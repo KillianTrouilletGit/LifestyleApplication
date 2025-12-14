@@ -1,0 +1,39 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_user"
+        />
+    <item
+        android:id="@+id/nav_modify"
+        android:title="Modify Info"
+        android:icon="@drawable/ic_modify"
+        />
+    <item
+        android:id="@+id/nav_planning"
+        android:icon="@drawable/ic_planning"
+        android:title="Planning"
+        />
+    <item
+        android:id="@+id/nav_training"
+        android:icon="@drawable/ic_training"
+        android:title="Entraînement"
+        />
+    <item
+        android:id="@+id/nav_nutrition"
+        android:icon="@drawable/ic_nutrition"
+        android:title="Nutrition"
+        />
+    <item
+        android:id="@+id/nav_sleep_monitoring"
+        android:icon="@drawable/sleep_ic"
+        android:title="Sleep Monitoring"
+        />
+    <item
+        android:id="@+id/nav_water"
+        android:icon="@drawable/ic_water"
+        android:title="Water amount"
+        />
+
+</menu>
+

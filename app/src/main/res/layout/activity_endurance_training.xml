@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/backgroundColor">
+
+    <!-- Corners -->
+    <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_tech_corner"
+               android:layout_gravity="top|start" android:layout_margin="16dp" android:tint="@color/accentColor"/>
+    <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_tech_corner"
+               android:layout_gravity="top|end" android:layout_margin="16dp" android:rotation="90" android:tint="@color/accentColor"/>
+    <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_tech_corner"
+               android:layout_gravity="bottom|start" android:layout_margin="16dp" android:rotation="270" android:tint="@color/accentColor"/>
+    <ImageView android:layout_width="48dp" android:layout_height="48dp" android:src="@drawable/ic_tech_corner"
+               android:layout_gravity="bottom|end" android:layout_margin="16dp" android:rotation="180" android:tint="@color/accentColor"/>
+
+    <LinearLayout 
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="24dp">
+
+        <!-- Header Section -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="32dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="PROTOCOL"
+                android:textSize="14sp"
+                android:textColor="#00E5FF"
+                android:letterSpacing="0.2"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ENDURANCE"
+                android:textSize="24sp"
+                android:textColor="#FFFFFF"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="2dp"
+                android:background="#00E5FF"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#1E1E1E"
+            app:cardCornerRadius="4dp"
+            app:cardElevation="0dp"
+            app:contentPadding="24dp">
+            
+            <TextView
+                android:id="@+id/tvTimer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="00:00:00"
+                android:fontFamily="monospace"
+                android:layout_gravity="center"
+                android:textColor="@color/accentColor"
+                android:textSize="56sp"
+                android:textStyle="bold" />
+        </androidx.cardview.widget.CardView>
+
+        <EditText
+            android:id="@+id/etDistance"
+            style="@style/Protocol.Input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:hint="DISTANCE (METERS)"
+            android:inputType="numberDecimal"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="32dp">
+            
+            <Button
+                android:id="@+id/btnStart"
+                style="@style/Protocol.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="START"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"/>
+                
+            <Button
+                android:id="@+id/btnPause"
+                style="@style/Protocol.Button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="PAUSE"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/buttonColor2"/>
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnSave"
+            style="@style/Protocol.Button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LOG SESSION"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="@color/accentColor"/>
+    </LinearLayout>
+</FrameLayout>

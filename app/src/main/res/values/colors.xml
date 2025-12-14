@@ -1,0 +1,12 @@
+<resources>
+    <color name="primaryColor">#1A1A1A</color> <!-- Eigengrau -->
+    <color name="accentColor">#00E5FF</color> <!-- Protocol Cyan -->
+    <color name="backgroundColor">#121212</color> <!-- Dark Background -->
+    <color name="textColor">#E0E0E0</color> <!-- Off White -->
+    <color name="buttonColor">#00E5FF</color> <!-- Protocol Cyan -->
+    <color name="iconColor">#E0E0E0</color> <!-- Off White -->
+    <color name="buttonColor2">#344955</color> <!-- Secondary Slate -->
+    <color name="whiteColor">#FFFFFF</color>
+    <color name="black">#000000</color>
+    <color name="errorColor">#8B0000</color> <!-- Signal Red -->
+</resources>

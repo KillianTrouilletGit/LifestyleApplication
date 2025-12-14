@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    android:layout_marginBottom="8dp"
+    >
+
+    <EditText
+        android:id="@+id/session_name_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Session Name"
+        android:textColorHint="@color/textColor"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"/>
+
+    <LinearLayout
+        android:id="@+id/exercises_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Exercises will be added dynamically here -->
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/add_exercise_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Add Exercise"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>

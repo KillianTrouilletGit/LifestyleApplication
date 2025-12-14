@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/backgroundColor"
+    android:padding="16dp">
+
+    <EditText
+        android:id="@+id/session_count_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter number of sessions"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"
+        android:inputType="number"
+        android:layout_marginTop="100dp"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="16dp">
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"/>
+        <Button
+            android:id="@+id/next_button"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:layout_marginTop="16dp"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
+</LinearLayout>

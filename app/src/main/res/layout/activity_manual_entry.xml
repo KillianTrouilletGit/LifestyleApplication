@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="70dp"
+    android:background="@color/backgroundColor">
+
+    <EditText
+        android:id="@+id/calories_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter calories"
+        android:inputType="numberDecimal"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"
+        android:layout_marginTop="90dp"/>
+
+    <EditText
+        android:id="@+id/protein_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter protein in grams"
+        android:inputType="numberDecimal"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"/>
+
+    <EditText
+        android:id="@+id/fat_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter fat in grams"
+        android:inputType="numberDecimal"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"/>
+
+    <EditText
+        android:id="@+id/carbs_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter carbs in grams"
+        android:inputType="numberDecimal"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"/>
+
+    <EditText
+        android:id="@+id/fiber_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter fiber in grams"
+        android:inputType="numberDecimal"
+        android:textColor="@color/textColor"
+        android:backgroundTint="@color/textColor"
+        android:textColorHint="@color/textColor"/>
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="24dp" />
+</LinearLayout>

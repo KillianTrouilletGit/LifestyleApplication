@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PersonalLevelingSystem" parent="Theme.AppCompat.DayNight" >
+    <item name="android:fontFamily">@font/font_rune</item>
+    </style>
+</resources>

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "916640530054",
+    "project_id": "calendarapi-426218",
+    "storage_bucket": "calendarapi-426218.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:916640530054:android:a0db21bb852ec79a3a1b07",
+        "android_client_info": {
+          "package_name": "com.example.personallevelingsystem"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "916640530054-nbgfvqih464drmf66us7vt1epk7ptcih.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.personallevelingsystem",
+            "certificate_hash": "d95e97cedcbd1314054ebcd1c125939fdf2dad32"
+          }
+        },
+        {
+          "client_id": "916640530054-l1m1a8mufh8t04qmu34lonjg8t8s900l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDE6qsXxhntlg6jjExtuWADS8Lz_WSrChM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "916640530054-l1m1a8mufh8t04qmu34lonjg8t8s900l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
