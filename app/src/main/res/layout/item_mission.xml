@@ -19,6 +19,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/textColor"
-        android:textColor="@color/textColor"
+        android:textColor="@color/buttonColor"
         android:theme="@style/CheckBoxTheme"   />
 </LinearLayout>

@@ -6,6 +6,8 @@
         <item name="colorAccent">@color/accentColor</item>
         <item name="android:windowBackground">@color/backgroundColor</item>
         <item name="android:textColor">@color/textColor</item>
+        <item name="android:buttonStyle">@style/Protocol.Button</item>
+        <item name="materialButtonStyle">@style/Protocol.Button</item>
         <!-- Font family if needed -->
         <!-- <item name="android:fontFamily">@font/font_rune</item> -->
     </style>

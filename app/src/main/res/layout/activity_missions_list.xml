@@ -7,6 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".ui.MissionsListActivity">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -64,5 +68,9 @@
             android:layout_marginBottom="16dp"/>
 
     </LinearLayout>
+
+
+
+    </FrameLayout>
 
 </androidx.drawerlayout.widget.DrawerLayout>

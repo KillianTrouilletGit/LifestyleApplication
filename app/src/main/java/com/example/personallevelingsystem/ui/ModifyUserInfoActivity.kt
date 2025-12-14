@@ -40,7 +40,7 @@ class ModifyUserInfoActivity : AppCompatActivity() {
         // Initialize the date input formatter
         formatDateInput()
 
-        binding.btnSaveUserInfo.setOnClickListener {
+        binding.btnSave.setOnClickListener {
             val name = binding.etName.text.toString()
             val weight = binding.etWeight.text.toString().toFloatOrNull() ?: 0f
             val height = binding.etHeight.text.toString().toFloatOrNull() ?: 0f

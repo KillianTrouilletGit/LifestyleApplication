@@ -45,18 +45,18 @@
         android:layout_marginBottom="16dp">
 
 
-    <Button
-        android:id="@+id/button_return_to_main"
-        android:layout_width="170dp"
-        android:layout_height="wrap_content"
-        android:text="Return to Main"
-        />
-    <Button
-        android:id="@+id/back_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        />
+        <Button
+            android:id="@+id/button_return_to_main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Return to Main"
+            android:layout_marginRight="5dp"/>
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Back" />
 
     </LinearLayout>
 

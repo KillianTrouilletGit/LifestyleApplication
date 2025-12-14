@@ -4,44 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/backgroundColor">
 
-    <!-- Top Left Corner -->
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_tech_corner"
-        android:layout_gravity="top|start"
-        android:layout_margin="16dp"
-        android:tint="@color/accentColor"/>
 
-    <!-- Top Right Corner -->
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_tech_corner"
-        android:layout_gravity="top|end"
-        android:layout_margin="16dp"
-        android:rotation="90"
-        android:tint="@color/accentColor"/>
-
-    <!-- Bottom Left Corner -->
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_tech_corner"
-        android:layout_gravity="bottom|start"
-        android:layout_margin="16dp"
-        android:rotation="270"
-        android:tint="@color/accentColor"/>
-
-    <!-- Bottom Right Corner -->
-    <ImageView
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        android:src="@drawable/ic_tech_corner"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:rotation="180"
-        android:tint="@color/accentColor"/>
 
     <LinearLayout 
         android:layout_width="match_parent"
@@ -99,7 +62,8 @@
                 android:fontFamily="monospace"
                 android:layout_gravity="center"
                 android:textColor="@color/accentColor"
-                android:textSize="56sp"
+                android:textSize="48sp"
+                android:maxLines="1"
                 android:textStyle="bold" />
         </androidx.cardview.widget.CardView>
 

@@ -1,11 +1,14 @@
 package com.example.personallevelingsystem.ui
 
+import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModelProvider
 import com.example.personallevelingsystem.MainActivity
 import com.example.personallevelingsystem.R
@@ -30,6 +33,7 @@ class SleepMonitoringActivity : AppCompatActivity() {
     private lateinit var userRepository: UserRepository
 
 
+    @SuppressLint("ResourceAsColor")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_sleep_monitoring)
@@ -57,7 +61,10 @@ class SleepMonitoringActivity : AppCompatActivity() {
                 minute,
                 true // 24 hour view
             )
+
             timePickerDialog.show()
+            timePickerDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(R.color.buttonColor)
+            timePickerDialog.getButton(DialogInterface.BUTTON_NEGATIVE).setTextColor(R.color.buttonColor)
         }
 
         saveButton.setOnClickListener {

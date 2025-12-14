@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/backgroundColor"
-    android:paddingVertical="90dp"
-    android:paddingHorizontal="16dp"
-    >
+    android:background="@color/backgroundColor">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp">
 
         <!-- Header Section -->
         <LinearLayout
@@ -22,20 +25,11 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CONFIGURATION"
+                android:text="PROGRAMMING"
                 android:textSize="14sp"
                 android:textColor="#00E5FF"
                 android:letterSpacing="0.2"
                 android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="SESSION CREATION"
-                android:textSize="24sp"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:layout_marginTop="4dp" />
 
             <View
                 android:layout_width="100dp"
@@ -54,37 +48,16 @@
             android:backgroundTint="@color/textColor"
             android:layout_marginTop="24dp" />
 
-        <LinearLayout
-            android:id="@+id/sessions_container"
+        <Button
+            android:id="@+id/save_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Sessions will be added dynamically here -->
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_horizontal"
-            android:layout_marginTop="16dp">
-            <Button
-                android:id="@+id/back_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Back"
-                android:layout_marginTop="16dp"
-                android:layout_weight="1"/>
-            <Button
-                android:id="@+id/save_button"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Save"
-                android:layout_marginTop="16dp"
-                android:layout_weight="1"/>
-        </LinearLayout>
+            android:text="Save"
+            android:layout_marginTop="16dp"/>
 
     </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+
+
+</FrameLayout>

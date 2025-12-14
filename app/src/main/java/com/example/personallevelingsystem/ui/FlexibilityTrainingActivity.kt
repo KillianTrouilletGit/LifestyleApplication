@@ -41,7 +41,7 @@ class FlexibilityTrainingActivity : AppCompatActivity() {
 
     private val timerRunnable = object : Runnable {
         override fun run() {
-            val millis = System.currentTimeMillis() - startTime + elapsedTime
+            val millis = System.currentTimeMillis() - startTime
             val seconds = (millis / 1000).toInt()
             val minutes = seconds / 60
             val hours = minutes / 60
