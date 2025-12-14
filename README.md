@@ -51,7 +51,7 @@ This project features a custom "Operator OS" design language, characterized by a
 
 | Dashboard | Training | Profile |
 |:---:|:---:|:---:|
-| *(Add your screenshot here)* | *(Add your screenshot here)* | *(Add your screenshot here)* |
+| placeholder | placeholder | placeholder |
 
 ---
 
@@ -81,4 +81,4 @@ This application was built as a capstone/portfolio project to explore:
 
 ---
 
-**Developed by [Your Name]**
+**Developed by Killian Trouillet**
