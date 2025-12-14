@@ -28,7 +28,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="CONSUMPTION"
+                android:text="PROTOCOL"
                 android:textSize="14sp"
                 android:textColor="#00E5FF"
                 android:letterSpacing="0.2"
@@ -37,7 +37,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="NUTRITION MODULE"
+                android:text="NUTRITION"
                 android:textSize="24sp"
                 android:textColor="#FFFFFF"
                 android:textStyle="bold"
