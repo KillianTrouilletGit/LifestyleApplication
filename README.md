@@ -98,6 +98,6 @@ A comprehensive workout logger.
 ## 👨‍💻 Author
 
 **Killian Trouillet**
-*Android Developer & Software Engineer*
+*Engineering Student at ISAE-Supaero*
 
 > *Built with discipline. Executed with precision.*
