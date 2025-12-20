@@ -1,84 +1,103 @@
 # Personal Leveling System (Operator OS)
 
-![Language](https://img.shields.io/badge/Kotlin-1.9.0-purple.svg?style=flat&logo=kotlin)
-![Platform](https://img.shields.io/badge/Android-MinSDK%2024-green.svg?style=flat&logo=android)
-![Architecture](https://img.shields.io/badge/Architecture-MVVM-blue.svg?style=flat)
+![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-7F52FF.svg?style=flat&logo=kotlin&logoColor=white)
+![Android](https://img.shields.io/badge/Android-MinSDK%2024-3DDC84.svg?style=flat&logo=android&logoColor=white)
+![Architecture](https://img.shields.io/badge/Architecture-MVVM-0052CC.svg?style=flat&logo=architecture&logoColor=white)
+![Database](https://img.shields.io/badge/Database-Room-4285F4.svg?style=flat&logo=sqlite&logoColor=white)
 
-**Personal Leveling System** is a gamified self-improvement application for Android, designed to treat personal development like an RPG. Users complete "missions" (daily habits), track "stats" (fitness, health), and earn XP to level up their profile.
+## 🚀 Overview
 
-This project features a custom "Operator OS" design language, characterized by a dark, tactical UI with high-contrast cyan accents (`#00E5FF`) and technical HUD elements.
+**Personal Leveling System** is a robust Android application that gamifies self-improvement, turning daily habits into an immersive RPG experience. Inspired by the "System" from *Solo Leveling*, it wraps complex fitness, nutrition, and scheduling tools in a custom-built, sci-fi "Operator OS" interface.
 
-> **Note:** This is a **Student Project** developed to demonstrate Android development skills including Room Database, Background Services, and Custom UI implementation.
-
----
-
-## 📱 Features
-
-### ⚔️ Gamification
--   **XP & Leveling System**: Earn experience points for every completed activity.
--   **Missions**: Daily and Weekly objective tracking with automated resets.
--   **Active Buffs**: Visual indicators of current streaks or achievements.
-
-### 🏋️ Training Module
--   **Program Management**: Create and manage custom workout programs.
--   **Session Tracking**: Log sets, reps, and weights during active sessions.
--   **Specialized Protocols**: Dedicated timers and loggers for **Endurance** (running/cardio) and **Flexibility** training.
-
-### 🥗 Health & Vitality
--   **Nutrition**: Calorie and macro tracking with daily targets.
--   **Hydration**: Water intake logger with visual progress.
--   **Sleep**: Sleep duration monitoring and quality assessment.
-
-### 📊 Data & Analysis
--   **Dashboard**: Centralized grid view of all vital metrics.
--   **Charts**: Visual progress tracking over time (MPAndroidChart).
--   **Local Storage**: Completely offline-first architecture using Room Database.
+This project demonstrates advanced Android development skills, featuring an **offline-first architecture**, **complex relational database modeling**, and a **custom design system** implemented without reliance on standard Material Design libraries.
 
 ---
 
-## 🛠️ Tech Stack
+## 🏗️ Technical Architecture
 
-*   **Language**: Kotlin
-*   **Architecture**: MVVM (Model-View-ViewModel)
-*   **UI**: Android View System (XML) with Custom Drawables & Styles
-*   **Database**: Room (SQLite)
-*   **Background Tasks**: WorkManager & BroadcastReceivers (for mission resets and notifications)
-*   **Async**: Coroutines & Flow
+The application is built using modern Android development practices, focusing on scalability and maintainability.
+
+### 🏛️ Architecture Pattern: MVVM (Model-View-ViewModel)
+-   **View Layer**: XML-based layouts with custom Drawables and Styles to achieve the unique "Protocol" aesthetic.
+-   **ViewModel Layer**: Manages UI state and business logic using `LiveData`. It survives configuration changes and ensures data persistence across the lifecycle.
+-   **Model Layer**: A repository pattern abstracting the Room Database data source, ensuring a clean separation of concerns.
+
+### 💾 Data Persistence: Room Database
+-   **Complex Relations**: Implements one-to-many and many-to-many relationships (e.g., `Programs` -> `Sessions` -> `Exercises`).
+-   **Type Converters**: Custom converters for storing complex objects and timestamps.
+-   **Offline First**: All user data is stored locally, ensuring instant access and zero latency.
+
+### ⚡ Concurrency & Background Processing
+-   **Coroutines & Flow**: Used for database operations and asynchronous tasks to keep the UI thread unblocked.
+-   **BroadcastReceivers**: Handles scheduled events for daily and weekly mission resets (e.g., `DailyMissionResetReceiver`).
 
 ---
 
-## 📸 Screenshots
+## 🎨 Design System: "Protocol"
 
-| Dashboard | Training | Profile |
-|:---:|:---:|:---:|
-| placeholder | placeholder | placeholder |
+Unlike typical apps that use standard Material Design components, this project features a bespoke design language named **"Protocol"**.
+
+-   **Aesthetic**: Tactical, high-contrast, dark-mode interface inspired by sci-fi HUDs.
+-   **Color Palette**:
+    -   *Eigengrau* (`#1A1A1A`): Deep matte charcoal background for reduced eye strain.
+    -   *Protocol Cyan* (`#00E5FF`): Standardized accent for interactive elements and data visualization.
+    -   *Deep Navy* (`#002233`): High-contrast text color for active buttons.
+-   **Custom Components**:
+    -   **Adaptive Icons**: Custom generated vector assets for all densities (`mdpi` to `xxxhdpi`).
+    -   **Technical Shapes**: Custom XML drawables for "cut-corner" cards, bordered inputs, and segmented progress bars.
+    -   **Typography**: Monospaced fonts for data values to enhance the technical feel.
 
 ---
 
-## 🚀 Setup & Installation
+## 📱 Core Modules
+
+### 1. ⚔️ Gamification Engine
+The core loop that drives engagement.
+-   **XP Calculation**: Dynamic XP curves based on activity difficulty.
+-   **Leveling**: User stats (Strength, Vitality, Intelligence) level up based on specific activity types.
+
+### 2. 🏋️ Training Protocol
+A comprehensive workout logger.
+-   **Dynamic Session Creation**: Users can build custom programs with variable sets and rep ranges.
+-   **Smart Autofill**: The system remembers weights from previous sessions to streamline data entry.
+-   **Specialized Timers**: Custom-built chronometers for **Endurance** and **Flexibility** training that handle state preservation across configuration changes.
+
+### 3. 🛡️ Vitality & Logistics
+-   **Nutrition**: Macro-nutrient tracking with daily automated resets.
+-   **Planning**: Integrated calendar view for scheduling upcoming "Missions".
+-   **Sleep & Hydration**: Specialized input interfaces (e.g., custom Time Pickers) for rapid logging.
+
+---
+
+## 💡 Key Technical Challenges Solved
+
+-   **State Preservation**: Solved complex issues with `Cronometer` widgets losing time during activity rotation or backgrounding by implementing robust `onSaveInstanceState` logic and manual time calculation.
+-   **Relational Data Integrity**: Designed a cascading deletion strategy in Room to ensure that deleting a "Program" correctly wipes all associated "Sessions" and "Exercises" to prevent orphan data.
+-   **Custom Asset Pipeline**: Created a PowerShell automation script (`update_icons.ps1`) to programmatically resize and distribute app icons across all Android density folders, ensuring pixel-perfect assets on every device.
+
+---
+
+## 🛠️ Setup & Installation
 
 1.  **Clone the Repository**:
     ```bash
     git clone https://github.com/your-username/PersonalLevelingSystem.git
     ```
 2.  **Open in Android Studio**:
-    *   File -> Open -> Select the cloned directory.
-3.  **Sync Gradle**:
-    *   Allow Android Studio to download dependencies.
-4.  **Run**:
-    *   Connect a physical Android device or use an Emulator.
-    *   Run the `app` configuration.
+    -   File -> Open -> Select project directory.
+    -   Wait for Gradle Sync to complete.
+3.  **Build**:
+    -   Select `app` configuration.
+    -   Click **Run** (Green Play Button).
+4.  **Requirements**:
+    -   Android SDK 24+ (Nougat or higher).
+    -   Kotlin 1.9.0+.
 
 ---
 
-## 📝 Project Context
+## 👨‍💻 Author
 
-This application was built as a capstone/portfolio project to explore:
-*   Complex local data relationships (Room).
-*   State management in MVVM.
-*   Custom UI theming and styling without relying on Material Design defaults.
-*   Background process management in modern Android.
+**Killian Trouillet**
+*Android Developer & Software Engineer*
 
----
-
-**Developed by Killian Trouillet**
+> *Built with discipline. Executed with precision.*
