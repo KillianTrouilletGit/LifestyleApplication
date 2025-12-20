@@ -9,4 +9,5 @@
     <color name="whiteColor">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="errorColor">#8B0000</color> <!-- Signal Red -->
+    <color name="buttonTextColor">#002233</color> <!-- Deep Navy Blue for Button Text -->
 </resources>
