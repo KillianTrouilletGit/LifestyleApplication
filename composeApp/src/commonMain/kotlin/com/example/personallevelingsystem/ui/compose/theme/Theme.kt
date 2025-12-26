@@ -1,16 +1,11 @@
 package com.example.personallevelingsystem.ui.compose.theme
 
-import android.app.Activity
-import android.os.Build
+
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowCompat
 import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
 
 // Force Dark Theme for Future Neon aesthetic
@@ -34,14 +29,9 @@ fun PersonalLevelingSystemTheme(
 ) {
     val colorScheme = SciFiColorScheme
 
-    val view = LocalView.current
-    if (!view.isInEditMode) {
-        SideEffect {
-            val window = (view.context as Activity).window
-            window.statusBarColor = SpaceBlack.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = false
-        }
-    }
+
+    
+    SystemAppearance(!darkTheme)
 
     MaterialTheme(
         colorScheme = colorScheme,
@@ -49,3 +39,6 @@ fun PersonalLevelingSystemTheme(
         content = content
     )
 }
+
+@Composable
+expect fun SystemAppearance(isDark: Boolean)

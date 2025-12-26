@@ -63,6 +63,7 @@ android {
 }
 
 dependencies {
+    implementation(project(":composeApp"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

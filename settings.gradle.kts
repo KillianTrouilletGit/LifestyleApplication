@@ -18,3 +18,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "PersonalLevelingSystem"
 include(":app")
+include(":composeApp")

@@ -41,9 +41,8 @@ data class DashboardItem(
 @Composable
 fun MainScreen(
     onNavigate: (String) -> Unit,
-    performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel
+    performanceState: com.example.personallevelingsystem.model.PerformanceState
 ) {
-    val performanceState by performanceViewModel.uiState.collectAsState()
 
     val items = listOf(
         DashboardItem("missions", "Missions", R.drawable.ic_missions_v2),

@@ -21,6 +21,7 @@ import com.example.personallevelingsystem.ui.compose.screens.TrainingSessionScre
 import com.example.personallevelingsystem.ui.compose.screens.TrainingScreen
 import com.example.personallevelingsystem.viewmodel.UserViewModel
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,11 +49,13 @@ class ComposeMigrationActivity : ComponentActivity() {
                             MigrationViewModelFactory(application)
                         )[com.example.personallevelingsystem.viewmodel.PerformanceViewModel::class.java]
 
+                        val state by viewModel.uiState.collectAsState()
+
                         MainScreen(
                             onNavigate = { destination ->
                                 navController.navigate(destination)
                             },
-                            performanceViewModel = viewModel
+                            performanceState = state
                         )
                     }
                     composable("profile") {
