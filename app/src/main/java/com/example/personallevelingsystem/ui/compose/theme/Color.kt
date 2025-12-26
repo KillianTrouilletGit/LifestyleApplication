@@ -22,6 +22,7 @@ val SecondaryAccent = NeonMagenta
 
 val TextPrimary = HologramText
 val TextSecondary = NeonCyan.copy(alpha = 0.6f)
+val CyberCyan = NeonCyan
 
 // Gradients
 val PrimaryGradient = Brush.linearGradient(

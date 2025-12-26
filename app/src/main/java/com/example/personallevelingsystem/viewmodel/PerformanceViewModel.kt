@@ -22,7 +22,9 @@ data class PerformanceState(
     val totalDailyMissions: Int = 0,
     val weeklyTrainingFrequency: List<Float> = List(7) { 0f }, // Last 7 days, 0.0 to 1.0 intensity
     val sleepHours: Float = 0f,
-    val waterIntake: Float = 0f
+    val waterIntake: Float = 0f,
+    val dailyBalanceIndex: Float = 0f,
+    val dailyCalories: Int = 0
 )
 
 class PerformanceViewModel(application: Application) : AndroidViewModel(application) {
@@ -38,6 +40,13 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
 
     init {
         loadPerformanceData()
+        
+        // Auto-refresh when missions are completed
+        viewModelScope.launch {
+            com.example.personallevelingsystem.repository.MissionRepository.missionUpdates.collect {
+                loadPerformanceData()
+            }
+        }
     }
 
     fun loadPerformanceData() {
@@ -125,6 +134,12 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
                 
                 val water = waterRecords.sumOf { it.amount.toDouble() }.toFloat() / 1000f // Convert ml to L
 
+                // 5. Nutrition Data (Today)
+                val mealDao = db.mealDao()
+                val meals = mealDao.getMealForDay(todayStart, todayEnd)
+                val balanceIndex = if (meals.isNotEmpty()) meals.map { it.balanceIndex }.average().toFloat() else 0f
+                val totalCalories = meals.sumOf { it.calories }.toInt()
+
                 _uiState.value = PerformanceState(
                     level = level,
                     currentXp = currentXp,
@@ -134,7 +149,9 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
                     totalDailyMissions = totalCount,
                     weeklyTrainingFrequency = frequency,
                     sleepHours = sleep,
-                    waterIntake = water
+                    waterIntake = water,
+                    dailyBalanceIndex = balanceIndex,
+                    dailyCalories = totalCalories
                 )
             }
         }

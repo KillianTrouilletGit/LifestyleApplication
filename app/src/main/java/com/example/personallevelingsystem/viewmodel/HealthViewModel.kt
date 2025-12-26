@@ -26,6 +26,11 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     private val mealDao = db.mealDao()
     private val client = OkHttpClient()
 
+    init {
+        calculateTotalWaterForToday()
+        calculateDailyBalanceIndex()
+    }
+
     // Water Logic
     private val _totalWaterToday = MutableLiveData<Float>()
     val totalWaterToday: LiveData<Float> = _totalWaterToday
@@ -137,18 +142,35 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
                             }
                             
                             val factor = quantity / 100
+                            
+                            // Calculate Balance (Duplicate logic from UI for now, ideally shared util)
+                            val totalCal = (calories * factor)
+                            val p = protein * factor
+                            val c = carbs * factor
+                            val f = fat * factor
+                            
+                            var balance = 0.5
+                            if (totalCal > 0) {
+                                val pRatio = (p * 4) / totalCal
+                                val cRatio = (c * 4) / totalCal
+                                val fRatio = (f * 9) / totalCal
+                                val diff = kotlin.math.abs(pRatio - 0.3) + kotlin.math.abs(cRatio - 0.4) + kotlin.math.abs(fRatio - 0.3)
+                                balance = (1.0 - (diff / 1.5)).coerceIn(0.0, 1.0)
+                            }
+
                             val meal = Meal(
                                 date = System.currentTimeMillis(),
                                 time = System.currentTimeMillis().toString(),
-                                calories = calories * factor,
-                                protein = protein * factor,
-                                fat = fat * factor,
-                                carbs = carbs * factor,
+                                calories = totalCal,
+                                protein = p,
+                                fat = f,
+                                carbs = c,
                                 fiber = fiber * factor,
-                                balanceIndex = 0.0 // Simplified for now
+                                balanceIndex = balance
                             )
                             mealDao.insert(meal)
                             _nutritionResult.postValue(meal)
+                            calculateDailyBalanceIndex()
                         }
                     }
                 }
@@ -156,5 +178,41 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
                  e.printStackTrace()
              }
          }
+    }
+    // Daily Balance Logic
+    private val _dailyBalanceIndex = MutableLiveData<Double>(0.0)
+    val dailyBalanceIndex: LiveData<Double> = _dailyBalanceIndex
+
+    fun calculateDailyBalanceIndex() {
+        viewModelScope.launch(Dispatchers.IO) {
+            val calendar = Calendar.getInstance()
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+            calendar.set(Calendar.SECOND, 0)
+            calendar.set(Calendar.MILLISECOND, 0)
+            val startOfDay = calendar.timeInMillis
+            
+            calendar.set(Calendar.HOUR_OF_DAY, 23)
+            calendar.set(Calendar.MINUTE, 59)
+            calendar.set(Calendar.SECOND, 59)
+            calendar.set(Calendar.MILLISECOND, 999)
+            val endOfDay = calendar.timeInMillis
+            
+            val meals = mealDao.getMealForDay(startOfDay, endOfDay)
+            if (meals.isNotEmpty()) {
+                val averageBalance = meals.map { it.balanceIndex }.average()
+                _dailyBalanceIndex.postValue(averageBalance)
+            } else {
+                _dailyBalanceIndex.postValue(0.0)
+            }
+        }
+    }
+
+    fun saveMeal(meal: Meal) {
+        viewModelScope.launch(Dispatchers.IO) {
+            mealDao.insert(meal)
+            _nutritionResult.postValue(meal)
+            calculateDailyBalanceIndex()
+        }
     }
 }

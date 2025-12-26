@@ -11,7 +11,7 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.personallevelingsystem.MainActivity
 import com.example.personallevelingsystem.R
-import com.example.personallevelingsystem.ui.MissionsListActivity
+
 
 object NotificationUtils {
 
@@ -35,7 +35,7 @@ object NotificationUtils {
 
     fun showLevelUpNotification(context: Context, level: Int) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_user)
+            .setSmallIcon(R.drawable.ic_profile_v2)
             .setContentTitle("Level Up!")
             .setContentText("Congratulations! You've reached level $level.")
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
@@ -46,13 +46,13 @@ object NotificationUtils {
     }
 
     private fun showPermanentMissionNotification(context: Context, dailyMissionsLeft: Int, weeklyMissionsLeft: Int) {
-        val intent = Intent(context, MissionsListActivity::class.java).apply {
+        val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent: PendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
         val notificationManager = NotificationManagerCompat.from(context)
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_missions)
+            .setSmallIcon(R.drawable.ic_missions_v2)
             .setContentTitle("Mission Status")
             .setContentText("Daily missions left: $dailyMissionsLeft, Weekly missions left: $weeklyMissionsLeft")
             .setPriority(NotificationCompat.PRIORITY_LOW)

@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import com.example.personallevelingsystem.R
@@ -39,11 +40,17 @@ data class DashboardItem(
 )
 
 @Composable
+
 fun MainScreen(
     onNavigate: (String) -> Unit,
-    performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel
+    performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel,
+    healthViewModel: com.example.personallevelingsystem.viewmodel.HealthViewModel
 ) {
     val performanceState by performanceViewModel.uiState.collectAsState()
+
+    androidx.compose.runtime.LaunchedEffect(Unit) {
+        performanceViewModel.loadPerformanceData()
+    }
 
     val items = listOf(
         DashboardItem("missions", "Missions", R.drawable.ic_missions_v2),
@@ -85,9 +92,8 @@ fun MainScreen(
                 }
             }
 
-            // Grid Items
             items(items) { item ->
-                DashboardCard(item = item, onClick = { onNavigate(item.id) })
+                DashboardCard(item = item, extraText = null, onClick = { onNavigate(item.id) })
             }
         }
     }
@@ -96,6 +102,7 @@ fun MainScreen(
 @Composable
 fun DashboardCard(
     item: DashboardItem,
+    extraText: String? = null,
     onClick: () -> Unit
 ) {
     JuicyCard(
@@ -127,6 +134,14 @@ fun DashboardCard(
                 style = MaterialTheme.typography.labelLarge,
                 color = androidx.compose.ui.graphics.Color.White
             )
+            if (extraText != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                 Text(
+                    text = extraText,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = com.example.personallevelingsystem.ui.compose.theme.CyberCyan
+                )
+            }
         }
     }
 }
@@ -135,8 +150,6 @@ fun DashboardCard(
 @Composable
 fun MainScreenPreview() {
     PersonalLevelingSystemTheme {
-         // Preview requires mock/fake VM, simplified for now:
-         // MainScreen(onNavigate = {}, performanceViewModel = ...) 
-         // Commented out or needs Mock provider. For now, leaving bare minimum to avoid error or simple error.
+         // Preview requires mock/fake VM
     }
 }

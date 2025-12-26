@@ -21,6 +21,7 @@ import com.example.personallevelingsystem.ui.compose.theme.NeonCyan
 import com.example.personallevelingsystem.ui.compose.theme.NeonMagenta
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -135,23 +136,22 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.Bottom,
-            modifier = Modifier.fillMaxWidth().height(120.dp) // Much taller graph
+            modifier = Modifier.fillMaxWidth().height(140.dp) // Increased from 120dp
         ) {
             state.weeklyTrainingFrequency.forEachIndexed { index, rawValue ->
                 val dayLabel = days.getOrElse(index) { "-" }
-                // Calculate height ratio (0.0 to 1.0)
                 val heightRatio = (rawValue / maxVolume).coerceIn(0.05f, 1f)
                 
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Bottom
+                    modifier = Modifier.wrapContentHeight()
                 ) {
-                    // Value Label (only if > 0)
-                    if (rawValue > 0.05f) { // Show threshold lowered
+                    // Value Label
+                    if (rawValue > 0.05f) {
                         Text(
-                            text = String.format("%.1f", rawValue), // Show 1 decimal
+                            text = String.format("%.1f", rawValue),
                             style = MaterialTheme.typography.labelSmall,
-                            fontSize = 11.sp, // Bigger text
+                            fontSize = 11.sp,
                             color = NeonCyan
                         )
                     }
@@ -160,25 +160,21 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
 
                     // Bar
                     Box(modifier = Modifier
-                        .width(16.dp) // Wider bars
-                        .height(100.dp * heightRatio) // Scale based on new taller height
-                    ) {
-                         // Inner colored box
-                         Box(modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                brush = if(rawValue > 0.05f) PrimaryGradient else androidx.compose.ui.graphics.SolidColor(Color.DarkGray.copy(alpha=0.3f))
-                            )
+                        .width(16.dp)
+                        .height(80.dp * heightRatio) // Reduced from 100dp to leave more room
+                        .background(
+                            brush = if(rawValue > 0.05f) PrimaryGradient else androidx.compose.ui.graphics.SolidColor(Color.DarkGray.copy(alpha=0.3f))
                         )
-                    }
+                    )
                     
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                     
                     Text(
                         text = dayLabel, 
                         style = MaterialTheme.typography.labelSmall, 
-                        fontSize = 12.sp, // Bigger Label
-                        color = Color.LightGray
+                        fontSize = 12.sp,
+                        color = Color.LightGray,
+                        fontWeight = FontWeight.Bold
                     )
                 }
             }
@@ -190,18 +186,25 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
 fun HealthOverviewCard(state: com.example.personallevelingsystem.viewmodel.PerformanceState) {
      Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(DesignSystem.Padding)
     ) {
         Text("BIO-METRICS", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
+        Spacer(modifier = Modifier.height(12.dp))
+        
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("SLEEP", style = MaterialTheme.typography.labelSmall, color = Color.White)
-                Text("${String.format("%.1f", state.sleepHours)}h", style = MaterialTheme.typography.titleLarge, color = NeonMagenta)
-            }
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("H2O", style = MaterialTheme.typography.labelSmall, color = Color.White)
-                Text("${String.format("%.1f", state.waterIntake)}L", style = MaterialTheme.typography.titleLarge, color = NeonCyan)
-            }
+            BioMetricItem(label = "SLEEP", value = "${String.format("%.1f", state.sleepHours)}H", color = NeonMagenta)
+            BioMetricItem(label = "H2O", value = "${String.format("%.1f", state.waterIntake)}L", color = NeonCyan)
+            BioMetricItem(label = "KCAL", value = "${state.dailyCalories}", color = Color.White)
+            BioMetricItem(label = "BAL", value = String.format("%.2f", state.dailyBalanceIndex), color = com.example.personallevelingsystem.ui.compose.theme.CyberCyan)
         }
+    }
+}
+
+@Composable
+fun BioMetricItem(label: String, value: String, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontSize = 10.sp)
+        Text(text = value, style = MaterialTheme.typography.titleMedium, color = color, fontWeight = FontWeight.Bold)
     }
 }

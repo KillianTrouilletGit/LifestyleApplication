@@ -24,118 +24,17 @@
         android:roundIcon="@mipmap/round_ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity
-            android:name=".ui.ManualEntryActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar"/>
-
-        <meta-data
-            android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="default" />
-        <meta-data
-            android:name="com.google.firebase.analytics.analytics_automatic_screen_reporting_enabled"
-            android:value="false" />
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-
-        <activity
-            android:name=".ui.MenuActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.WaterActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.MissionsListActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.SleepMonitoringActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.EnduranceTrainingActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.FlexibilityTrainingActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.NutritionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar"
-            android:windowSoftInputMode="adjustPan" />
-        <activity
-            android:name=".ui.TrainingSessionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.SelectSessionActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.GoogleCalendarActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.ViewProgramsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.CreateSessionsActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.EnterSessionCountActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.TrainingActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.ModifyUserInfoActivity"
-            android:exported="false"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".ui.UserProfileActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar" />
-            
         <receiver
             android:name=".receiver.DailyMissionResetReceiver"
             android:exported="false" />
         <receiver
             android:name=".receiver.WeeklyMissionResetReceiver"
             android:exported="false" />
+
         <activity
-            android:name=".ui.compose.ComposeMigrationActivity"
+            android:name=".MainActivity"
             android:exported="true"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.PersonalLevelingSystem">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -143,6 +42,16 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 </manifest>

@@ -86,6 +86,7 @@ fun JuicyButton(
 fun JuicyCard(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    shape: androidx.compose.ui.graphics.Shape = RoundedCornerShape(DesignSystem.CornerRadius),
     content: @Composable () -> Unit
 ) {
     val haptic = LocalHapticFeedback.current
@@ -103,7 +104,7 @@ fun JuicyCard(
             .scale(scale)
             .border(
                 BorderStroke(1.dp, BorderGradient),
-                RoundedCornerShape(DesignSystem.CornerRadius)
+                shape
             )
             .clickable(
                 interactionSource = interactionSource,
@@ -116,7 +117,7 @@ fun JuicyCard(
         colors = CardDefaults.cardColors(
             containerColor = Color.Black, // Ensure opaque black background behind glass/border
         ),
-        shape = RoundedCornerShape(DesignSystem.CornerRadius),
+        shape = shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         Box(

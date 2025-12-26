@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
 
@@ -27,6 +28,7 @@ android {
         versionName = "1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         buildConfigField("String", "USDA_API_KEY", "\"${properties.getProperty("USDA_API_KEY")}\"")
+        buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY")}\"")
     }
 
     buildFeatures {
@@ -63,7 +65,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.22")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation("androidx.compose.ui:ui:1.6.8")
@@ -108,6 +110,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-auth:20.5.0")
     implementation("com.google.android.gms:play-services-auth:20.5.0")
     // implementation("com.google.cloud:google-cloud-datastore:2.1.0") // Removed for GitHub cleanup
+    implementation(libs.google.ai.client.generativeai)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.coil.compose)
     configurations.all {
         exclude(group = "com.android.support")
         exclude(group = "com.google.protobuf", module = "protobuf-javalite")

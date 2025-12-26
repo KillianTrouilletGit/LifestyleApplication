@@ -1,5 +1,8 @@
 package com.example.personallevelingsystem.repository
 
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
+
 import android.content.SharedPreferences
 import android.content.Context
 import android.util.Log
@@ -15,6 +18,11 @@ import java.util.Calendar
 class MissionRepository(private val context: Context) {
     private val db = AppDatabase.getDatabase(context)
     private val sharedPreferences: SharedPreferences =context.getSharedPreferences("missions_prefs", Context.MODE_PRIVATE)
+
+    companion object {
+        private val _missionUpdates = kotlinx.coroutines.flow.MutableSharedFlow<Unit>(replay = 0)
+        val missionUpdates = _missionUpdates.asSharedFlow()
+    }
 
     private val dailyMissions = mutableListOf(
         Mission("daily_flex", "Complete a 15-minutes flexibility training", MissionType.DAILY, getMissionCompletionStatus("daily_flex"), 50),
@@ -73,6 +81,11 @@ class MissionRepository(private val context: Context) {
 
         saveMissionCompletionStatus(mission.id, true)
         updateMissionNotification()
+        
+        // Signal update to any listeners (like PerformanceViewModel)
+        kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+            _missionUpdates.emit(Unit)
+        }
     }
 
     private fun getMissionCompletionStatus(missionId: String): Boolean {
