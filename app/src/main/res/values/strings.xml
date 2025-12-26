@@ -1,9 +1,0 @@
-<resources>
-    <string name="app_name">Personal Leveling System</string>
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="default_web_client_id">916640530054-nbgfvqih464drmf66us7vt1epk7ptcih.apps.googleusercontent.com</string>
-
-</resources>
