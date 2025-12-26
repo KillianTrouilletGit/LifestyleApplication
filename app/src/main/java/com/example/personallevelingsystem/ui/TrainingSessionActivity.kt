@@ -194,7 +194,7 @@ class TrainingSessionActivity : AppCompatActivity() {
                     nextButton.text = "NEXT EXERCISE"
                     // Apply style programmatically is hard, usually we just set background tint
                     nextButton.setBackgroundColor(getColor(R.color.buttonColor))
-                    nextButton.setTextColor(getColor(R.color.textColor))
+                    nextButton.setTextColor(getColor(R.color.buttonTextColor))
                     
                     val params = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT, 

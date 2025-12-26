@@ -139,6 +139,10 @@
         <receiver
             android:name=".receiver.WeeklyMissionResetReceiver"
             android:exported="false" />
+        <activity
+            android:name=".ui.compose.ComposeMigrationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.PersonalLevelingSystem" />
     </application>
 
 </manifest>
