@@ -79,25 +79,13 @@ A comprehensive workout logger.
 
 ## 🛠️ Setup & Installation
 
-1.  **Clone the Repository**:
-    ```bash
-    git clone https://github.com/your-username/PersonalLevelingSystem.git
-    ```
-2.  **Open in Android Studio**:
-    -   File -> Open -> Select project directory.
-    -   Wait for Gradle Sync to complete.
-3.  **Build**:
-    -   Select `app` configuration.
-    -   Click **Run** (Green Play Button).
-4.  **Requirements**:
-    -   Android SDK 24+ (Nougat or higher).
-    -   Kotlin 1.9.0+.
+-  Download the release 1.0.0 and install it on your android device
 
 ---
 
 ## 👨‍💻 Author
 
 **Killian Trouillet**
-*Android Developer & Software Engineer*
+*Engineering Student at ISAE-Supaero*
 
 > *Built with discipline. Executed with precision.*
