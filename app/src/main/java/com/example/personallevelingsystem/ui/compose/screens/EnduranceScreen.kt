@@ -1,0 +1,149 @@
+package com.example.personallevelingsystem.ui.compose.screens
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.ui.compose.components.JuicyButton
+import com.example.personallevelingsystem.ui.compose.components.JuicyInput
+import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import com.example.personallevelingsystem.viewmodel.TrainingViewModel
+import kotlinx.coroutines.delay
+
+@Composable
+fun EnduranceScreen(
+    viewModel: TrainingViewModel,
+    onBackClick: () -> Unit
+) {
+    EnduranceContent(
+        onSave = { duration, distance ->
+            viewModel.saveEnduranceTraining(duration, distance)
+            onBackClick()
+        },
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun EnduranceContent(
+    onSave: (Long, Float) -> Unit,
+    onBackClick: () -> Unit
+) {
+    var isRunning by remember { mutableStateOf(false) }
+    var startTime by remember { mutableStateOf(0L) }
+    var elapsedTime by remember { mutableStateOf(0L) }
+    var distanceInput by remember { mutableStateOf("") }
+
+    LaunchedEffect(isRunning) {
+        if (isRunning) {
+            startTime = System.currentTimeMillis() - elapsedTime
+            while (isRunning) {
+                elapsedTime = System.currentTimeMillis() - startTime
+                delay(100L)
+            }
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(DesignSystem.Padding),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        OperatorHeader(subtitle = "Stamina Module", title = "Endurance")
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        // Timer Display
+        val seconds = (elapsedTime / 1000) % 60
+        val minutes = (elapsedTime / (1000 * 60)) % 60
+        val hours = (elapsedTime / (1000 * 60 * 60))
+        val timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+        Text(
+            text = timeString,
+            style = MaterialTheme.typography.displayLarge.copy(
+                fontSize = 64.sp,
+                fontWeight = FontWeight.Bold,
+                fontFeatureSettings = "tnum"
+            ),
+            color = MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.weight(1f))
+        
+        JuicyInput(
+            value = distanceInput,
+            onValueChange = { distanceInput = it },
+            placeholder = "DISTANCE (KM)",
+            keyboardType = KeyboardType.Number,
+            modifier = Modifier.fillMaxWidth()
+        )
+        
+        Spacer(modifier = Modifier.height(24.dp))
+
+        if (!isRunning) {
+            JuicyButton(
+                text = if (elapsedTime > 0) "RESUME RUN" else "START RUN",
+                onClick = { isRunning = true },
+                modifier = Modifier.fillMaxWidth()
+            )
+        } else {
+             JuicyButton(
+                text = "PAUSE",
+                onClick = { isRunning = false },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        JuicyButton(
+            text = "COMPLETE & SAVE",
+            onClick = {
+                isRunning = false
+                val dist = distanceInput.toFloatOrNull() ?: 0f
+                onSave(elapsedTime, dist)
+            },
+            enabled = !isRunning && elapsedTime > 0,
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        JuicyButton(
+            text = "ABORT / RETURN",
+            onClick = onBackClick,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun EnduranceScreenPreview() {
+    PersonalLevelingSystemTheme {
+        EnduranceContent(onSave = { _,_ -> }, onBackClick = {})
+    }
+}

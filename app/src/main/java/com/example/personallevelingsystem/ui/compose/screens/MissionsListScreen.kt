@@ -25,9 +25,9 @@ import androidx.compose.ui.unit.dp
 import com.example.personallevelingsystem.model.Mission
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.PlacementSpring
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolCyan
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolGreen
 import com.example.personallevelingsystem.viewmodel.MissionViewModel
 
 @Composable
@@ -42,7 +42,6 @@ fun MissionsListScreen(
         dailyMissions = dailyMissions,
         weeklyMissions = weeklyMissions,
         onMissionCheck = { mission ->
-            // Hardcoded userId 1 as per typical single user app structure seen so far
             viewModel.completeMission(mission, 1)
         },
         onBackClick = onBackClick
@@ -61,7 +60,7 @@ fun MissionsListContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .padding(DesignSystem.Padding)
     ) {
         OperatorHeader(subtitle = "Objectives", title = "Active Missions")
         
@@ -72,26 +71,26 @@ fun MissionsListContent(
         ) {
             if (dailyMissions.isNotEmpty()) {
                 stickyHeader {
-                    MissionSectionHeader(title = "Daily Missions")
+                    MissionSectionHeader(title = "DAILY MISSIONS")
                 }
                 items(dailyMissions, key = { it.id }) { mission ->
                     MissionItem(
                         mission = mission,
                         onCheck = { onMissionCheck(mission) },
-                        modifier = Modifier.animateItemPlacement()
+                        modifier = Modifier.animateItemPlacement(PlacementSpring)
                     )
                 }
             }
             
             if (weeklyMissions.isNotEmpty()) {
                 stickyHeader {
-                    MissionSectionHeader(title = "Weekly Missions")
+                    MissionSectionHeader(title = "WEEKLY MISSIONS")
                 }
                 items(weeklyMissions, key = { it.id }) { mission ->
                     MissionItem(
                         mission = mission,
                         onCheck = { onMissionCheck(mission) },
-                        modifier = Modifier.animateItemPlacement()
+                        modifier = Modifier.animateItemPlacement(PlacementSpring)
                     )
                 }
             }
@@ -111,13 +110,13 @@ fun MissionSectionHeader(title: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.background)
+            .background(androidx.compose.ui.graphics.Color.Transparent) // Fully transparent for ambient effect
             .padding(vertical = 8.dp)
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleMedium,
-            color = ProtocolCyan
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary
         )
     }
 }
@@ -135,7 +134,7 @@ fun MissionItem(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = mission.description ?: "Unknown Mission", // Assuming description field exists
+            text = mission.description ?: "Unknown Mission",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
@@ -144,9 +143,9 @@ fun MissionItem(
             checked = mission.isCompleted,
             onCheckedChange = { onCheck() },
             colors = CheckboxDefaults.colors(
-                checkedColor = ProtocolCyan,
-                uncheckedColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                checkmarkColor = MaterialTheme.colorScheme.onPrimary
+                checkedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent, // Neon Cyan
+                uncheckedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent.copy(alpha = 0.5f),
+                checkmarkColor = com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
             )
         )
     }

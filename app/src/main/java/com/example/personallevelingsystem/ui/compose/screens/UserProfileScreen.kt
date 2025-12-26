@@ -3,7 +3,6 @@ package com.example.personallevelingsystem.ui.compose.screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,15 +30,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.model.User
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolCyan
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolGreen
 import com.example.personallevelingsystem.viewmodel.UserViewModel
 
 @Composable
@@ -53,17 +49,11 @@ fun UserProfileScreen(
 
     LaunchedEffect(user) {
         user?.let {
-            // Assuming this is a quick calculation or we can offload
-            // Since we can't easily call suspend functions here without scope or knowledge of repo
-            // We will just use the viewmodel function synchronously if it's not suspend, 
-            // but the viewmodel definition showed it was just a function returning Int.
             maxXp = viewModel.calculateXpForNextLevel(it.level)
         }
     }
 
-    // Trigger load if user is null (optional, depends on app flow)
     LaunchedEffect(Unit) {
-        // Hardcoded ID 1 for single user app context usually
         if (user == null) {
             viewModel.getUserById(1)
         }
@@ -88,7 +78,7 @@ fun UserProfileContent(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp),
+            .padding(DesignSystem.Padding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         OperatorHeader(subtitle = "Identity", title = "Operator Profile")
@@ -100,8 +90,8 @@ fun UserProfileContent(
             modifier = Modifier
                 .size(120.dp)
                 .clip(CircleShape)
-                .border(2.dp, ProtocolCyan, CircleShape)
-                .background(Color.Gray)
+                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
+                .background(Color.DarkGray)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_user_placeholder),
@@ -115,7 +105,7 @@ fun UserProfileContent(
 
         // Name
         Text(
-            text = user?.name ?: "Unknown Operator",
+            text = user?.name ?: "UNKNOWN OPERATOR",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground
         )
@@ -124,9 +114,9 @@ fun UserProfileContent(
 
         // Level
         Text(
-            text = "Level: ${user?.level ?: 1}",
-            style = MaterialTheme.typography.titleLarge,
-            color = ProtocolGreen
+            text = "LEVEL: ${user?.level ?: 1}",
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.tertiary // TelemetryGreen
         )
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -144,8 +134,8 @@ fun UserProfileContent(
         val progress = if (maxXp > 0) currentXp.toFloat() / maxXp.toFloat() else 0f
         
         Text(
-            text = "XP: $currentXp / $maxXp",
-            style = MaterialTheme.typography.labelLarge,
+            text = "XP PROGRESS: $currentXp / $maxXp",
+            style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.Start)
         )
@@ -155,9 +145,9 @@ fun UserProfileContent(
             progress = { progress },
             modifier = Modifier
                 .fillMaxWidth()
-                .height(12.dp)
+                .height(8.dp)
                 .clip(MaterialTheme.shapes.small),
-            color = ProtocolCyan,
+            color = MaterialTheme.colorScheme.primary,
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
 

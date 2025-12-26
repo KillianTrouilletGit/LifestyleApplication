@@ -8,31 +8,57 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.personallevelingsystem.R
 
-val RuneFontFamily = FontFamily(
-    Font(R.font.font_rune)
-)
+val DataFont = FontFamily.Monospace
+val HeaderFont = FontFamily.SansSerif
 
-val Typography = Typography(
+val SciFiTypography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = HeaderFont,
+        fontWeight = FontWeight.Bold,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.25).sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = HeaderFont,
+        fontWeight = FontWeight.Bold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
+    ),
+    titleLarge = TextStyle(
+        fontFamily = HeaderFont,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
     bodyLarge = TextStyle(
-        fontFamily = RuneFontFamily,
+        fontFamily = DataFont,
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
-    titleLarge = TextStyle(
-        fontFamily = RuneFontFamily,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
+    bodyMedium = TextStyle(
+        fontFamily = DataFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = RuneFontFamily,
+    labelLarge = TextStyle(
+        fontFamily = DataFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+    labelMedium = TextStyle( // For HUD labels like "DAILY INTAKE"
+        fontFamily = DataFont,
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     )
-    // Add other styles as needed
 )

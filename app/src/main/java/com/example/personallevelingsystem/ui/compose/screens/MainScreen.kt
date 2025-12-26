@@ -21,11 +21,13 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
 import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolCyan
 
 data class DashboardItem(
     val id: String,
@@ -38,21 +40,21 @@ fun MainScreen(
     onNavigate: (String) -> Unit
 ) {
     val items = listOf(
-        DashboardItem("missions", "Missions", R.drawable.ic_missions),
-        DashboardItem("training", "Training", R.drawable.ic_training),
-        DashboardItem("nutrition", "Nutrition", R.drawable.ic_nutrition),
-        DashboardItem("sleep", "Sleep", R.drawable.sleep_ic), // Note: xml says sleep_ic not ic_sleep
-        DashboardItem("water", "Hydration", R.drawable.ic_water),
-        DashboardItem("planning", "Planning", R.drawable.ic_planning),
-        DashboardItem("profile", "Profile", R.drawable.ic_user),
-        DashboardItem("settings", "Settings", R.drawable.ic_modify)
+        DashboardItem("missions", "Missions", R.drawable.ic_missions_neon),
+        DashboardItem("training", "Training", R.drawable.ic_training_neon),
+        DashboardItem("nutrition", "Nutrition", R.drawable.ic_nutrition_neon),
+        DashboardItem("sleep", "Sleep", R.drawable.ic_sleep_neon),
+        DashboardItem("water", "Hydration", R.drawable.ic_water_neon),
+        DashboardItem("planning", "Planning", R.drawable.ic_planning_neon),
+        DashboardItem("profile", "Profile", R.drawable.ic_profile_neon),
+        DashboardItem("settings", "Settings", R.drawable.ic_settings_neon)
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background) // SpaceBlack via Theme
+            .padding(DesignSystem.Padding)
     ) {
         OperatorHeader(
             subtitle = "Operator OS",
@@ -61,10 +63,6 @@ fun MainScreen(
         
         Spacer(modifier = Modifier.height(16.dp))
 
-        // ViewPager placeholder? The XML had a ViewPager.
-        // I will omit it for now or put a placeholder as I don't see the adapter code.
-        // Assuming it's a chart carousel based on file names `item_carousel_chart`.
-        
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
@@ -88,21 +86,27 @@ fun DashboardCard(
         modifier = Modifier.fillMaxSize()
     ) {
         Column(
-            modifier = Modifier.padding(24.dp),
+            modifier = Modifier.padding(12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Using ColorFilter to tint the icons to reflect the theme if they are flats
             Image(
                 painter = painterResource(id = item.iconRes),
                 contentDescription = item.title,
-                modifier = Modifier.size(64.dp),
-                colorFilter = ColorFilter.tint(ProtocolCyan) 
+                modifier = Modifier
+                    .size(48.dp)
+                    .drawWithCache {
+                        val brush = com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(brush, blendMode = BlendMode.SrcIn)
+                        }
+                    }
             )
             Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleMedium,
+                text = item.title.uppercase(),
+                style = MaterialTheme.typography.labelLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )
         }
