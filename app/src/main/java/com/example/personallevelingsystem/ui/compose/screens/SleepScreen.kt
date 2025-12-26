@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,13 +71,36 @@ fun SleepContent(
         
         Spacer(modifier = Modifier.height(8.dp))
 
-        JuicyInput(
-            value = duration,
-            onValueChange = onDurationChange,
-            placeholder = "08:00",
-            keyboardType = KeyboardType.Text, // Text for colon
-            modifier = Modifier.fillMaxWidth()
+        val context = androidx.compose.ui.platform.LocalContext.current
+        val calendar = java.util.Calendar.getInstance()
+        val hour = calendar.get(java.util.Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(java.util.Calendar.MINUTE)
+
+        val timePickerDialog = android.app.TimePickerDialog(
+            context,
+            com.example.personallevelingsystem.R.style.NeonDialogTheme, // Apply Neon Theme
+            { _, selectedHour, selectedMinute ->
+                val formattedTime = String.format(java.util.Locale.getDefault(), "%02d:%02d", selectedHour, selectedMinute)
+                onDurationChange(formattedTime)
+            },
+            hour,
+            minute,
+            true
         )
+
+        androidx.compose.foundation.layout.Box(modifier = Modifier.fillMaxWidth()) {
+            JuicyInput(
+                value = duration,
+                onValueChange = {}, // Read-only
+                placeholder = "08:00",
+                modifier = Modifier.fillMaxWidth()
+            )
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clickable { timePickerDialog.show() }
+            )
+        }
 
         Spacer(modifier = Modifier.height(24.dp))
 

@@ -43,10 +43,16 @@ class ComposeMigrationActivity : ComponentActivity() {
                     
                     NavHost(navController = navController, startDestination = "main") {
                     composable("main") {
+                        val viewModel = ViewModelProvider(
+                            this@ComposeMigrationActivity,
+                            MigrationViewModelFactory(application)
+                        )[com.example.personallevelingsystem.viewmodel.PerformanceViewModel::class.java]
+
                         MainScreen(
                             onNavigate = { destination ->
                                 navController.navigate(destination)
-                            }
+                            },
+                            performanceViewModel = viewModel
                         )
                     }
                     composable("profile") {
@@ -273,6 +279,9 @@ class MigrationViewModelFactory(private val application: android.app.Application
             }
             modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java) -> {
                 com.example.personallevelingsystem.viewmodel.HealthViewModel(application) as T
+            }
+            modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.PerformanceViewModel::class.java) -> {
+                com.example.personallevelingsystem.viewmodel.PerformanceViewModel(application) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }

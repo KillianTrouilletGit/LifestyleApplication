@@ -21,6 +21,9 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import com.example.personallevelingsystem.R
@@ -37,17 +40,20 @@ data class DashboardItem(
 
 @Composable
 fun MainScreen(
-    onNavigate: (String) -> Unit
+    onNavigate: (String) -> Unit,
+    performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel
 ) {
+    val performanceState by performanceViewModel.uiState.collectAsState()
+
     val items = listOf(
-        DashboardItem("missions", "Missions", R.drawable.ic_missions_neon),
-        DashboardItem("training", "Training", R.drawable.ic_training_neon),
-        DashboardItem("nutrition", "Nutrition", R.drawable.ic_nutrition_neon),
-        DashboardItem("sleep", "Sleep", R.drawable.ic_sleep_neon),
-        DashboardItem("water", "Hydration", R.drawable.ic_water_neon),
-        DashboardItem("planning", "Planning", R.drawable.ic_planning_neon),
-        DashboardItem("profile", "Profile", R.drawable.ic_profile_neon),
-        DashboardItem("settings", "Settings", R.drawable.ic_settings_neon)
+        DashboardItem("missions", "Missions", R.drawable.ic_missions_v2),
+        DashboardItem("training", "Training", R.drawable.ic_training_v2),
+        DashboardItem("nutrition", "Nutrition", R.drawable.ic_nutrition_v2),
+        DashboardItem("sleep", "Sleep", R.drawable.ic_sleep_v2),
+        DashboardItem("water", "Hydration", R.drawable.ic_water_v2),
+        DashboardItem("planning", "Planning", R.drawable.ic_planning_v2),
+        DashboardItem("profile", "Profile", R.drawable.ic_profile_v2),
+        DashboardItem("settings", "Settings", R.drawable.ic_settings_v2)
     )
 
     Column(
@@ -56,19 +62,30 @@ fun MainScreen(
             .background(MaterialTheme.colorScheme.background) // SpaceBlack via Theme
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(
-            subtitle = "Operator OS",
-            title = "System Dashboard"
-        )
-        
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.fillMaxSize()
         ) {
+            // Header & Carousel Section
+            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
+                Column {
+                    OperatorHeader(
+                        subtitle = "Operator OS",
+                        title = "System Dashboard"
+                    )
+                    
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    // Performance Visualization
+                    com.example.personallevelingsystem.ui.compose.components.PerformanceCarousel(state = performanceState)
+        
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
+            // Grid Items
             items(items) { item ->
                 DashboardCard(item = item, onClick = { onNavigate(item.id) })
             }
@@ -95,6 +112,7 @@ fun DashboardCard(
                 contentDescription = item.title,
                 modifier = Modifier
                     .size(48.dp)
+                    .graphicsLayer { alpha = 0.99f } // Force compositing layer for BlendMode
                     .drawWithCache {
                         val brush = com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
                         onDrawWithContent {
@@ -107,7 +125,7 @@ fun DashboardCard(
             Text(
                 text = item.title.uppercase(),
                 style = MaterialTheme.typography.labelLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                color = androidx.compose.ui.graphics.Color.White
             )
         }
     }
@@ -117,6 +135,8 @@ fun DashboardCard(
 @Composable
 fun MainScreenPreview() {
     PersonalLevelingSystemTheme {
-        MainScreen(onNavigate = {})
+         // Preview requires mock/fake VM, simplified for now:
+         // MainScreen(onNavigate = {}, performanceViewModel = ...) 
+         // Commented out or needs Mock provider. For now, leaving bare minimum to avoid error or simple error.
     }
 }
