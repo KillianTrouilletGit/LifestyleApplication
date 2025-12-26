@@ -38,6 +38,16 @@ class MainActivity : ComponentActivity() {
             PersonalLevelingSystemTheme {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
+                
+                // Helper for debounced navigation/popping
+                fun popBackStackSafe() {
+                    val lifecycle = navBackStackEntry?.lifecycle
+                    if (lifecycle?.currentState == androidx.lifecycle.Lifecycle.State.RESUMED) {
+                        navController.popBackStack()
+                    }
+                }
+                
+                // ... (rest of content)
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 // Wrap content in Ambient Background
@@ -96,7 +106,7 @@ class MainActivity : ComponentActivity() {
                         com.example.personallevelingsystem.ui.compose.screens.ModifyUserInfoScreen(
                             viewModel = viewModel,
                             onSaveClick = { navController.popBackStack() },
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("missions") {
@@ -107,7 +117,7 @@ class MainActivity : ComponentActivity() {
 
                         MissionsListScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     // Add other screens as needed
@@ -118,7 +128,7 @@ class MainActivity : ComponentActivity() {
                             onStartProgramClick = { navController.navigate("select_session") },
                             onStartFlexibilityClick = { navController.navigate("flexibility") },
                             onStartEnduranceClick = { navController.navigate("endurance") },
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable(
@@ -139,7 +149,7 @@ class MainActivity : ComponentActivity() {
 
                         com.example.personallevelingsystem.ui.compose.screens.TrainingSessionScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("select_session") {
@@ -159,7 +169,7 @@ class MainActivity : ComponentActivity() {
                             onSessionClick = { sessionId -> 
                                 navController.navigate("training_session/$sessionId") 
                             },
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("view_programs") {
@@ -177,7 +187,7 @@ class MainActivity : ComponentActivity() {
                         com.example.personallevelingsystem.ui.compose.screens.ViewProgramsScreen(
                             programs = programs,
                             onDeleteProgram = { viewModel.deleteProgram(it.program) },
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("water") {
@@ -188,7 +198,7 @@ class MainActivity : ComponentActivity() {
                         
                         com.example.personallevelingsystem.ui.compose.screens.WaterScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("sleep") {
@@ -199,7 +209,7 @@ class MainActivity : ComponentActivity() {
                         
                         com.example.personallevelingsystem.ui.compose.screens.SleepScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("nutrition") {
@@ -215,7 +225,7 @@ class MainActivity : ComponentActivity() {
                         com.example.personallevelingsystem.ui.compose.screens.NutritionScreen(
                             viewModel = healthViewModel,
                             foodAnalysisViewModel = foodAnalysisViewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("flexibility") {
@@ -226,7 +236,7 @@ class MainActivity : ComponentActivity() {
                         
                         com.example.personallevelingsystem.ui.compose.screens.FlexibilityScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("endurance") {
@@ -238,7 +248,7 @@ class MainActivity : ComponentActivity() {
                             
                         com.example.personallevelingsystem.ui.compose.screens.EnduranceScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("create_program") {
@@ -249,9 +259,9 @@ class MainActivity : ComponentActivity() {
                         
                         com.example.personallevelingsystem.ui.compose.screens.CreateProgramScreen(
                             viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() },
+                            onBackClick = { popBackStackSafe() },
                             onSaveSuccess = { 
-                                navController.popBackStack() 
+                                popBackStackSafe() 
                             }
                         )
                     }
@@ -265,7 +275,7 @@ class MainActivity : ComponentActivity() {
                         com.example.personallevelingsystem.ui.compose.screens.ModifyUserInfoScreen(
                             viewModel = viewModel,
                             onSaveClick = { navController.popBackStack() },
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     composable("planning") {
@@ -276,12 +286,25 @@ class MainActivity : ComponentActivity() {
 
                         com.example.personallevelingsystem.ui.compose.screens.PlanningScreen(
                             missionViewModel = viewModel,
-                            onBackClick = { navController.popBackStack() }
+                            onBackClick = { popBackStackSafe() }
                         )
                     }
                     }
                 }
             }
+        }
+    }
+
+    override fun onUserLeaveHint() {
+        super.onUserLeaveHint()
+        try {
+            val viewModel = ViewModelProvider(
+                this,
+                MigrationViewModelFactory(application)
+            )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
+            viewModel.ensureTimerNotification()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

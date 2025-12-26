@@ -1,4 +1,4 @@
-# Personal Leveling System (Operator OS)
+# Operator OS
 
 ![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-7F52FF.svg?style=flat&logo=kotlin&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-MinSDK%2024-3DDC84.svg?style=flat&logo=android&logoColor=white)
@@ -8,7 +8,7 @@
 
 ## 🚀 Overview
 
-**Personal Leveling System** is a high-performance Android application that gamifies self-improvement, turning daily habits into an immersive RPG experience. Inspired by the "System" from *Solo Leveling*, it wraps complex fitness, nutrition, and scheduling tools in a custom-built, sci-fi **"Operator OS"** interface.
+**Operator OS** is a high-performance Android application that gamifies self-improvement, turning daily habits into an immersive RPG experience. Inspired by the "System" from *Solo Leveling*, it wraps complex fitness, nutrition, and scheduling tools in a custom-built, sci-fi **"Operator OS"** interface.
 
 The app has recently undergone a major transformation, moving from a legacy XML-based architecture to a **Modern Android Development (MAD)** stack using Jetpack Compose, offering a more fluid, reactive, and visually stunning user experience.
 

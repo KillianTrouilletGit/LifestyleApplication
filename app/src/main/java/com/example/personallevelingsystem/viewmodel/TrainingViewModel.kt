@@ -1,6 +1,7 @@
 package com.example.personallevelingsystem.viewmodel
 
 import android.app.Application
+import android.content.Intent
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -139,8 +140,65 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
             
             // 2. Load first exercise sets
             if (exercises.isNotEmpty()) {
-                loadSetsForExercise(exercises[0])
+                val firstExercise = exercises[0]
+                loadSetsForExercise(firstExercise)
+                
+                // 3. Start Timer Service
+                startTimerService(firstExercise.name)
             }
+        }
+    }
+
+    private var sessionStartTime: Long = 0
+
+    // Track if timer service *should* be running
+    var isTimerRunning: Boolean = false
+    private var lastExerciseName: String = "Training"
+
+    fun startTimerService(exerciseName: String) {
+        val app = getApplication<Application>()
+        // Use elapsedRealtime for Chronometer compatibility
+        sessionStartTime = android.os.SystemClock.elapsedRealtime()
+        lastExerciseName = exerciseName
+        isTimerRunning = true
+        
+        val intent = Intent(app, com.example.personallevelingsystem.service.TrainingTimerService::class.java).apply {
+            action = com.example.personallevelingsystem.service.TrainingTimerService.ACTION_START
+            putExtra(com.example.personallevelingsystem.service.TrainingTimerService.EXTRA_EXERCISE_NAME, exerciseName)
+            putExtra(com.example.personallevelingsystem.service.TrainingTimerService.EXTRA_START_TIME, sessionStartTime)
+        }
+        androidx.core.content.ContextCompat.startForegroundService(app, intent)
+    }
+
+    private fun updateTimerService(exerciseName: String) {
+        val app = getApplication<Application>()
+        lastExerciseName = exerciseName
+        // isTimerRunning remains true
+        
+        val intent = Intent(app, com.example.personallevelingsystem.service.TrainingTimerService::class.java).apply {
+            action = com.example.personallevelingsystem.service.TrainingTimerService.ACTION_UPDATE
+            putExtra(com.example.personallevelingsystem.service.TrainingTimerService.EXTRA_EXERCISE_NAME, exerciseName)
+            putExtra(com.example.personallevelingsystem.service.TrainingTimerService.EXTRA_START_TIME, sessionStartTime)
+        }
+        androidx.core.content.ContextCompat.startForegroundService(app, intent)
+    }
+
+    fun stopTimerService() {
+        isTimerRunning = false
+        val app = getApplication<Application>()
+        val intent = Intent(app, com.example.personallevelingsystem.service.TrainingTimerService::class.java).apply {
+            action = com.example.personallevelingsystem.service.TrainingTimerService.ACTION_STOP
+        }
+        app.startService(intent) // stop command doesn't need foreground promotion
+    }
+
+    /**
+     * Called by Activity lifecycle (onStop) to ensure notification is visible
+     * if the timer is supposed to be running.
+     */
+    fun ensureTimerNotification() {
+        if (isTimerRunning) {
+            updateTimerService(lastExerciseName)
         }
     }
 
@@ -190,9 +248,14 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
             if (currentIndex < exercises.size - 1) {
                 val nextIndex = currentIndex + 1
                 _currentExerciseIndex.postValue(nextIndex)
-                loadSetsForExercise(exercises[nextIndex])
+                val nextExercise = exercises[nextIndex]
+                loadSetsForExercise(nextExercise)
+                
+                // Update Timer Notification
+                updateTimerService(nextExercise.name)
             } else {
                 // Session Complete
+                stopTimerService()
                 val session = trainingSessionDao.getTrainingSessionById(currentSessionId)
                 val updatedSession = session.copy(endTime = java.util.Date())
                 trainingSessionDao.updateTrainingSession(updatedSession)

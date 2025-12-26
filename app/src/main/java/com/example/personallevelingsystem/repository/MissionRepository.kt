@@ -105,9 +105,8 @@ class MissionRepository(private val context: Context) {
     }
 
     fun updateMissionNotification() {
-        val dailyMissionsLeft = getIncompleteDailyMissionsCount()
-        val weeklyMissionsLeft = getIncompleteWeeklyMissionsCount()
-        NotificationUtils.updatePermanentMissionNotification(context, dailyMissionsLeft, weeklyMissionsLeft)
+        // Notification disabled by user request (Operator OS Streamlining)
+        // NotificationUtils.updatePermanentMissionNotification(context, dailyMissionsLeft, weeklyMissionsLeft)
     }
 
     suspend fun getTotalCaloriesForCurrentDay(): Double {

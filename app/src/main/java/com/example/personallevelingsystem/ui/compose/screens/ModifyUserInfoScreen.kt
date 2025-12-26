@@ -109,6 +109,33 @@ fun ModifyUserInfoContent(
     onSaveClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
+    // Date Picker Logic
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val calendar = java.util.Calendar.getInstance()
+    
+    // Parse existing DOB or default to current date
+    try {
+        if (dob.isNotEmpty()) {
+            val parts = dob.split("-")
+            if (parts.size == 3) {
+                calendar.set(parts[0].toInt(), parts[1].toInt() - 1, parts[2].toInt())
+            }
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    val datePickerDialog = android.app.DatePickerDialog(
+        context,
+        { _, year, month, dayOfMonth ->
+            val formattedDate = String.format("%d-%02d-%02d", year, month + 1, dayOfMonth)
+            onDobChange(formattedDate)
+        },
+        calendar.get(java.util.Calendar.YEAR),
+        calendar.get(java.util.Calendar.MONTH),
+        calendar.get(java.util.Calendar.DAY_OF_MONTH)
+    )
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -151,10 +178,11 @@ fun ModifyUserInfoContent(
 
         JuicyInput(
             value = dob,
-            onValueChange = onDobChange,
-            placeholder = "DATE OF BIRTH (YYYY-MM-DD)",
+            onValueChange = { }, // Read-only, handled by dialog
+            placeholder = "DATE OF BIRTH",
             modifier = Modifier.fillMaxWidth(),
-            keyboardType = KeyboardType.Number
+            readOnly = true,
+            onClick = { datePickerDialog.show() }
         )
 
         Spacer(modifier = Modifier.height(32.dp))

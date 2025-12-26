@@ -26,15 +26,25 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     private val mealDao = db.mealDao()
     private val client = OkHttpClient()
 
+    // LiveData Declarations (Must be before init)
+    private val _totalWaterToday = MutableLiveData<Float>()
+    val totalWaterToday: LiveData<Float> = _totalWaterToday
+
+    private val _foodSuggestions = MutableLiveData<List<String>>()
+    val foodSuggestions: LiveData<List<String>> = _foodSuggestions
+
+    private val _nutritionResult = MutableLiveData<Meal?>()
+    val nutritionResult: LiveData<Meal?> = _nutritionResult
+
+    private val _dailyBalanceIndex = MutableLiveData<Double>(0.0)
+    val dailyBalanceIndex: LiveData<Double> = _dailyBalanceIndex
+
     init {
         calculateTotalWaterForToday()
         calculateDailyBalanceIndex()
     }
 
     // Water Logic
-    private val _totalWaterToday = MutableLiveData<Float>()
-    val totalWaterToday: LiveData<Float> = _totalWaterToday
-
     fun saveWater(amount: Float) {
         viewModelScope.launch(Dispatchers.IO) {
             val water = Water(date = System.currentTimeMillis(), amount = amount)
@@ -74,12 +84,6 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     // Nutrition Logic
-    private val _foodSuggestions = MutableLiveData<List<String>>()
-    val foodSuggestions: LiveData<List<String>> = _foodSuggestions
-
-    private val _nutritionResult = MutableLiveData<Meal?>()
-    val nutritionResult: LiveData<Meal?> = _nutritionResult
-
     fun fetchFoodSuggestions(query: String) {
         viewModelScope.launch(Dispatchers.IO) {
             val apiKey = com.example.personallevelingsystem.BuildConfig.USDA_API_KEY
@@ -180,9 +184,6 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
          }
     }
     // Daily Balance Logic
-    private val _dailyBalanceIndex = MutableLiveData<Double>(0.0)
-    val dailyBalanceIndex: LiveData<Double> = _dailyBalanceIndex
-
     fun calculateDailyBalanceIndex() {
         viewModelScope.launch(Dispatchers.IO) {
             val calendar = Calendar.getInstance()

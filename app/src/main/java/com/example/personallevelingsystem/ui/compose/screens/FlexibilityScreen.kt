@@ -35,6 +35,8 @@ fun FlexibilityScreen(
     onBackClick: () -> Unit
 ) {
     FlexibilityContent(
+        onStartTimer = { title -> viewModel.startTimerService(title) },
+        onStopTimer = { viewModel.stopTimerService() },
         onSave = { duration ->
             viewModel.saveFlexibilityTraining(duration)
             onBackClick()
@@ -45,6 +47,8 @@ fun FlexibilityScreen(
 
 @Composable
 fun FlexibilityContent(
+    onStartTimer: (String) -> Unit,
+    onStopTimer: () -> Unit,
     onSave: (Long) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -94,13 +98,19 @@ fun FlexibilityContent(
         if (!isRunning) {
             JuicyButton(
                 text = if (elapsedTime > 0) "RESUME PROTOCOL" else "INITIATE PROTOCOL",
-                onClick = { isRunning = true },
+                onClick = { 
+                    isRunning = true
+                    onStartTimer("Flexibility Training")
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         } else {
              JuicyButton(
                 text = "PAUSE",
-                onClick = { isRunning = false },
+                onClick = { 
+                    isRunning = false
+                    onStopTimer()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -111,6 +121,7 @@ fun FlexibilityContent(
             text = "COMPLETE & SAVE",
             onClick = {
                 isRunning = false
+                onStopTimer()
                 onSave(elapsedTime)
             },
             enabled = !isRunning && elapsedTime > 0, // Only save when paused and has time
@@ -121,16 +132,12 @@ fun FlexibilityContent(
 
         JuicyButton(
             text = "ABORT / RETURN",
-            onClick = onBackClick,
+            onClick = {
+                onStopTimer()
+                onBackClick()
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun FlexibilityScreenPreview() {
-    PersonalLevelingSystemTheme {
-        FlexibilityContent(onSave = {}, onBackClick = {})
-    }
-}

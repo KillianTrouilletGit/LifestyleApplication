@@ -71,7 +71,10 @@ fun TrainingSessionScreen(
             viewModel.saveCurrentSetState(updatedList)
         },
         onNextExercise = { viewModel.nextExercise() },
-        onBackClick = onBackClick
+        onBackClick = {
+            viewModel.stopTimerService()
+            onBackClick()
+        }
     )
 }
 

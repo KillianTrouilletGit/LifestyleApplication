@@ -16,10 +16,16 @@ import com.example.personallevelingsystem.R
 object NotificationUtils {
 
     private const val CHANNEL_ID = "level_up_channel"
+    private const val TRAINING_CHANNEL_ID = "training_timer_channel"
     private const val PERMANENT_NOTIFICATION_ID = 1001
+    const val TRAINING_NOTIFICATION_ID = 2001
 
     fun createNotificationChannel(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager: NotificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            // Level Up Channel
             val name = "Level Up"
             val descriptionText = "Notifications for level up"
             val importance = NotificationManager.IMPORTANCE_DEFAULT
@@ -27,9 +33,17 @@ object NotificationUtils {
                 description = descriptionText
                 setShowBadge(false)
             }
-            val notificationManager: NotificationManager =
-                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+
+            // Training Timer Channel
+            val trainingName = "Training Timer"
+            val trainingDesc = "Persistent timer for active training sessions"
+            val trainingImportance = NotificationManager.IMPORTANCE_DEFAULT 
+            val trainingChannel = NotificationChannel(TRAINING_CHANNEL_ID, trainingName, trainingImportance).apply {
+                description = trainingDesc
+                setShowBadge(false)
+            }
+            notificationManager.createNotificationChannel(trainingChannel)
         }
     }
 
@@ -65,5 +79,32 @@ object NotificationUtils {
 
     fun updatePermanentMissionNotification(context: Context, dailyMissionsLeft: Int, weeklyMissionsLeft: Int) {
         showPermanentMissionNotification(context, dailyMissionsLeft, weeklyMissionsLeft)
+    }
+
+    fun buildTimerNotification(context: Context, exerciseName: String, startTimeMillis: Long): android.app.Notification {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+        }
+        val pendingIntent: PendingIntent = PendingIntent.getActivity(
+            context, 0, intent, 
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
+        val remoteViews = android.widget.RemoteViews(context.packageName, R.layout.notification_timer)
+        remoteViews.setTextViewText(R.id.notification_exercise_name, exerciseName)
+        remoteViews.setChronometer(R.id.notification_timer, startTimeMillis, null, true)
+
+        return NotificationCompat.Builder(context, TRAINING_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_training_v2)
+            .setCustomContentView(remoteViews)
+            .setStyle(NotificationCompat.DecoratedCustomViewStyle()) // Allows system decorations if needed, or remove for raw custom view
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setOngoing(true) 
+            .setAutoCancel(false)
+            .setOnlyAlertOnce(true)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setContentIntent(pendingIntent)
+            .build()
     }
 }

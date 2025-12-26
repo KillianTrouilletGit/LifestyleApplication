@@ -36,6 +36,8 @@ fun EnduranceScreen(
     onBackClick: () -> Unit
 ) {
     EnduranceContent(
+        onStartTimer = { title -> viewModel.startTimerService(title) },
+        onStopTimer = { viewModel.stopTimerService() },
         onSave = { duration, distance ->
             viewModel.saveEnduranceTraining(duration, distance)
             onBackClick()
@@ -46,6 +48,8 @@ fun EnduranceScreen(
 
 @Composable
 fun EnduranceContent(
+    onStartTimer: (String) -> Unit,
+    onStopTimer: () -> Unit,
     onSave: (Long, Float) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -106,13 +110,19 @@ fun EnduranceContent(
         if (!isRunning) {
             JuicyButton(
                 text = if (elapsedTime > 0) "RESUME RUN" else "START RUN",
-                onClick = { isRunning = true },
+                onClick = { 
+                    isRunning = true
+                    onStartTimer("Endurance Training")
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         } else {
              JuicyButton(
                 text = "PAUSE",
-                onClick = { isRunning = false },
+                onClick = { 
+                    isRunning = false
+                    onStopTimer()
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -123,6 +133,7 @@ fun EnduranceContent(
             text = "COMPLETE & SAVE",
             onClick = {
                 isRunning = false
+                onStopTimer()
                 val dist = distanceInput.toFloatOrNull() ?: 0f
                 onSave(elapsedTime, dist)
             },
@@ -134,7 +145,10 @@ fun EnduranceContent(
 
         JuicyButton(
             text = "ABORT / RETURN",
-            onClick = onBackClick,
+            onClick = {
+                onStopTimer()
+                onBackClick()
+            },
             modifier = Modifier.fillMaxWidth()
         )
     }
@@ -144,6 +158,11 @@ fun EnduranceContent(
 @Composable
 fun EnduranceScreenPreview() {
     PersonalLevelingSystemTheme {
-        EnduranceContent(onSave = { _,_ -> }, onBackClick = {})
+        EnduranceContent(
+            onStartTimer = {},
+            onStopTimer = {},
+            onSave = { _,_ -> },
+            onBackClick = {}
+        )
     }
 }

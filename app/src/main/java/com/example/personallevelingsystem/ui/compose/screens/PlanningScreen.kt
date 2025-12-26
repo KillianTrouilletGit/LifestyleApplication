@@ -105,7 +105,7 @@ fun PlanningScreen(
                 val service = com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential
                 )
-                .setApplicationName("Personal Leveling System")
+                .setApplicationName("Operator OS")
                 .build()
 
                 val now = java.util.Calendar.getInstance()

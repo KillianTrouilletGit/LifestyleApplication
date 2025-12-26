@@ -10,8 +10,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.MaterialTheme
@@ -73,7 +78,7 @@ fun MissionsListContent(
             }
 
             if (dailyMissions.isNotEmpty()) {
-                stickyHeader {
+                item {
                     MissionSectionHeader(title = "DAILY MISSIONS")
                 }
                 items(dailyMissions, key = { it.id }) { mission ->
@@ -86,7 +91,7 @@ fun MissionsListContent(
             }
             
             if (weeklyMissions.isNotEmpty()) {
-                stickyHeader {
+                item {
                     MissionSectionHeader(title = "WEEKLY MISSIONS")
                 }
                 items(weeklyMissions, key = { it.id }) { mission ->
@@ -142,15 +147,36 @@ fun MissionItem(
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
-        Checkbox(
-            checked = mission.isCompleted,
-            onCheckedChange = { onCheck() },
-            enabled = !mission.isCompleted,
-            colors = CheckboxDefaults.colors(
-                checkedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent, // Neon Cyan
-                uncheckedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent.copy(alpha = 0.5f),
-                checkmarkColor = com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
-            )
-        )
+        // Custom Gradient Checkbox
+        Box(
+            modifier = Modifier
+                .size(24.dp)
+                .background(
+                    brush = if (mission.isCompleted) com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient 
+                            else androidx.compose.ui.graphics.Brush.linearGradient(
+                                listOf(androidx.compose.ui.graphics.Color.Transparent, androidx.compose.ui.graphics.Color.Transparent)
+                            ), 
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                )
+                .border(
+                    width = 2.dp,
+                    brush = if (mission.isCompleted) androidx.compose.ui.graphics.Brush.linearGradient(
+                                listOf(androidx.compose.ui.graphics.Color.Transparent, androidx.compose.ui.graphics.Color.Transparent)
+                            )
+                            else com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient,
+                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                )
+                .clickable(enabled = !mission.isCompleted) { onCheck() },
+            contentAlignment = Alignment.Center
+        ) {
+            if (mission.isCompleted) {
+                androidx.compose.material3.Icon(
+                    imageVector = androidx.compose.material.icons.Icons.Default.Check,
+                    contentDescription = null,
+                    tint = androidx.compose.ui.graphics.Color.Black, // Black icon on neon gradient
+                    modifier = Modifier.size(16.dp)
+                )
+            }
+        }
     }
 }
