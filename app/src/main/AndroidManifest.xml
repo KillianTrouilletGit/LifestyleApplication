@@ -125,14 +125,8 @@
             android:name=".MainActivity"
             android:exported="true"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.TransparentActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-
+            android:theme="@style/AppTheme.TransparentActionBar" />
+            
         <receiver
             android:name=".receiver.DailyMissionResetReceiver"
             android:exported="false" />
@@ -142,7 +136,13 @@
         <activity
             android:name=".ui.compose.ComposeMigrationActivity"
             android:exported="true"
-            android:theme="@style/Theme.PersonalLevelingSystem" />
+            android:theme="@style/Theme.PersonalLevelingSystem">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

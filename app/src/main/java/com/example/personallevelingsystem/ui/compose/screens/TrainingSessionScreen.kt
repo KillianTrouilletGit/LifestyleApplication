@@ -1,7 +1,6 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,31 +26,67 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
+import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import com.example.personallevelingsystem.ui.compose.theme.ProtocolCyan
 import kotlinx.coroutines.delay
 
-data class TrainingSetState(
-    var reps: String = "",
-    var weight: String = "",
-    val previousReps: Int = 0,
-    val previousWeight: Float = 0f
-)
+import androidx.compose.runtime.livedata.observeAsState
+import com.example.personallevelingsystem.viewmodel.TrainingViewModel.TrainingSetState
 
 @Composable
 fun TrainingSessionScreen(
-    sessionName: String = "Test Session", // Should come from VM
-    exerciseName: String = "Bench Press", // Should come from VM
-    setsCount: Int = 3,
+    viewModel: com.example.personallevelingsystem.viewmodel.TrainingViewModel,
+    onBackClick: () -> Unit
+) {
+    val currentExercises by viewModel.currentExercises.observeAsState(initial = emptyList())
+    val currentIndex by viewModel.currentExerciseIndex.observeAsState(initial = 0)
+    val currentSets by viewModel.currentSets.observeAsState(initial = emptyList())
+    
+    // Navigate back when session is finished
+    val sessionFinished by viewModel.sessionFinished.observeAsState(initial = false)
+    LaunchedEffect(sessionFinished) {
+        if (sessionFinished) {
+            onBackClick()
+        }
+    }
+    
+    TrainingSessionContent(
+        currentExercises = currentExercises,
+        currentIndex = currentIndex,
+        currentSets = currentSets,
+        onRepsChange = { index, newValue -> 
+            val updatedList = currentSets.toMutableList()
+            updatedList[index] = currentSets[index].copy(reps = newValue)
+            viewModel.saveCurrentSetState(updatedList)
+        },
+        onWeightChange = { index, newValue ->
+            val updatedList = currentSets.toMutableList()
+            updatedList[index] = currentSets[index].copy(weight = newValue)
+            viewModel.saveCurrentSetState(updatedList)
+        },
+        onNextExercise = { viewModel.nextExercise() },
+        onBackClick = onBackClick
+    )
+}
+
+@Composable
+fun TrainingSessionContent(
+    currentExercises: List<com.example.personallevelingsystem.model.Exercise>,
+    currentIndex: Int,
+    currentSets: List<TrainingSetState>,
+    onRepsChange: (Int, String) -> Unit,
+    onWeightChange: (Int, String) -> Unit,
     onNextExercise: () -> Unit,
     onBackClick: () -> Unit
 ) {
+
+    
     // Timer Logic
     var timeMillis by remember { mutableLongStateOf(0L) }
     LaunchedEffect(Unit) {
@@ -63,60 +97,62 @@ fun TrainingSessionScreen(
         }
     }
 
-    // Mock State for Sets
-    val sets = remember {
-        mutableStateListOf<TrainingSetState>().apply {
-            repeat(setsCount) {
-                add(TrainingSetState())
-            }
+    if (currentExercises.isEmpty()) {
+        // Loading or Empty State
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("No Exercises Found or Loading...", color = MaterialTheme.colorScheme.primary)
+            // Ideally provide a back button here too if stuck
+             JuicyButton(
+                onClick = onBackClick,
+                text = "GO BACK",
+                modifier = Modifier.padding(top = 100.dp)
+            )
         }
+        return
     }
+
+    val currentExercise = currentExercises.getOrNull(currentIndex) ?: return
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .padding(16.dp)
+            .padding(DesignSystem.Padding)
     ) {
-        // Timer Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp, bottom = 16.dp),
+                .padding(vertical = 24.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = formatTime(timeMillis),
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 fontWeight = FontWeight.Bold
             )
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Exercise Name
         Text(
-            text = exerciseName,
+            text = currentExercise.name.uppercase(),
             style = MaterialTheme.typography.headlineSmall,
-            color = ProtocolCyan,
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Sets List
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            itemsIndexed(sets) { index, set ->
+            itemsIndexed(currentSets) { index, setState ->
                 TrainingSetRow(
                     index = index + 1,
-                    state = set,
-                    onRepsChange = { sets[index] = set.copy(reps = it) },
-                    onWeightChange = { sets[index] = set.copy(weight = it) }
+                    state = setState,
+                    onRepsChange = { newValue -> onRepsChange(index, newValue) },
+                    onWeightChange = { newValue -> onWeightChange(index, newValue) }
                 )
             }
             
@@ -124,13 +160,13 @@ fun TrainingSessionScreen(
                 Spacer(modifier = Modifier.height(32.dp))
                 JuicyButton(
                     onClick = onNextExercise,
-                    text = "NEXT EXERCISE",
+                    text = if (currentIndex < currentExercises.size - 1) "NEXT EXERCISE" else "FINISH SESSION",
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 JuicyButton(
                     onClick = onBackClick,
-                    text = "END SESSION", // Simulating 'finish' or 'abort'
+                    text = "END SESSION",
                     modifier = Modifier.fillMaxWidth() 
                 )
             }
@@ -154,15 +190,14 @@ fun TrainingSetRow(
         Text(
             text = "SET $index",
             style = MaterialTheme.typography.titleMedium,
-            color = ProtocolCyan,
+            color = MaterialTheme.colorScheme.primary, // Neon Blue
             modifier = Modifier.weight(0.8f)
         )
 
-        // Previous stats placeholder
         if (state.previousReps > 0) {
             Text(
                 text = "PREV: ${state.previousReps}x${state.previousWeight}kg",
-                style = MaterialTheme.typography.labelSmall,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.weight(1.2f)
             )
@@ -198,14 +233,17 @@ fun CustomInput(
     OutlinedTextField(
         value = value,
         onValueChange = onValueChange,
-        placeholder = { Text(placeholder, style = MaterialTheme.typography.bodySmall) },
+        placeholder = { Text(placeholder, style = MaterialTheme.typography.bodyMedium) },
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = ProtocolCyan,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.onSurfaceVariant,
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
-            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+            cursorColor = MaterialTheme.colorScheme.primary,
+            focusedContainerColor = Color.Transparent,
+            unfocusedContainerColor = Color.Transparent
         ),
         modifier = modifier
     )
@@ -222,7 +260,18 @@ fun formatTime(millis: Long): String {
 @Composable
 fun TrainingSessionPreview() {
     PersonalLevelingSystemTheme {
-        TrainingSessionScreen(
+        TrainingSessionContent(
+            currentExercises = listOf(
+                com.example.personallevelingsystem.model.Exercise(name = "Bench Press", sessionId = 1, sets = 3)
+            ),
+            currentIndex = 0,
+            currentSets = listOf(
+                TrainingSetState(reps = "10", weight = "100", previousReps = 10, previousWeight = 95f),
+                TrainingSetState(reps = "8", weight = "105", previousReps = 8, previousWeight = 100f),
+                TrainingSetState(reps = "6", weight = "110", previousReps = 6, previousWeight = 105f)
+            ),
+            onRepsChange = { _, _ -> },
+            onWeightChange = { _, _ -> },
             onNextExercise = {},
             onBackClick = {}
         )
