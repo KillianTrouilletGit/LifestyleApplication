@@ -45,23 +45,32 @@ class MissionRepository(private val context: Context) {
     fun getWeeklyMissions(): List<Mission> = weeklyMissions
 
     fun resetDailyMissions() {
+        dailyMissions.replaceAll { it.copy(isCompleted = false) }
         dailyMissions.forEach {
-            it.isCompleted = false
             saveMissionCompletionStatus(it.id, false)
         }
         updateMissionNotification()
     }
 
     fun resetWeeklyMissions() {
+        weeklyMissions.replaceAll { it.copy(isCompleted = false) }
         weeklyMissions.forEach {
-            it.isCompleted = false
             saveMissionCompletionStatus(it.id, false)
         }
         updateMissionNotification()
     }
 
     fun completeMission(mission: Mission) {
-        mission.isCompleted = true
+        val dailyIndex = dailyMissions.indexOfFirst { it.id == mission.id }
+        if (dailyIndex != -1) {
+            dailyMissions[dailyIndex] = dailyMissions[dailyIndex].copy(isCompleted = true)
+        }
+
+        val weeklyIndex = weeklyMissions.indexOfFirst { it.id == mission.id }
+        if (weeklyIndex != -1) {
+            weeklyMissions[weeklyIndex] = weeklyMissions[weeklyIndex].copy(isCompleted = true)
+        }
+
         saveMissionCompletionStatus(mission.id, true)
         updateMissionNotification()
     }

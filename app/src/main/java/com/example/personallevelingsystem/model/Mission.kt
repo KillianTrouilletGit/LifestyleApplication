@@ -4,7 +4,7 @@ data class Mission(
     val id: String,
     val description: String,
     val type: MissionType,
-    var isCompleted: Boolean,
+    val isCompleted: Boolean,
     val reward: Int // Reward points or other types of rewards
 )
 

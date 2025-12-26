@@ -62,13 +62,16 @@ fun MissionsListContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Objectives", title = "Active Missions")
-        
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
         ) {
+            item {
+                OperatorHeader(subtitle = "Objectives", title = "Active Missions")
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
             if (dailyMissions.isNotEmpty()) {
                 stickyHeader {
                     MissionSectionHeader(title = "DAILY MISSIONS")
@@ -142,6 +145,7 @@ fun MissionItem(
         Checkbox(
             checked = mission.isCompleted,
             onCheckedChange = { onCheck() },
+            enabled = !mission.isCompleted,
             colors = CheckboxDefaults.colors(
                 checkedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent, // Neon Cyan
                 uncheckedColor = com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent.copy(alpha = 0.5f),
