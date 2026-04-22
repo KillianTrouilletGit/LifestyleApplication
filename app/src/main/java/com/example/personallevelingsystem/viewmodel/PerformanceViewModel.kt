@@ -21,6 +21,7 @@ data class PerformanceState(
     val dailyMissionsCompleted: Int = 0,
     val totalDailyMissions: Int = 0,
     val weeklyTrainingFrequency: List<Float> = List(7) { 0f }, // Last 7 days, 0.0 to 1.0 intensity
+    val weeklyTrainingLabels: List<String> = List(7) { "" }, // Day labels for the last 7 days
     val sleepHours: Float = 0f,
     val waterIntake: Float = 0f,
     val dailyBalanceIndex: Float = 0f,
@@ -94,14 +95,22 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
                 // If I assume the labels are static M-S, I should map sessions to DayOfWeek.
                 
                 val frequency = MutableList(7) { 0f }
-                
-                // Group by Day of Week (Monday=1 -> index 0)
+                val labels = MutableList(7) { "" }
+                val dayFormat = java.text.SimpleDateFormat("E", java.util.Locale.getDefault())
+
+                // Pre-fill labels and initialize calendar to startOfWeek
+                val labelCalendar = Calendar.getInstance()
+                labelCalendar.timeInMillis = startOfWeek
+                for (i in 0..6) {
+                    // Extract first letter of the day (e.g., "M" for Monday)
+                    labels[i] = dayFormat.format(labelCalendar.time).take(1).uppercase()
+                    labelCalendar.add(Calendar.DAY_OF_YEAR, 1)
+                }
+
+                // Group by days since startOfWeek
                 sessions.forEach { session ->
-                    val c = Calendar.getInstance()
-                    c.time = session.startTime
-                    // Calendar.DAY_OF_WEEK: Sun=1, Mon=2, ..., Sat=7
-                    var dayIndex = c.get(Calendar.DAY_OF_WEEK) - 2 // Mon=0, Sun=-1
-                    if (dayIndex < 0) dayIndex = 6 // Make Sun=6
+                    val diffMillis = session.startTime.time - startOfWeek
+                    val dayIndex = (diffMillis / (1000 * 60 * 60 * 24)).toInt()
                     
                     if (dayIndex in 0..6) {
                         // Add duration in hours
@@ -148,6 +157,7 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
                     dailyMissionsCompleted = completedCount,
                     totalDailyMissions = totalCount,
                     weeklyTrainingFrequency = frequency,
+                    weeklyTrainingLabels = labels,
                     sleepHours = sleep,
                     waterIntake = water,
                     dailyBalanceIndex = balanceIndex,

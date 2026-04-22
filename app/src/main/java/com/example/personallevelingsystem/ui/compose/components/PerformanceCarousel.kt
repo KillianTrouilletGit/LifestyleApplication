@@ -113,7 +113,6 @@ fun MissionStatsCard(state: com.example.personallevelingsystem.viewmodel.Perform
 @Composable
 fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.PerformanceState) {
     val activeDays = state.weeklyTrainingFrequency.count { it > 0.1f }
-    val days = listOf("M", "T", "W", "T", "F", "S", "S") // Static labels for now
 
     Column(
         verticalArrangement = Arrangement.Center,
@@ -139,7 +138,7 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
             modifier = Modifier.fillMaxWidth().height(140.dp) // Increased from 120dp
         ) {
             state.weeklyTrainingFrequency.forEachIndexed { index, rawValue ->
-                val dayLabel = days.getOrElse(index) { "-" }
+                val dayLabel = state.weeklyTrainingLabels.getOrElse(index) { "-" }
                 val heightRatio = (rawValue / maxVolume).coerceIn(0.05f, 1f)
                 
                 Column(
