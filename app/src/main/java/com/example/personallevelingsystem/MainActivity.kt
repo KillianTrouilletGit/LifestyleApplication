@@ -63,6 +63,11 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("main") {
                                     popUpTo("splash") { inclusive = true }
                                 }
+                                // Honor deeplink_route from notification taps
+                                intent?.getStringExtra("deeplink_route")?.takeIf { it.isNotBlank() }?.let { route ->
+                                    navController.navigate(route)
+                                    intent.removeExtra("deeplink_route")
+                                }
                             }
                         )
                     }
@@ -77,12 +82,18 @@ class MainActivity : ComponentActivity() {
                             MigrationViewModelFactory(application)
                         )[com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java]
 
+                        val missionViewModel = ViewModelProvider(
+                            this@MainActivity,
+                            MigrationViewModelFactory(application)
+                        )[MissionViewModel::class.java]
+
                         MainScreen(
                             onNavigate = { destination ->
                                 navController.navigate(destination)
                             },
                             performanceViewModel = performanceViewModel,
-                            healthViewModel = healthViewModel
+                            healthViewModel = healthViewModel,
+                            missionViewModel = missionViewModel
                         )
                     }
                     composable("profile") {
@@ -117,7 +128,8 @@ class MainActivity : ComponentActivity() {
 
                         MissionsListScreen(
                             viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
+                            onBackClick = { popBackStackSafe() },
+                            onDeeplink = { route -> navController.navigate(route) }
                         )
                     }
                     // Add other screens as needed
@@ -266,15 +278,7 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("settings") {
-                        // Re-use Modify User for settings for now
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[UserViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.ModifyUserInfoScreen(
-                            viewModel = viewModel,
-                            onSaveClick = { navController.popBackStack() },
+                        com.example.personallevelingsystem.ui.compose.screens.ReminderSettingsScreen(
                             onBackClick = { popBackStackSafe() }
                         )
                     }

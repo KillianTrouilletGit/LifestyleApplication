@@ -10,6 +10,7 @@ import com.example.personallevelingsystem.data.AppDatabase
 import com.example.personallevelingsystem.model.Program
 import com.example.personallevelingsystem.model.ProgramWithSessions
 import com.example.personallevelingsystem.model.Session
+import com.example.personallevelingsystem.service.MissionAutoCompleter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -18,6 +19,7 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     private val programDao = AppDatabase.getDatabase(application).programDao()
     private val trainingSessionDao = AppDatabase.getDatabase(application).trainingSessionDao()
     private val exerciseDao = AppDatabase.getDatabase(application).exerciseDao()
+    private val autoCompleter = MissionAutoCompleter(application)
 
     private val _programs = MutableLiveData<List<ProgramWithSessions>>()
     val programs: LiveData<List<ProgramWithSessions>> = _programs
@@ -81,6 +83,7 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 duration = duration
             )
             flexibilityDao.insert(training)
+            autoCompleter.sweep()
         }
     }
 
@@ -92,6 +95,7 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 distance = distance
             )
             enduranceDao.insert(training)
+            autoCompleter.sweep()
         }
     }
 

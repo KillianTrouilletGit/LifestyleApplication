@@ -9,6 +9,7 @@ import com.example.personallevelingsystem.data.AppDatabase
 import com.example.personallevelingsystem.model.Meal
 import com.example.personallevelingsystem.model.Sleep
 import com.example.personallevelingsystem.model.Water
+import com.example.personallevelingsystem.service.MissionAutoCompleter
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -25,6 +26,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     private val sleepDao = db.SleepTimeDao()
     private val mealDao = db.mealDao()
     private val client = OkHttpClient()
+    private val autoCompleter = MissionAutoCompleter(application)
 
     // LiveData Declarations (Must be before init)
     private val _totalWaterToday = MutableLiveData<Float>()
@@ -50,6 +52,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
             val water = Water(date = System.currentTimeMillis(), amount = amount)
             waterDao.insert(water)
             calculateTotalWaterForToday()
+            autoCompleter.sweep()
         }
     }
 
@@ -79,7 +82,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch(Dispatchers.IO) {
             val sleep = Sleep(date = System.currentTimeMillis(), duration = duration)
             sleepDao.insert(sleep)
-            // TODO: Trigger mission completion logic here or observe in View
+            autoCompleter.sweep()
         }
     }
 
@@ -175,6 +178,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
                             mealDao.insert(meal)
                             _nutritionResult.postValue(meal)
                             calculateDailyBalanceIndex()
+                            autoCompleter.sweep()
                         }
                     }
                 }
@@ -214,6 +218,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
             mealDao.insert(meal)
             _nutritionResult.postValue(meal)
             calculateDailyBalanceIndex()
+            autoCompleter.sweep()
         }
     }
 }

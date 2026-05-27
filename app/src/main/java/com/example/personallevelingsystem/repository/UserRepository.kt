@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import com.example.personallevelingsystem.data.UserDao
 import com.example.personallevelingsystem.model.User
+import com.example.personallevelingsystem.util.MissionPrefs
 import com.example.personallevelingsystem.util.NotificationUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -32,10 +33,19 @@ class UserRepository(private val userDao: UserDao, private val context: Context)
 
     suspend fun insertUser(user: User) {
         userDao.insert(user)
+        if (user.weight > 0f) {
+            MissionPrefs.get(context).setWeightLoggedAt(System.currentTimeMillis())
+        }
     }
 
     suspend fun updateUser(user: User) {
+        val previous = userDao.getUserById(user.id)
         userDao.update(user)
+        // Stamp weight-logged-at whenever weight actually changes, for the
+        // weekly "Body Stat Check" mission and the Sunday weigh-in reminder.
+        if (previous == null || previous.weight != user.weight) {
+            MissionPrefs.get(context).setWeightLoggedAt(System.currentTimeMillis())
+        }
     }
 
     suspend fun getUserById(userId: Int): User? {

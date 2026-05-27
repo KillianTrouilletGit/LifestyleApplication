@@ -45,8 +45,10 @@ import androidx.compose.ui.graphics.BlendMode
 import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.components.TopMissionsCard
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import androidx.compose.runtime.livedata.observeAsState
 
 data class DashboardItem(
     val id: String,
@@ -59,13 +61,18 @@ data class DashboardItem(
 fun MainScreen(
     onNavigate: (String) -> Unit,
     performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel,
-    healthViewModel: com.example.personallevelingsystem.viewmodel.HealthViewModel
+    healthViewModel: com.example.personallevelingsystem.viewmodel.HealthViewModel,
+    missionViewModel: com.example.personallevelingsystem.viewmodel.MissionViewModel? = null
 ) {
     val performanceState by performanceViewModel.uiState.collectAsState()
+    val dailyMissions by (missionViewModel?.dailyMissions
+        ?: androidx.lifecycle.MutableLiveData(emptyList<com.example.personallevelingsystem.model.Mission>()))
+        .observeAsState(emptyList())
     var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         performanceViewModel.loadPerformanceData()
+        missionViewModel?.refresh()
         isVisible = true
     }
 
@@ -106,12 +113,22 @@ fun MainScreen(
                         subtitle = "Operator OS",
                         title = "System Dashboard"
                     )
-                    
+
                     Spacer(modifier = Modifier.height(16.dp))
-                    
+
+                    // Top missions surfaced from MissionViewModel (if available)
+                    if (dailyMissions.isNotEmpty()) {
+                        TopMissionsCard(
+                            incompleteMissions = dailyMissions.filter { !it.isCompleted },
+                            totalDaily = dailyMissions.size,
+                            onOpenMissions = { onNavigate("missions") }
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                    }
+
                     // Performance Visualization
                     com.example.personallevelingsystem.ui.compose.components.PerformanceCarousel(state = performanceState)
-        
+
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }

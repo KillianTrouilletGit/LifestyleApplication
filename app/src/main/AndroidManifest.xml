@@ -32,6 +32,9 @@
         <receiver
             android:name=".receiver.WeeklyMissionResetReceiver"
             android:exported="false" />
+        <receiver
+            android:name=".receiver.NotificationActionReceiver"
+            android:exported="false" />
 
         <activity
             android:name=".MainActivity"

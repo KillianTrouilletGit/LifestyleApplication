@@ -6,18 +6,25 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.personallevelingsystem.model.Mission
+import com.example.personallevelingsystem.model.MissionCategory
 import com.example.personallevelingsystem.model.MissionType
 import com.example.personallevelingsystem.repository.MissionRepository
 import com.example.personallevelingsystem.repository.UserRepository
+import com.example.personallevelingsystem.service.MissionAutoCompleter
+import com.example.personallevelingsystem.service.MissionProgress
+import com.example.personallevelingsystem.util.MissionPrefs
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MissionViewModel(
     application: Application,
-    private val userRepository: UserRepository // Add userRepository as a parameter
+    private val userRepository: UserRepository
 ) : AndroidViewModel(application) {
 
     private val repository = MissionRepository(application)
+    private val autoCompleter = MissionAutoCompleter(application)
+    private val prefs = MissionPrefs.get(application)
 
     private val _dailyMissions = MutableLiveData<List<Mission>>()
     val dailyMissions: LiveData<List<Mission>> = _dailyMissions
@@ -25,30 +32,56 @@ class MissionViewModel(
     private val _weeklyMissions = MutableLiveData<List<Mission>>()
     val weeklyMissions: LiveData<List<Mission>> = _weeklyMissions
 
+    /** Progress snapshots keyed by mission id. Only present for data-driven missions. */
+    private val _missionProgress = MutableLiveData<Map<String, MissionProgress>>(emptyMap())
+    val missionProgress: LiveData<Map<String, MissionProgress>> = _missionProgress
+
+    /** Streak counters keyed by mission id. */
+    private val _streaks = MutableLiveData<Map<String, Int>>(emptyMap())
+    val streaks: LiveData<Map<String, Int>> = _streaks
+
+    /** XP totals keyed by category — for the specialization summary card. */
+    private val _categoryXp = MutableLiveData<Map<MissionCategory, Int>>(emptyMap())
+    val categoryXp: LiveData<Map<MissionCategory, Int>> = _categoryXp
+
     init {
-        // Load missions when the ViewModel is created
-        loadMissions()
+        refresh()
     }
 
-    private fun loadMissions() {
+    /**
+     * Reload missions from repository, then run an auto-complete sweep,
+     * then re-read state to surface freshly-ticked missions.
+     */
+    fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
-            _dailyMissions.postValue(repository.getDailyMissions())
-            _weeklyMissions.postValue(repository.getWeeklyMissions())
+            // First sweep against current data — may auto-complete some
+            autoCompleter.sweep()
+
+            val daily = repository.getDailyMissions()
+            val weekly = repository.getWeeklyMissions()
+            _dailyMissions.postValue(daily)
+            _weeklyMissions.postValue(weekly)
+
+            val progressMap = mutableMapOf<String, MissionProgress>()
+            for (m in daily + weekly) {
+                val p = autoCompleter.computeProgress(m) ?: continue
+                progressMap[m.id] = p
+            }
+            _missionProgress.postValue(progressMap)
+
+            _streaks.postValue((daily + weekly).associate { it.id to prefs.getStreak(it.id) })
+            _categoryXp.postValue(prefs.allCategoryXp())
         }
     }
 
-    fun completeMission(mission: Mission, userId: Int) { // Add userId parameter
+    fun completeMission(mission: Mission, userId: Int) {
         if (!mission.isCompleted) {
-            // Optimistic Update: Update UI immediately
+            // Optimistic UI: tick it locally
             val currentDaily = _dailyMissions.value.orEmpty().toMutableList()
             val indexDaily = currentDaily.indexOfFirst { it.id == mission.id }
             if (indexDaily != -1) {
-                // Assuming Mission is mutable for now, or use copy if data class. 
-                // Since it's passed as reference, modification should work but we need to post NEW list reference
-                // for LiveData to trigger observers.
-                // Creating a shallow copy of the list is enough if item was modified.
-                currentDaily[indexDaily] = currentDaily[indexDaily].copy(isCompleted = true) 
-                _dailyMissions.value = ArrayList(currentDaily) // Post new reference
+                currentDaily[indexDaily] = currentDaily[indexDaily].copy(isCompleted = true)
+                _dailyMissions.value = ArrayList(currentDaily)
             }
 
             val currentWeekly = _weeklyMissions.value.orEmpty().toMutableList()
@@ -57,16 +90,12 @@ class MissionViewModel(
                 currentWeekly[indexWeekly] = currentWeekly[indexWeekly].copy(isCompleted = true)
                 _weeklyMissions.value = ArrayList(currentWeekly)
             }
-            
-            // Persist in background
+
             viewModelScope.launch(Dispatchers.IO) {
                 repository.completeMission(mission)
-                userRepository.addXp(userId, mission.reward)
-                // We don't need to reloadMissions() immediately if we trust our optimistic update,
-                // but it's safe to do so to ensure consistency later. 
-                // loadMissions() 
-                // Actually, let's NOT reload immediately to avoid overwriting the optimistic state 
-                // if the DB write lags slightly.
+                val awarded = autoCompleter.awardWithStreak(mission)
+                userRepository.addXp(userId, awarded)
+                refresh()
             }
         }
     }
@@ -79,9 +108,7 @@ class MissionViewModel(
         }
     }
 
-
-
-    suspend fun getTotalCaloriesForCurrentDay(): Double {
-        return repository.getTotalCaloriesForCurrentDay()
+    suspend fun getTotalCaloriesForCurrentDay(): Double = withContext(Dispatchers.IO) {
+        repository.getTotalCaloriesForCurrentDay()
     }
 }
