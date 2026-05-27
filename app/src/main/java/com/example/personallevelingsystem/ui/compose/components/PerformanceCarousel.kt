@@ -10,6 +10,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -17,11 +25,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.personallevelingsystem.ui.compose.theme.NeonCyan
-import com.example.personallevelingsystem.ui.compose.theme.NeonMagenta
+import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.RubyRed
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.graphicsLayer
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -62,7 +73,7 @@ fun PerformanceCarousel(
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) NeonCyan else Color.DarkGray
+                val color = if (pagerState.currentPage == iteration) CrimsonRed else Color.DarkGray
                 Box(
                     modifier = Modifier
                         .padding(2.dp)
@@ -77,35 +88,78 @@ fun PerformanceCarousel(
 
 @Composable
 fun LevelProgressCard(state: com.example.personallevelingsystem.viewmodel.PerformanceState) {
-    val progress = if (state.requiredXp > 0) state.currentXp / state.requiredXp else 0f
+    var startAnimation by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { startAnimation = true }
+
+    val animatedLevel by animateIntAsState(targetValue = if (startAnimation) state.level else 0, animationSpec = tween(1000), label = "level")
+    val animatedXp by animateFloatAsState(targetValue = if (startAnimation) state.currentXp else 0f, animationSpec = tween(1000), label = "xp")
+    
+    val progress = if (state.requiredXp > 0) animatedXp / state.requiredXp else 0f
     
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("CURRENT STATUS", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
-        Text("LEVEL ${state.level}", style = MaterialTheme.typography.displayMedium, color = NeonMagenta)
-        Spacer(modifier = Modifier.height(8.dp))
-        Text("XP: ${state.currentXp.toInt()} / ${state.requiredXp.toInt()}", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
-        LinearProgressIndicator(
-            progress = { progress },
-            modifier = Modifier.fillMaxWidth(0.8f).padding(top=4.dp),
-            color = NeonCyan,
-            trackColor = Color.DarkGray,
+        Text(
+            text = "LEVEL $animatedLevel", 
+            style = MaterialTheme.typography.displayMedium, 
+            modifier = Modifier
+                .graphicsLayer(alpha = 0.99f)
+                .drawWithCache {
+                    onDrawWithContent {
+                        drawContent()
+                        drawRect(PrimaryGradient, blendMode = BlendMode.SrcIn)
+                    }
+                }
         )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text("XP: ${animatedXp.toInt()} / ${state.requiredXp.toInt()}", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
+        
+        // Gradient Progress Bar
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(0.8f)
+                .height(8.dp) // slightly taller for gradient visibility
+                .padding(top = 8.dp)
+                .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
+                .background(Color.DarkGray.copy(alpha = 0.5f))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(progress)
+                    .fillMaxHeight()
+                    .background(PrimaryGradient)
+            )
+        }
     }
 }
 
 @Composable
 fun MissionStatsCard(state: com.example.personallevelingsystem.viewmodel.PerformanceState) {
+    var startAnimation by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { startAnimation = true }
+
     val efficiencyPercent = (state.missionEfficiency * 100).toInt()
+    val animatedEfficiency by animateIntAsState(targetValue = if (startAnimation) efficiencyPercent else 0, animationSpec = tween(1000), label = "efficiency")
     
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("MISSION EFFICIENCY", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
-        Text("$efficiencyPercent%", style = MaterialTheme.typography.displayMedium, color = NeonCyan)
+        Text(
+            text = "$animatedEfficiency%", 
+            style = MaterialTheme.typography.displayMedium, 
+            modifier = Modifier
+                .graphicsLayer(alpha = 0.99f)
+                .drawWithCache {
+                    onDrawWithContent {
+                        drawContent()
+                        drawRect(PrimaryGradient, blendMode = BlendMode.SrcIn)
+                    }
+                }
+        )
         Text("Daily Objectives: ${state.dailyMissionsCompleted}/${state.totalDailyMissions}", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
     }
 }
@@ -151,7 +205,7 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
                             text = String.format("%.1f", rawValue),
                             style = MaterialTheme.typography.labelSmall,
                             fontSize = 11.sp,
-                            color = NeonCyan
+                            color = CrimsonRed
                         )
                     }
                     
@@ -183,6 +237,14 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
 
 @Composable
 fun HealthOverviewCard(state: com.example.personallevelingsystem.viewmodel.PerformanceState) {
+    var startAnimation by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { startAnimation = true }
+
+    val animatedSleep by animateFloatAsState(targetValue = if (startAnimation) state.sleepHours else 0f, animationSpec = tween(1000), label = "sleep")
+    val animatedWater by animateFloatAsState(targetValue = if (startAnimation) state.waterIntake else 0f, animationSpec = tween(1000), label = "water")
+    val animatedKcal by animateIntAsState(targetValue = if (startAnimation) state.dailyCalories else 0, animationSpec = tween(1000), label = "kcal")
+    val animatedBal by animateFloatAsState(targetValue = if (startAnimation) state.dailyBalanceIndex else 0f, animationSpec = tween(1000), label = "bal")
+
      Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,10 +254,10 @@ fun HealthOverviewCard(state: com.example.personallevelingsystem.viewmodel.Perfo
         Spacer(modifier = Modifier.height(12.dp))
         
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            BioMetricItem(label = "SLEEP", value = "${String.format("%.1f", state.sleepHours)}H", color = NeonMagenta)
-            BioMetricItem(label = "H2O", value = "${String.format("%.1f", state.waterIntake)}L", color = NeonCyan)
-            BioMetricItem(label = "KCAL", value = "${state.dailyCalories}", color = Color.White)
-            BioMetricItem(label = "BAL", value = String.format("%.2f", state.dailyBalanceIndex), color = com.example.personallevelingsystem.ui.compose.theme.CyberCyan)
+            BioMetricItem(label = "SLEEP", value = "${String.format("%.1f", animatedSleep)}H", color = RubyRed)
+            BioMetricItem(label = "H2O", value = "${String.format("%.1f", animatedWater)}L", color = CrimsonRed)
+            BioMetricItem(label = "KCAL", value = "${animatedKcal}", color = Color.White)
+            BioMetricItem(label = "BAL", value = String.format("%.2f", animatedBal), color = CrimsonRed)
         }
     }
 }

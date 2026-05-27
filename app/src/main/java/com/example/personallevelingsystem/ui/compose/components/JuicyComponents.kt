@@ -8,6 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,6 +31,9 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,6 +43,7 @@ import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.GlassGradient
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
+import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
 
 @Composable
 fun JuicyButton(
@@ -94,16 +99,33 @@ fun JuicyCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.98f else 1f,
+        targetValue = if (isPressed) 0.96f else 1f, // slightly more bounce
         animationSpec = BouncySpring,
         label = "cardScale"
+    )
+    
+    val glowAlpha by animateFloatAsState(
+        targetValue = if (isPressed) 0.6f else 0f,
+        animationSpec = tween(200),
+        label = "glowAlpha"
     )
 
     Card(
         modifier = modifier
             .scale(scale)
+            .drawBehind {
+                if (glowAlpha > 0f) {
+                    drawRect(
+                        brush = Brush.radialGradient(
+                            colors = listOf(CrimsonRed.copy(alpha = glowAlpha), Color.Transparent),
+                            center = Offset(size.width / 2, size.height / 2),
+                            radius = size.width * 0.7f
+                        )
+                    )
+                }
+            }
             .border(
-                BorderStroke(1.dp, BorderGradient),
+                BorderStroke(1.5.dp, BorderGradient), // Slightly thicker glass border
                 shape
             )
             .clickable(
@@ -115,7 +137,7 @@ fun JuicyCard(
                 }
             ),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Black, // Ensure opaque black background behind glass/border
+            containerColor = Color.Transparent, // Transparent background for true glassmorphism
         ),
         shape = shape,
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)

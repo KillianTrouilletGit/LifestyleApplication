@@ -14,8 +14,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
-import com.example.personallevelingsystem.ui.compose.theme.NeonCyan
-import com.example.personallevelingsystem.ui.compose.theme.NeonMagenta
+import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.RubyRed
 import kotlinx.coroutines.delay
 
 @Composable
@@ -52,7 +52,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             Text(
                 text = "OPERATOR OS",
                 style = MaterialTheme.typography.displayMedium,
-                color = NeonCyan,
+                color = CrimsonRed,
                 fontWeight = FontWeight.Bold,
                 letterSpacing = 4.sp
             )
@@ -63,7 +63,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                 modifier = Modifier
                     .height(2.dp)
                     .fillMaxWidth(0.6f)
-                    .background(NeonMagenta.copy(alpha = 0.5f))
+                    .background(RubyRed.copy(alpha = 0.5f))
             )
             
             Spacer(modifier = Modifier.height(24.dp))

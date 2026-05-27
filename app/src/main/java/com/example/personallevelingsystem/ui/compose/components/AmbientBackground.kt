@@ -11,9 +11,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import com.example.personallevelingsystem.ui.compose.theme.NeonCyan
-import com.example.personallevelingsystem.ui.compose.theme.NeonMagenta
-import com.example.personallevelingsystem.ui.compose.theme.NeonViolet
+import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.DarkBlood
+import com.example.personallevelingsystem.ui.compose.theme.RubyRed
 import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
 import kotlin.random.Random
 
@@ -22,10 +22,10 @@ fun AmbientBackground() {
     val infiniteTransition = rememberInfiniteTransition(label = "ambient_animation")
 
     // Define multiple orbs with slightly different animation phases
-    val orb1 = rememberOrbState(infiniteTransition, NeonMagenta, 10000)
-    val orb2 = rememberOrbState(infiniteTransition, NeonCyan, 13000)
-    val orb3 = rememberOrbState(infiniteTransition, NeonViolet, 11000)
-    val orb4 = rememberOrbState(infiniteTransition, NeonCyan.copy(alpha=0.5f), 15000)
+    val orb1 = rememberOrbState(infiniteTransition, RubyRed, 10000)
+    val orb2 = rememberOrbState(infiniteTransition, CrimsonRed, 13000)
+    val orb3 = rememberOrbState(infiniteTransition, DarkBlood, 11000)
+    val orb4 = rememberOrbState(infiniteTransition, CrimsonRed.copy(alpha=0.5f), 15000)
 
     Canvas(modifier = Modifier.fillMaxSize().background(SpaceBlack)) {
         drawOrb(orb1)

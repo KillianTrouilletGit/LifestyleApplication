@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -23,8 +24,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.runtime.collectAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.EaseInOut
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import com.example.personallevelingsystem.R
@@ -47,9 +62,11 @@ fun MainScreen(
     healthViewModel: com.example.personallevelingsystem.viewmodel.HealthViewModel
 ) {
     val performanceState by performanceViewModel.uiState.collectAsState()
+    var isVisible by remember { mutableStateOf(false) }
 
-    androidx.compose.runtime.LaunchedEffect(Unit) {
+    LaunchedEffect(Unit) {
         performanceViewModel.loadPerformanceData()
+        isVisible = true
     }
 
     val items = listOf(
@@ -63,6 +80,8 @@ fun MainScreen(
         DashboardItem("settings", "Settings", R.drawable.ic_settings_v2)
     )
 
+    val lazyGridState = rememberLazyGridState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,6 +89,7 @@ fun MainScreen(
             .padding(DesignSystem.Padding)
     ) {
         LazyVerticalGrid(
+            state = lazyGridState,
             columns = GridCells.Fixed(2),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -77,7 +97,11 @@ fun MainScreen(
         ) {
             // Header & Carousel Section
             item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
-                Column {
+                Column(modifier = Modifier.graphicsLayer {
+                    if (lazyGridState.firstVisibleItemIndex == 0) {
+                        translationY = lazyGridState.firstVisibleItemScrollOffset * 0.15f
+                    }
+                }) {
                     OperatorHeader(
                         subtitle = "Operator OS",
                         title = "System Dashboard"
@@ -92,8 +116,22 @@ fun MainScreen(
                 }
             }
 
-            items(items) { item ->
-                DashboardCard(item = item, extraText = null, onClick = { onNavigate(item.id) })
+            itemsIndexed(items, span = { _, item ->
+                // Make primary sections (Missions, Training) span the full width as "Hero" cards
+                if (item.id == "missions" || item.id == "training") {
+                    androidx.compose.foundation.lazy.grid.GridItemSpan(2)
+                } else {
+                    androidx.compose.foundation.lazy.grid.GridItemSpan(1)
+                }
+            }) { index, item ->
+                val isHero = item.id == "missions" || item.id == "training"
+                AnimatedVisibility(
+                    visible = isVisible,
+                    enter = fadeIn(animationSpec = tween(400, delayMillis = index * 50)) + 
+                            slideInVertically(initialOffsetY = { 50 }, animationSpec = tween(400, delayMillis = index * 50))
+                ) {
+                    DashboardCard(item = item, isHero = isHero, extraText = null, onClick = { onNavigate(item.id) })
+                }
             }
         }
     }
@@ -102,15 +140,29 @@ fun MainScreen(
 @Composable
 fun DashboardCard(
     item: DashboardItem,
+    isHero: Boolean = false,
     extraText: String? = null,
     onClick: () -> Unit
 ) {
+    val infiniteTransition = rememberInfiniteTransition(label = "iconBreathing")
+    val breathingScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = if (isHero) 1.05f else 1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(2000, easing = EaseInOut),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "iconBreathingScale"
+    )
+
     JuicyCard(
         onClick = onClick,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(if (isHero) 160.dp else 140.dp)
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -118,8 +170,12 @@ fun DashboardCard(
                 painter = painterResource(id = item.iconRes),
                 contentDescription = item.title,
                 modifier = Modifier
-                    .size(48.dp)
-                    .graphicsLayer { alpha = 0.99f } // Force compositing layer for BlendMode
+                    .size(if (isHero) 56.dp else 40.dp)
+                    .graphicsLayer { 
+                        alpha = 0.99f // Required for BlendMode masking
+                        scaleX = breathingScale
+                        scaleY = breathingScale
+                    }
                     .drawWithCache {
                         val brush = com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
                         onDrawWithContent {
@@ -128,18 +184,19 @@ fun DashboardCard(
                         }
                     }
             )
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(if (isHero) 12.dp else 8.dp))
             Text(
                 text = item.title.uppercase(),
-                style = MaterialTheme.typography.labelLarge,
-                color = androidx.compose.ui.graphics.Color.White
+                style = if (isHero) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelLarge,
+                color = androidx.compose.ui.graphics.Color.White,
+                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
             )
             if (extraText != null) {
                 Spacer(modifier = Modifier.height(4.dp))
                  Text(
                     text = extraText,
                     style = MaterialTheme.typography.labelSmall,
-                    color = com.example.personallevelingsystem.ui.compose.theme.CyberCyan
+                    color = com.example.personallevelingsystem.ui.compose.theme.AccentRed
                 )
             }
         }

@@ -3,35 +3,40 @@ package com.example.personallevelingsystem.ui.compose.theme
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 
-// Visual Design System: Future Neon / High-Precision
-val SpaceBlack = Color(0xFF000000) // True Depth Black
-val NeonMagenta = Color(0xFFFF00FF) // Hot Magenta
-val NeonCyan = Color(0xFF00FFFF)   // Electric Cyan
-val NeonViolet = Color(0xFF9D00FF) // Electric Violet
+// Visual Design System: Premium Dark Glass with Ruby Accents
+val SpaceBlack = Color(0xFF0A0A0A) // Very deep gray/black
+val CharcoalGrey = Color(0xFF141414)
+val CrimsonRed = Color(0xFFE50914) // Bold Red
+val RubyRed = Color(0xFF9E0B0F)
+val DarkBlood = Color(0xFF4A0404)
 val AlertOrange = Color(0xFFFF5722)
-val GlassSurfaceStart = Color(0x33FFFFFF)
-val GlassSurfaceEnd = Color(0x0DFFFFFF)
-val GlassSurface = Color(0x1AFFFFFF)
-val HologramText = Color(0xCCFFFFFF)
 val TelemetryGreen = Color(0xFF00E676)
+
+// Glassmorphic colors
+val GlassSurfaceStart = Color(0x22FFFFFF)
+val GlassSurfaceEnd = Color(0x05FFFFFF)
+val GlassSurface = Color(0x15FFFFFF)
+val HologramText = Color(0xE6FFFFFF)
 
 // Functional Mappings
 val PrimaryBackground = SpaceBlack
-val PrimaryAccent = NeonCyan // Default primary color for text/icons
-val SecondaryAccent = NeonMagenta
+val PrimaryAccent = CrimsonRed
+val SecondaryAccent = RubyRed
 
 val TextPrimary = HologramText
-val TextSecondary = NeonCyan.copy(alpha = 0.6f)
-val CyberCyan = NeonCyan
+val TextSecondary = Color(0x99FFFFFF)
+val AccentRed = CrimsonRed
+val CyberCyan = CrimsonRed // Retained for compatibility
 
 // Gradients
 val PrimaryGradient = Brush.linearGradient(
-    colors = listOf(NeonMagenta, NeonCyan)
+    colors = listOf(Color(0xFFFF3B5C), CrimsonRed, RubyRed)
 )
 
 val GlassGradient = Brush.verticalGradient(
     colors = listOf(GlassSurfaceStart, GlassSurfaceEnd)
 )
 
-// Legacy but redirected
-val BorderGradient = PrimaryGradient
+val BorderGradient = Brush.linearGradient(
+    colors = listOf(Color(0x33FFFFFF), Color(0x0AFFFFFF))
+)
