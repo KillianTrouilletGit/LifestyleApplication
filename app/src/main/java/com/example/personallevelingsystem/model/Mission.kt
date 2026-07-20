@@ -59,7 +59,7 @@ sealed class MissionRequirement {
     /** Cumulative endurance distance this week >= km. */
     data class EnduranceWeeklyKm(val km: Float) : MissionRequirement()
 
-    /** Any training session logged today (counts as workout discipline). */
+    /** A strength session finished today (endTime set — started/abandoned ones don't count). */
     object TrainingSessionLoggedToday : MissionRequirement()
 
     /** User weight last updated within the current ISO week. */

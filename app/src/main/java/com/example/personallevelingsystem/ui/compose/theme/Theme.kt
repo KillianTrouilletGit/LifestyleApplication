@@ -1,8 +1,6 @@
 package com.example.personallevelingsystem.ui.compose.theme
 
 import android.app.Activity
-import android.os.Build
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
@@ -11,28 +9,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
-import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
 
-// Force Dark Theme for Future Neon aesthetic
-private val SciFiColorScheme = darkColorScheme(
+// Sober premium dark scheme — red for actions, deep violet for structure
+private val OperatorColorScheme = darkColorScheme(
     primary = PrimaryAccent,
+    onPrimary = Color.White,
     secondary = SecondaryAccent,
+    onSecondary = Color.White,
     tertiary = TelemetryGreen,
     background = Color.Transparent, // Transparent so AmbientBackground shows through
-    surface = Color.Transparent, // Transparent surface for components to handle their own backgrounds (e.g. Glass)
-    onPrimary = SpaceBlack,
+    surface = Color.Transparent, // Components handle their own surfaces
+    surfaceVariant = SurfaceElevated,
     onBackground = TextPrimary,
-    onSurface = TextPrimary
+    onSurface = TextPrimary,
+    onSurfaceVariant = TextSecondary,
+    outline = BorderSubtle,
+    error = CrimsonRed
 )
 
 @Composable
 fun PersonalLevelingSystemTheme(
-    // Ignore system setting, force "Sci-Fi" dark mode
-    darkTheme: Boolean = true, 
+    // Ignore system setting, the app is dark by design
+    darkTheme: Boolean = true,
     dynamicColor: Boolean = false, // Disable dynamic colors to enforce branding
     content: @Composable () -> Unit
 ) {
-    val colorScheme = SciFiColorScheme
+    val colorScheme = OperatorColorScheme
 
     val view = LocalView.current
     if (!view.isInEditMode) {

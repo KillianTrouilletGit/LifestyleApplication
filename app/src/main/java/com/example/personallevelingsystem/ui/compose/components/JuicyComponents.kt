@@ -8,7 +8,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,19 +30,19 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.draw.drawBehind
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.width
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.BorderGradient
 import com.example.personallevelingsystem.ui.compose.theme.BouncySpring
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.GlassGradient
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
-import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
-import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
+import com.example.personallevelingsystem.ui.compose.theme.SurfaceElevated
+import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 
 @Composable
 fun JuicyButton(
@@ -72,17 +71,18 @@ fun JuicyButton(
         enabled = enabled,
         interactionSource = interactionSource,
         colors = ButtonDefaults.buttonColors(
-            containerColor = Color.Transparent,
-            contentColor = PrimaryAccent, // Neon Text
-            disabledContainerColor = Color.Transparent
+            containerColor = PrimaryAccent,
+            contentColor = Color.White,
+            disabledContainerColor = SurfaceElevated,
+            disabledContentColor = TextSecondary
         ),
-        border = BorderStroke(1.5.dp, com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient),
-        shape = RoundedCornerShape(8.dp) // Technical "cut" look
+        shape = RoundedCornerShape(12.dp)
     ) {
         Text(
-            text = text.uppercase(), // HUD style
+            text = text.uppercase(),
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = FontWeight.Bold
+            fontWeight = FontWeight.SemiBold,
+            letterSpacing = 1.sp
         )
     }
 }
@@ -99,33 +99,16 @@ fun JuicyCard(
     val isPressed by interactionSource.collectIsPressedAsState()
     
     val scale by animateFloatAsState(
-        targetValue = if (isPressed) 0.96f else 1f, // slightly more bounce
+        targetValue = if (isPressed) 0.97f else 1f,
         animationSpec = BouncySpring,
         label = "cardScale"
-    )
-    
-    val glowAlpha by animateFloatAsState(
-        targetValue = if (isPressed) 0.6f else 0f,
-        animationSpec = tween(200),
-        label = "glowAlpha"
     )
 
     Card(
         modifier = modifier
             .scale(scale)
-            .drawBehind {
-                if (glowAlpha > 0f) {
-                    drawRect(
-                        brush = Brush.radialGradient(
-                            colors = listOf(CrimsonRed.copy(alpha = glowAlpha), Color.Transparent),
-                            center = Offset(size.width / 2, size.height / 2),
-                            radius = size.width * 0.7f
-                        )
-                    )
-                }
-            }
             .border(
-                BorderStroke(1.5.dp, BorderGradient), // Slightly thicker glass border
+                BorderStroke(1.dp, BorderGradient), // Hairline border
                 shape
             )
             .clickable(
@@ -168,22 +151,23 @@ fun OperatorHeader(
     ) {
         Text(
             text = subtitle.uppercase(),
-            style = MaterialTheme.typography.labelLarge,
-            color = PrimaryAccent,
+            style = MaterialTheme.typography.labelMedium,
+            color = AccentViolet,
             letterSpacing = 2.sp
         )
+        Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = title.uppercase(),
+            text = title,
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.Bold
         )
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(10.dp))
         Box(
             modifier = Modifier
-                .height(2.dp)
-                .fillMaxWidth(0.4f)
-                .background(BorderGradient)
+                .height(3.dp)
+                .width(48.dp)
+                .background(PrimaryGradient, RoundedCornerShape(2.dp))
         )
     }
 }

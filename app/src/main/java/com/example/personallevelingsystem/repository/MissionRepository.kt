@@ -38,6 +38,18 @@ class MissionRepository(private val context: Context) {
             tip = "Hold each position 30s+. Breathe through tension, don't bounce."
         ),
         Mission(
+            id = "daily_strength",
+            title = "Iron Session",
+            description = "Complete a full strength session — every exercise closed out.",
+            type = MissionType.DAILY,
+            category = MissionCategory.BODY,
+            isCompleted = getMissionCompletionStatus("daily_strength"),
+            reward = 50,
+            requirement = MissionRequirement.TrainingSessionLoggedToday,
+            deeplinkRoute = "training",
+            tip = "Only finished sessions count — close the last exercise to bank the XP."
+        ),
+        Mission(
             id = "daily_water",
             title = "Hydration Quota",
             description = "Drink your daily water target (≈ 35 ml per kg of body weight).",

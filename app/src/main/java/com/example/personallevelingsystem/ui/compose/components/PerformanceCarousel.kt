@@ -25,11 +25,16 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.shape.RoundedCornerShape
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
+import com.example.personallevelingsystem.ui.compose.theme.CalmBlue
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
-import com.example.personallevelingsystem.ui.compose.theme.RubyRed
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import com.example.personallevelingsystem.ui.compose.theme.TelemetryGreen
+import com.example.personallevelingsystem.ui.compose.theme.TextPrimary
+import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.graphicsLayer
@@ -73,7 +78,7 @@ fun PerformanceCarousel(
             horizontalArrangement = Arrangement.Center
         ) {
             repeat(pagerState.pageCount) { iteration ->
-                val color = if (pagerState.currentPage == iteration) CrimsonRed else Color.DarkGray
+                val color = if (pagerState.currentPage == iteration) CrimsonRed else Color(0x33FFFFFF)
                 Box(
                     modifier = Modifier
                         .padding(2.dp)
@@ -100,7 +105,7 @@ fun LevelProgressCard(state: com.example.personallevelingsystem.viewmodel.Perfor
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("CURRENT STATUS", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
+        Text("CURRENT STATUS", style = MaterialTheme.typography.labelMedium, color = AccentViolet)
         Text(
             text = "LEVEL $animatedLevel", 
             style = MaterialTheme.typography.displayMedium, 
@@ -114,16 +119,16 @@ fun LevelProgressCard(state: com.example.personallevelingsystem.viewmodel.Perfor
                 }
         )
         Spacer(modifier = Modifier.height(8.dp))
-        Text("XP: ${animatedXp.toInt()} / ${state.requiredXp.toInt()}", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
-        
+        Text("XP: ${animatedXp.toInt()} / ${state.requiredXp.toInt()}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+
         // Gradient Progress Bar
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.8f)
                 .height(8.dp) // slightly taller for gradient visibility
                 .padding(top = 8.dp)
-                .clip(androidx.compose.foundation.shape.RoundedCornerShape(4.dp))
-                .background(Color.DarkGray.copy(alpha = 0.5f))
+                .clip(RoundedCornerShape(4.dp))
+                .background(Color(0x1AFFFFFF))
         ) {
             Box(
                 modifier = Modifier
@@ -147,7 +152,7 @@ fun MissionStatsCard(state: com.example.personallevelingsystem.viewmodel.Perform
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("MISSION EFFICIENCY", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
+        Text("MISSION EFFICIENCY", style = MaterialTheme.typography.labelMedium, color = AccentViolet)
         Text(
             text = "$animatedEfficiency%", 
             style = MaterialTheme.typography.displayMedium, 
@@ -160,7 +165,7 @@ fun MissionStatsCard(state: com.example.personallevelingsystem.viewmodel.Perform
                     }
                 }
         )
-        Text("Daily Objectives: ${state.dailyMissionsCompleted}/${state.totalDailyMissions}", style = MaterialTheme.typography.bodySmall, color = Color.LightGray)
+        Text("Daily Objectives: ${state.dailyMissionsCompleted}/${state.totalDailyMissions}", style = MaterialTheme.typography.bodySmall, color = TextSecondary)
     }
 }
 
@@ -178,8 +183,8 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("WEEKLY VOLUME", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
-            Text("$activeDays/7 ACT", style = MaterialTheme.typography.labelSmall, color = Color.White)
+            Text("WEEKLY VOLUME", style = MaterialTheme.typography.labelMedium, color = AccentViolet)
+            Text("$activeDays/7 ACT", style = MaterialTheme.typography.labelSmall, color = TextPrimary)
         }
         
         Spacer(modifier = Modifier.height(16.dp)) // More space
@@ -216,17 +221,18 @@ fun TrainingFrequencyCard(state: com.example.personallevelingsystem.viewmodel.Pe
                         .width(16.dp)
                         .height(80.dp * heightRatio) // Reduced from 100dp to leave more room
                         .background(
-                            brush = if(rawValue > 0.05f) PrimaryGradient else androidx.compose.ui.graphics.SolidColor(Color.DarkGray.copy(alpha=0.3f))
+                            brush = if(rawValue > 0.05f) PrimaryGradient else androidx.compose.ui.graphics.SolidColor(Color(0x14FFFFFF)),
+                            shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
                         )
                     )
-                    
+
                     Spacer(modifier = Modifier.height(6.dp))
-                    
+
                     Text(
-                        text = dayLabel, 
-                        style = MaterialTheme.typography.labelSmall, 
+                        text = dayLabel,
+                        style = MaterialTheme.typography.labelSmall,
                         fontSize = 12.sp,
-                        color = Color.LightGray,
+                        color = TextSecondary,
                         fontWeight = FontWeight.Bold
                     )
                 }
@@ -250,14 +256,14 @@ fun HealthOverviewCard(state: com.example.personallevelingsystem.viewmodel.Perfo
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(DesignSystem.Padding)
     ) {
-        Text("BIO-METRICS", style = MaterialTheme.typography.labelMedium, color = PrimaryAccent)
+        Text("BIO-METRICS", style = MaterialTheme.typography.labelMedium, color = AccentViolet)
         Spacer(modifier = Modifier.height(12.dp))
         
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
-            BioMetricItem(label = "SLEEP", value = "${String.format("%.1f", animatedSleep)}H", color = RubyRed)
-            BioMetricItem(label = "H2O", value = "${String.format("%.1f", animatedWater)}L", color = CrimsonRed)
-            BioMetricItem(label = "KCAL", value = "${animatedKcal}", color = Color.White)
-            BioMetricItem(label = "BAL", value = String.format("%.2f", animatedBal), color = CrimsonRed)
+            BioMetricItem(label = "SLEEP", value = "${String.format("%.1f", animatedSleep)}H", color = AccentViolet)
+            BioMetricItem(label = "H2O", value = "${String.format("%.1f", animatedWater)}L", color = CalmBlue)
+            BioMetricItem(label = "KCAL", value = "${animatedKcal}", color = TextPrimary)
+            BioMetricItem(label = "BAL", value = String.format("%.2f", animatedBal), color = TelemetryGreen)
         }
     }
 }
@@ -265,7 +271,7 @@ fun HealthOverviewCard(state: com.example.personallevelingsystem.viewmodel.Perfo
 @Composable
 fun BioMetricItem(label: String, value: String, color: Color) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(text = label, style = MaterialTheme.typography.labelSmall, color = Color.Gray, fontSize = 10.sp)
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = TextSecondary, fontSize = 10.sp)
         Text(text = value, style = MaterialTheme.typography.titleMedium, color = color, fontWeight = FontWeight.Bold)
     }
 }

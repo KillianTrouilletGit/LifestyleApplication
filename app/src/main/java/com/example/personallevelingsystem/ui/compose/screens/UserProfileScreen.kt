@@ -91,7 +91,7 @@ fun UserProfileContent(
                 .size(120.dp)
                 .clip(CircleShape)
                 .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
-                .background(Color.DarkGray)
+                .background(com.example.personallevelingsystem.ui.compose.theme.SurfaceHigh)
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_user_placeholder),

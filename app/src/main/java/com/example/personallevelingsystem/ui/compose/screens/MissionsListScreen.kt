@@ -1,5 +1,12 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +35,7 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -47,17 +57,21 @@ import com.example.personallevelingsystem.model.MissionDifficulty
 import com.example.personallevelingsystem.service.MissionProgress
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.AlertOrange
+import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
+import com.example.personallevelingsystem.ui.compose.theme.CalmBlue
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
-import com.example.personallevelingsystem.ui.compose.theme.DarkBlood
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import com.example.personallevelingsystem.ui.compose.theme.GlassSurface
 import com.example.personallevelingsystem.ui.compose.theme.HologramText
 import com.example.personallevelingsystem.ui.compose.theme.PlacementSpring
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
-import com.example.personallevelingsystem.ui.compose.theme.RubyRed
+import com.example.personallevelingsystem.ui.compose.theme.SurfaceElevated
 import com.example.personallevelingsystem.ui.compose.theme.TelemetryGreen
 import com.example.personallevelingsystem.viewmodel.MissionViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun MissionsListScreen(
@@ -70,19 +84,26 @@ fun MissionsListScreen(
     val progress by viewModel.missionProgress.observeAsState(initial = emptyMap())
     val streaks by viewModel.streaks.observeAsState(initial = emptyMap())
     val categoryXp by viewModel.categoryXp.observeAsState(initial = emptyMap())
+    val celebration by viewModel.streakCelebration.observeAsState(initial = null)
 
-    MissionsListContent(
-        dailyMissions = dailyMissions,
-        weeklyMissions = weeklyMissions,
-        progress = progress,
-        streaks = streaks,
-        categoryXp = categoryXp,
-        onMissionCheck = { mission ->
-            viewModel.completeMission(mission, 1)
-        },
-        onDeeplink = onDeeplink,
-        onBackClick = onBackClick
-    )
+    Box(modifier = Modifier.fillMaxSize()) {
+        MissionsListContent(
+            dailyMissions = dailyMissions,
+            weeklyMissions = weeklyMissions,
+            progress = progress,
+            streaks = streaks,
+            categoryXp = categoryXp,
+            onMissionCheck = { mission ->
+                viewModel.completeMission(mission, 1)
+            },
+            onDeeplink = onDeeplink,
+            onBackClick = onBackClick
+        )
+        StreakCelebrationOverlay(
+            streak = celebration,
+            onFinished = { viewModel.clearStreakCelebration() }
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -169,16 +190,17 @@ fun MissionsListContent(
 
         JuicyButton(
             onClick = onBackClick,
-            text = "CLOSE"
+            text = "CLOSE",
+            modifier = Modifier.fillMaxWidth()
         )
     }
 
-    val sheetState = rememberModalBottomSheetState()
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     detailMission?.let { mission ->
         ModalBottomSheet(
             onDismissRequest = { detailMission = null },
             sheetState = sheetState,
-            containerColor = Color(0xFF111111)
+            containerColor = SurfaceElevated
         ) {
             MissionDetailSheet(
                 mission = mission,
@@ -207,8 +229,10 @@ fun MissionSectionHeader(title: String, progress: String) {
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.primary,
+            style = MaterialTheme.typography.labelMedium,
+            color = AccentViolet,
+            letterSpacing = 1.5.sp,
+            fontWeight = FontWeight.Bold,
             modifier = Modifier.weight(1f)
         )
         Text(
@@ -233,14 +257,12 @@ fun MissionItem(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp)
+            .padding(vertical = 5.dp)
+            .background(Color(0x0AFFFFFF), RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,
-                brush = if (mission.isCompleted)
-                    Brush.linearGradient(listOf(TelemetryGreen.copy(alpha = 0.5f), TelemetryGreen.copy(alpha = 0.15f)))
-                else
-                    Brush.linearGradient(listOf(categoryColor.copy(alpha = 0.55f), categoryColor.copy(alpha = 0.1f))),
-                shape = RoundedCornerShape(10.dp)
+                color = if (mission.isCompleted) TelemetryGreen.copy(alpha = 0.35f) else BorderSubtle,
+                shape = RoundedCornerShape(12.dp)
             )
             .clickable(onClick = onTap)
             .padding(horizontal = 12.dp, vertical = 10.dp),
@@ -264,9 +286,9 @@ fun MissionItem(
         Column(modifier = Modifier.weight(1f)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = mission.title.uppercase(),
+                    text = mission.title,
                     style = MaterialTheme.typography.labelLarge,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = if (mission.isCompleted) TelemetryGreen else HologramText,
                     modifier = Modifier.weight(1f)
                 )
@@ -304,7 +326,7 @@ fun MissionItem(
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Custom Gradient Checkbox
+        // Completion checkbox — gradient fill is the reward moment
         Box(
             modifier = Modifier
                 .size(28.dp)
@@ -313,15 +335,13 @@ fun MissionItem(
                             else Brush.linearGradient(
                                 listOf(Color.Transparent, Color.Transparent)
                             ),
-                    shape = RoundedCornerShape(6.dp)
+                    shape = RoundedCornerShape(8.dp)
                 )
                 .border(
-                    width = 2.dp,
-                    brush = if (mission.isCompleted) Brush.linearGradient(
-                                listOf(Color.Transparent, Color.Transparent)
-                            )
-                            else PrimaryGradient,
-                    shape = RoundedCornerShape(6.dp)
+                    width = 1.5.dp,
+                    color = if (mission.isCompleted) Color.Transparent
+                            else CrimsonRed.copy(alpha = 0.7f),
+                    shape = RoundedCornerShape(8.dp)
                 )
                 .clickable(enabled = !mission.isCompleted) { onCheck() },
             contentAlignment = Alignment.Center
@@ -360,8 +380,10 @@ private fun ProgressBar(progress: MissionProgress, color: Color) {
 }
 
 private fun formatProgress(p: MissionProgress): String {
-    val current = if (p.current >= 100f) p.current.toInt().toString() else "%.1f".format(p.current)
-    val target = if (p.target >= 100f) p.target.toInt().toString() else "%.1f".format(p.target)
+    fun fmt(v: Float): String =
+        if (v % 1f == 0f || v >= 100f) v.toInt().toString() else "%.1f".format(v)
+    val current = fmt(p.current)
+    val target = fmt(p.target)
     return if (p.unit.isEmpty()) "$current / $target" else "$current / $target ${p.unit}"
 }
 
@@ -411,16 +433,13 @@ private fun SpecializationCard(categoryXp: Map<MissionCategory, Int>) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .border(
-                1.dp,
-                Brush.linearGradient(listOf(CrimsonRed.copy(alpha = 0.5f), DarkBlood.copy(alpha = 0.4f))),
-                RoundedCornerShape(10.dp)
-            )
-            .padding(12.dp)
+            .background(GlassSurface, RoundedCornerShape(16.dp))
+            .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
+            .padding(14.dp)
     ) {
         Text(
             text = "SPECIALIZATION · $total XP TOTAL",
-            color = PrimaryAccent,
+            color = AccentViolet,
             style = MaterialTheme.typography.labelMedium,
             fontWeight = FontWeight.Bold,
             letterSpacing = 1.sp
@@ -479,14 +498,25 @@ private fun MissionDetailSheet(
     onComplete: () -> Unit,
     onDeeplink: (String) -> Unit
 ) {
+    // Material3 1.2.x bug: WindowInsets report zero inside the sheet's dialog
+    // window, so navigationBarsPadding() is a no-op here. Read the real inset
+    // from the root view instead so buttons clear the system navigation bar.
+    val view = androidx.compose.ui.platform.LocalView.current
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val bottomInset = remember(view) {
+        val raw = androidx.core.view.ViewCompat.getRootWindowInsets(view)
+            ?.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+        with(density) { raw.toDp() }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 16.dp)
     ) {
         Text(
-            text = mission.title.uppercase(),
-            color = PrimaryAccent,
+            text = mission.title,
+            color = HologramText,
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
@@ -508,7 +538,7 @@ private fun MissionDetailSheet(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "PROGRESS",
-                color = PrimaryAccent,
+                color = AccentViolet,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.sp,
                 fontWeight = FontWeight.Bold
@@ -521,7 +551,7 @@ private fun MissionDetailSheet(
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "TIP",
-                color = PrimaryAccent,
+                color = AccentViolet,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.sp,
                 fontWeight = FontWeight.Bold
@@ -551,7 +581,7 @@ private fun MissionDetailSheet(
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp + bottomInset.coerceAtLeast(16.dp)))
     }
 }
 
@@ -559,13 +589,14 @@ private fun MissionDetailSheet(
 private fun StatChip(label: String, value: String) {
     Box(
         modifier = Modifier
-            .border(1.dp, RubyRed.copy(alpha = 0.5f), RoundedCornerShape(6.dp))
+            .background(Color(0x0DFFFFFF), RoundedCornerShape(8.dp))
+            .border(1.dp, BorderSubtle, RoundedCornerShape(8.dp))
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Column(horizontalAlignment = Alignment.Start) {
             Text(
                 text = label,
-                color = PrimaryAccent,
+                color = AccentViolet,
                 style = MaterialTheme.typography.labelSmall,
                 fontSize = 9.sp,
                 letterSpacing = 1.sp
@@ -580,11 +611,78 @@ private fun StatChip(label: String, value: String) {
     }
 }
 
+/**
+ * Duolingo-style celebration shown when a completed mission keeps its streak alive.
+ * Springs in over the list, holds briefly, fades out, then clears via [onFinished].
+ * Purely decorative: it never intercepts touches.
+ */
+@Composable
+private fun StreakCelebrationOverlay(streak: Int?, onFinished: () -> Unit) {
+    var visible by remember { mutableStateOf(false) }
+    var shownStreak by remember { mutableStateOf(0) }
+    val haptic = LocalHapticFeedback.current
+
+    LaunchedEffect(streak) {
+        if (streak != null) {
+            shownStreak = streak
+            visible = true
+            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            delay(1600)
+            visible = false
+            delay(300)
+            onFinished()
+        }
+    }
+
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        AnimatedVisibility(
+            visible = visible,
+            enter = scaleIn(
+                initialScale = 0.4f,
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioMediumBouncy,
+                    stiffness = Spring.StiffnessMediumLow
+                )
+            ) + fadeIn(tween(150)),
+            exit = fadeOut(tween(250))
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .background(SurfaceElevated, RoundedCornerShape(24.dp))
+                    .border(
+                        1.dp,
+                        Brush.linearGradient(
+                            listOf(AlertOrange.copy(alpha = 0.7f), CrimsonRed.copy(alpha = 0.35f))
+                        ),
+                        RoundedCornerShape(24.dp)
+                    )
+                    .padding(horizontal = 36.dp, vertical = 28.dp)
+            ) {
+                Text(text = "🔥", fontSize = 54.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "$shownStreak",
+                    style = MaterialTheme.typography.displayMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = AlertOrange
+                )
+                Text(
+                    text = "DAY STREAK",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = AccentViolet,
+                    letterSpacing = 2.sp
+                )
+            }
+        }
+    }
+}
+
 private fun categoryColor(category: MissionCategory): Color = when (category) {
     MissionCategory.BODY -> CrimsonRed
-    MissionCategory.MIND -> Color(0xFFB388FF)        // soft violet for mind
+    MissionCategory.MIND -> AccentViolet
     MissionCategory.NUTRITION -> TelemetryGreen
-    MissionCategory.RECOVERY -> Color(0xFF40C4FF)    // calm cyan for recovery
+    MissionCategory.RECOVERY -> CalmBlue
     MissionCategory.DISCIPLINE -> AlertOrange
     MissionCategory.PROGRESS -> Color(0xFFE6E6E6)
 }

@@ -10,7 +10,6 @@ import com.example.personallevelingsystem.repository.UserRepository
 import com.example.personallevelingsystem.util.MissionPrefs
 import com.example.personallevelingsystem.util.NotificationUtils
 import com.example.personallevelingsystem.util.todayDayKey
-import com.example.personallevelingsystem.util.yesterdayDayKey
 import com.example.personallevelingsystem.util.thisWeekKey
 import java.util.Calendar
 
@@ -79,7 +78,8 @@ class MissionAutoCompleter(private val context: Context) {
             }
             MissionRequirement.TrainingSessionLoggedToday -> {
                 val (start, end) = todayBounds()
-                val count = db.trainingSessionDao().getTrainingSessionsForWeek(start, end).size.toFloat()
+                // Only sessions with an endTime count — abandoned/started ones don't
+                val count = db.trainingSessionDao().countCompletedSessionsForDay(start, end).toFloat()
                 MissionProgress(current = count, target = 1f, unit = "session")
             }
             MissionRequirement.WeightLoggedThisWeek -> {
@@ -122,10 +122,14 @@ class MissionAutoCompleter(private val context: Context) {
         val last = prefs.getLastCompletedDay(mission.id)
         val currentStreak = prefs.getStreak(mission.id)
 
+        // Up to STREAK_GRACE_DAYS idle days are forgiven before a streak breaks
+        // (gap of 1 = consecutive days = 0 idle days).
+        val idleDays = com.example.personallevelingsystem.util.daysBetweenDayKeys(last, today) - 1
         val newStreak = when {
             last == today -> currentStreak // already counted today, no double-bump
-            last == yesterdayDayKey() || last == 0 && currentStreak == 0 -> currentStreak + 1
+            last == 0 && currentStreak == 0 -> currentStreak + 1 // first ever completion
             mission.type == MissionType.WEEKLY -> currentStreak + 1
+            idleDays <= STREAK_GRACE_DAYS -> currentStreak + 1
             else -> 1 // streak broken
         }
 
@@ -217,5 +221,8 @@ class MissionAutoCompleter(private val context: Context) {
 
     companion object {
         const val DEFAULT_USER_ID = 1
+
+        /** Days of inactivity tolerated before a streak resets. */
+        const val STREAK_GRACE_DAYS = 3
     }
 }

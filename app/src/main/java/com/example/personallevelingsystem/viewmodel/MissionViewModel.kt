@@ -44,6 +44,14 @@ class MissionViewModel(
     private val _categoryXp = MutableLiveData<Map<MissionCategory, Int>>(emptyMap())
     val categoryXp: LiveData<Map<MissionCategory, Int>> = _categoryXp
 
+    /** Streak value to celebrate (Duolingo-style). Null when nothing to show. */
+    private val _streakCelebration = MutableLiveData<Int?>(null)
+    val streakCelebration: LiveData<Int?> = _streakCelebration
+
+    fun clearStreakCelebration() {
+        _streakCelebration.postValue(null)
+    }
+
     init {
         refresh()
     }
@@ -55,7 +63,10 @@ class MissionViewModel(
     fun refresh() {
         viewModelScope.launch(Dispatchers.IO) {
             // First sweep against current data — may auto-complete some
-            autoCompleter.sweep()
+            val freshly = autoCompleter.sweep()
+            // Auto-completed missions with a continuing streak also earn the celebration
+            val bestFreshStreak = freshly.maxOfOrNull { prefs.getStreak(it.id) } ?: 0
+            if (bestFreshStreak >= 2) _streakCelebration.postValue(bestFreshStreak)
 
             val daily = repository.getDailyMissions()
             val weekly = repository.getWeeklyMissions()
@@ -95,6 +106,8 @@ class MissionViewModel(
                 repository.completeMission(mission)
                 val awarded = autoCompleter.awardWithStreak(mission)
                 userRepository.addXp(userId, awarded)
+                val newStreak = prefs.getStreak(mission.id)
+                if (newStreak >= 2) _streakCelebration.postValue(newStreak)
                 refresh()
             }
         }

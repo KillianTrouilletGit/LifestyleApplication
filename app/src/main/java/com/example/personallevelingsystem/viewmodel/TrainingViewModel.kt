@@ -27,6 +27,17 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     private val _sessions = MutableLiveData<List<Session>>()
     val sessions: LiveData<List<Session>> = _sessions
 
+    /** Best weight per completed session for the exercise being inspected. */
+    private val _exerciseHistory = MutableLiveData<List<com.example.personallevelingsystem.data.ExerciseHistoryPoint>>(emptyList())
+    val exerciseHistory: LiveData<List<com.example.personallevelingsystem.data.ExerciseHistoryPoint>> = _exerciseHistory
+
+    fun loadExerciseHistory(exerciseId: Long) {
+        _exerciseHistory.postValue(emptyList()) // avoid flashing the previous exercise's curve
+        viewModelScope.launch(Dispatchers.IO) {
+            _exerciseHistory.postValue(trainingSessionDao.getExerciseWeightHistory(exerciseId))
+        }
+    }
+
     // Active Training Session State
     private var currentSessionId: Long = 0
     private val _currentExercises = MutableLiveData<List<com.example.personallevelingsystem.model.Exercise>>()
@@ -263,6 +274,9 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
                 val session = trainingSessionDao.getTrainingSessionById(currentSessionId)
                 val updatedSession = session.copy(endTime = java.util.Date())
                 trainingSessionDao.updateTrainingSession(updatedSession)
+                // Credit data-driven missions (e.g. Iron Session) right away,
+                // like the flexibility/endurance flows do
+                autoCompleter.sweep()
                 _sessionFinished.postValue(true)
             }
         }

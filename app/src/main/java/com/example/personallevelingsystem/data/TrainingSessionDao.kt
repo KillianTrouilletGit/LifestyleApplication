@@ -45,4 +45,23 @@ interface TrainingSessionDao {
     @Query("SELECT * FROM training_sessions WHERE date >= :startOfWeek AND date <= :endOfWeek")
     suspend fun getTrainingSessionsForWeek(startOfWeek: Long, endOfWeek: Long): List<TrainingSession>
 
+    @Query("SELECT COUNT(*) FROM training_sessions WHERE date >= :startOfDay AND date <= :endOfDay AND endTime IS NOT NULL")
+    suspend fun countCompletedSessionsForDay(startOfDay: Long, endOfDay: Long): Int
+
+    @Query("""
+        SELECT s.date AS date, MAX(t.weight) AS topWeight
+        FROM training_sets t
+        JOIN training_sessions s ON t.trainingSessionId = s.id
+        WHERE t.exerciseId = :exerciseId AND t.weight > 0
+        GROUP BY t.trainingSessionId
+        ORDER BY s.date ASC
+    """)
+    suspend fun getExerciseWeightHistory(exerciseId: Long): List<ExerciseHistoryPoint>
+
 }
+
+/** One training day's best weight for an exercise — feeds the evolution chart. */
+data class ExerciseHistoryPoint(
+    val date: Long,
+    val topWeight: Float
+)

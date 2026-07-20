@@ -136,6 +136,22 @@ fun yesterdayDayKey(): Int {
             c.get(java.util.Calendar.DAY_OF_MONTH)
 }
 
+/**
+ * Calendar days between two yyyyMMdd day keys (0 = same day, 1 = consecutive days).
+ * Returns Int.MAX_VALUE when either key is unset so callers treat it as "no history".
+ */
+fun daysBetweenDayKeys(from: Int, to: Int): Int {
+    if (from <= 0 || to <= 0) return Int.MAX_VALUE
+    val cal = java.util.Calendar.getInstance()
+    cal.clear()
+    cal.set(from / 10000, (from / 100) % 100 - 1, from % 100)
+    val a = cal.timeInMillis
+    cal.clear()
+    cal.set(to / 10000, (to / 100) % 100 - 1, to % 100)
+    val b = cal.timeInMillis
+    return ((b - a) / 86_400_000L).toInt()
+}
+
 /** ISO week key: yyyy * 100 + weekOfYear. */
 fun thisWeekKey(): Int {
     val c = java.util.Calendar.getInstance()

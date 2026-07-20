@@ -170,16 +170,16 @@ class MainActivity : ComponentActivity() {
                             MigrationViewModelFactory(application)
                         )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
                         
-                        val sessions by viewModel.sessions.observeAsState(initial = emptyList())
+                        val programs by viewModel.programs.observeAsState(initial = emptyList())
 
                         androidx.compose.runtime.LaunchedEffect(Unit) {
-                            viewModel.loadSessions()
+                            viewModel.loadPrograms()
                         }
-                        
+
                         com.example.personallevelingsystem.ui.compose.screens.SelectSessionScreen(
-                            sessions = sessions, 
-                            onSessionClick = { sessionId -> 
-                                navController.navigate("training_session/$sessionId") 
+                            programs = programs,
+                            onSessionClick = { sessionId ->
+                                navController.navigate("training_session/$sessionId")
                             },
                             onBackClick = { popBackStackSafe() }
                         )
@@ -191,13 +191,16 @@ class MainActivity : ComponentActivity() {
                         )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
 
                         val programs by viewModel.programs.observeAsState(initial = emptyList())
-                        
+                        val exerciseHistory by viewModel.exerciseHistory.observeAsState(initial = emptyList())
+
                         androidx.compose.runtime.LaunchedEffect(Unit) {
                             viewModel.loadPrograms()
                         }
 
                         com.example.personallevelingsystem.ui.compose.screens.ViewProgramsScreen(
                             programs = programs,
+                            exerciseHistory = exerciseHistory,
+                            onExerciseClick = { exercise -> viewModel.loadExerciseHistory(exercise.id) },
                             onDeleteProgram = { viewModel.deleteProgram(it.program) },
                             onBackClick = { popBackStackSafe() }
                         )

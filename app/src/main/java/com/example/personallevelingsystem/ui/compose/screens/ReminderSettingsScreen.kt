@@ -133,7 +133,7 @@ private fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Spacer(modifier = Modifier.height(4.dp))
     Text(
         text = title,
-        color = PrimaryAccent,
+        color = com.example.personallevelingsystem.ui.compose.theme.AccentViolet,
         style = MaterialTheme.typography.labelMedium,
         letterSpacing = 1.5.sp,
         fontWeight = FontWeight.Bold,
@@ -149,10 +149,11 @@ private fun ToggleRow(label: String, sublabel: String, checked: Boolean, onChang
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 6.dp)
+            .background(Color(0x0AFFFFFF), RoundedCornerShape(12.dp))
             .border(
                 1.dp,
-                Brush.linearGradient(listOf(RubyRed.copy(alpha = 0.4f), Color.White.copy(alpha = 0.05f))),
-                RoundedCornerShape(8.dp)
+                com.example.personallevelingsystem.ui.compose.theme.BorderSubtle,
+                RoundedCornerShape(12.dp)
             )
             .clickable { onChange(!checked) }
             .padding(horizontal = 12.dp, vertical = 10.dp),

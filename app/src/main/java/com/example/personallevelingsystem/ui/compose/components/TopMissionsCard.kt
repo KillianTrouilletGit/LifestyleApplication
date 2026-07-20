@@ -19,18 +19,20 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.personallevelingsystem.model.Mission
 import com.example.personallevelingsystem.model.MissionCategory
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.AlertOrange
+import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
+import com.example.personallevelingsystem.ui.compose.theme.CalmBlue
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.GlassSurface
 import com.example.personallevelingsystem.ui.compose.theme.HologramText
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
-import com.example.personallevelingsystem.ui.compose.theme.RubyRed
 import com.example.personallevelingsystem.ui.compose.theme.TelemetryGreen
 
 /**
@@ -51,18 +53,15 @@ fun TopMissionsCard(
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .border(
-                1.5.dp,
-                Brush.linearGradient(listOf(CrimsonRed.copy(alpha = 0.5f), RubyRed.copy(alpha = 0.2f))),
-                RoundedCornerShape(12.dp)
-            )
+            .background(GlassSurface, RoundedCornerShape(16.dp))
+            .border(1.dp, BorderSubtle, RoundedCornerShape(16.dp))
             .clickable(onClick = onOpenMissions)
-            .padding(14.dp)
+            .padding(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
                 text = "TODAY'S OPS",
-                color = PrimaryAccent,
+                color = AccentViolet,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.5.sp,
                 fontWeight = FontWeight.Bold,
@@ -140,9 +139,9 @@ private fun MissionRow(mission: Mission) {
 
 private fun categoryColor(category: MissionCategory): Color = when (category) {
     MissionCategory.BODY -> CrimsonRed
-    MissionCategory.MIND -> Color(0xFFB388FF)
+    MissionCategory.MIND -> AccentViolet
     MissionCategory.NUTRITION -> TelemetryGreen
-    MissionCategory.RECOVERY -> Color(0xFF40C4FF)
+    MissionCategory.RECOVERY -> CalmBlue
     MissionCategory.DISCIPLINE -> AlertOrange
     MissionCategory.PROGRESS -> Color(0xFFE6E6E6)
 }

@@ -15,7 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
-import com.example.personallevelingsystem.ui.compose.theme.RubyRed
+import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
+import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
+import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 import kotlinx.coroutines.delay
 
 @Composable
@@ -42,7 +44,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black),
+            .background(SpaceBlack),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -61,9 +63,9 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             
             Box(
                 modifier = Modifier
-                    .height(2.dp)
-                    .fillMaxWidth(0.6f)
-                    .background(RubyRed.copy(alpha = 0.5f))
+                    .height(3.dp)
+                    .fillMaxWidth(0.4f)
+                    .background(PrimaryGradient)
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -77,7 +79,7 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
                     Text(
                         text = log,
                         style = MaterialTheme.typography.labelSmall,
-                        color = if (index == step - 1) PrimaryAccent else Color.Gray,
+                        color = if (index == step - 1) PrimaryAccent else TextSecondary,
                         modifier = Modifier.padding(vertical = 2.dp),
                         fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
                     )

@@ -19,20 +19,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.personallevelingsystem.model.Session
+import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.model.Program
+import com.example.personallevelingsystem.model.ProgramWithSessions
+import com.example.personallevelingsystem.model.SessionWithExercises
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
 import com.example.personallevelingsystem.ui.compose.theme.PlacementSpring
+import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SelectSessionScreen(
-    sessions: List<Session>, // Will come from ViewModel
+    programs: List<ProgramWithSessions>, // Will come from ViewModel
     onSessionClick: (Long) -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -51,12 +56,23 @@ fun SelectSessionScreen(
             verticalArrangement = Arrangement.spacedBy(12.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            items(items = sessions, key = { it.id }) { session ->
-                SessionItem(
-                    session = session,
-                    onClick = { onSessionClick(session.id) },
-                    modifier = Modifier.animateItemPlacement(PlacementSpring)
-                )
+            programs.filter { it.sessions.isNotEmpty() }.forEach { programWithSessions ->
+                item(key = "program_${programWithSessions.program.id}") {
+                    ProgramSectionHeader(
+                        name = programWithSessions.program.name,
+                        sessionCount = programWithSessions.sessions.size
+                    )
+                }
+                items(
+                    items = programWithSessions.sessions,
+                    key = { "session_${it.session.id}" }
+                ) { sessionWithExercises ->
+                    SessionItem(
+                        sessionWithExercises = sessionWithExercises,
+                        onClick = { onSessionClick(sessionWithExercises.session.id) },
+                        modifier = Modifier.animateItemPlacement(PlacementSpring)
+                    )
+                }
             }
         }
 
@@ -69,8 +85,31 @@ fun SelectSessionScreen(
 }
 
 @Composable
+private fun ProgramSectionHeader(name: String, sessionCount: Int) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 2.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = name.uppercase(),
+            style = MaterialTheme.typography.labelMedium,
+            color = AccentViolet,
+            letterSpacing = 1.5.sp,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = "$sessionCount SESSIONS",
+            style = MaterialTheme.typography.labelSmall,
+            color = TextSecondary
+        )
+    }
+}
+
+@Composable
 fun SessionItem(
-    session: Session,
+    sessionWithExercises: SessionWithExercises,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -84,13 +123,13 @@ fun SessionItem(
         ) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = session.name,
+                    text = sessionWithExercises.session.name,
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "ID: ${session.id}",
+                    text = "${sessionWithExercises.exercises.size} exercises",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -109,9 +148,11 @@ fun SessionItem(
 fun SelectSessionScreenPreview() {
     PersonalLevelingSystemTheme {
         SelectSessionScreen(
-            sessions = listOf(
-                Session(id = 1, name = "Upper Body Power", programId = 1),
-                Session(id = 2, name = "Lower Body Hypertrophy", programId = 1)
+            programs = listOf(
+                ProgramWithSessions(
+                    program = Program(id = 1, name = "Spartan Protocol"),
+                    sessions = emptyList()
+                )
             ),
             onSessionClick = {},
             onBackClick = {}

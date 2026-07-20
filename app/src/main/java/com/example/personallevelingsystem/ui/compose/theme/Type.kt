@@ -2,14 +2,14 @@ package com.example.personallevelingsystem.ui.compose.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.personallevelingsystem.R
 
-val DataFont = FontFamily.Monospace
+// Sans-serif body for readability; monospace reserved for terminal-style moments
+val DataFont = FontFamily.SansSerif
 val HeaderFont = FontFamily.SansSerif
+val MonoFont = FontFamily.Monospace
 
 val SciFiTypography = Typography(
     displayLarge = TextStyle(
@@ -24,7 +24,7 @@ val SciFiTypography = Typography(
         fontWeight = FontWeight.Bold,
         fontSize = 45.sp,
         lineHeight = 52.sp,
-        letterSpacing = 0.sp
+        letterSpacing = (-0.25).sp
     ),
     titleLarge = TextStyle(
         fontFamily = HeaderFont,
@@ -38,14 +38,14 @@ val SciFiTypography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 0.15.sp
     ),
     bodyMedium = TextStyle(
         fontFamily = DataFont,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.25.sp
+        letterSpacing = 0.1.sp
     ),
     labelLarge = TextStyle(
         fontFamily = DataFont,
@@ -54,11 +54,11 @@ val SciFiTypography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.1.sp
     ),
-    labelMedium = TextStyle( // For HUD labels like "DAILY INTAKE"
+    labelMedium = TextStyle( // Overline labels like "DAILY INTAKE"
         fontFamily = DataFont,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
+        letterSpacing = 1.sp
     )
 )
