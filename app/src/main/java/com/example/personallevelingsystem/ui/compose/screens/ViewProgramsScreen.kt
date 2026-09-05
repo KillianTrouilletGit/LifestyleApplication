@@ -57,7 +57,6 @@ import com.example.personallevelingsystem.model.Program
 import com.example.personallevelingsystem.model.ProgramWithSessions
 import com.example.personallevelingsystem.model.SessionWithExercises
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
@@ -101,7 +100,7 @@ fun ViewProgramsScreen(
                         onExerciseClick(exercise)
                     },
                     onDelete = { onDeleteProgram(programWithSessions) },
-                    modifier = Modifier.animateItemPlacement(PlacementSpring)
+                    modifier = Modifier.animateItem(placementSpec = PlacementSpring)
                 )
             }
         }

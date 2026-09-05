@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
@@ -199,7 +200,8 @@ fun ArcStat(
     label: String,
     value: String,
     modifier: Modifier = Modifier,
-    valueColor: Color = HologramText
+    valueColor: Color = HologramText,
+    valueStyle: TextStyle = MaterialTheme.typography.headlineMedium.tabular
 ) {
     Column(modifier = modifier) {
         Text(
@@ -210,8 +212,10 @@ fun ArcStat(
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.headlineMedium.tabular,
-            color = valueColor
+            style = valueStyle,
+            color = valueColor,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }

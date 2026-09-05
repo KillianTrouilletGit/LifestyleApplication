@@ -1,6 +1,5 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,8 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.WaterDrop
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,18 +21,26 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.personallevelingsystem.ui.compose.components.JuicyButton
+import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.ui.compose.components.ArcButton
+import com.example.personallevelingsystem.ui.compose.components.ArcCard
+import com.example.personallevelingsystem.ui.compose.components.ArcProgressBar
+import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
 import com.example.personallevelingsystem.ui.compose.components.JuicyInput
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
-import com.example.personallevelingsystem.ui.compose.theme.CalmBlue
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import com.example.personallevelingsystem.ui.compose.theme.SignalCyan
 import com.example.personallevelingsystem.ui.compose.theme.TelemetryGreen
+import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
+import com.example.personallevelingsystem.ui.compose.theme.tabular
+import com.example.personallevelingsystem.util.hapticConfirm
 import com.example.personallevelingsystem.viewmodel.HealthViewModel
 
 /** Quick-add presets, in ml — same steps as the notification actions. */
@@ -43,7 +52,6 @@ fun WaterScreen(viewModel: HealthViewModel) {
     val targetMl by viewModel.waterTargetMl.observeAsState(initial = 2500f)
     var inputAmount by remember { mutableStateOf("") }
 
-    // Refresh data on enter
     LaunchedEffect(Unit) {
         viewModel.calculateTotalWaterForToday()
     }
@@ -58,7 +66,7 @@ fun WaterScreen(viewModel: HealthViewModel) {
             val amount = inputAmount.replace(',', '.').toFloatOrNull()
             if (amount != null && amount > 0) {
                 viewModel.saveWater(amount)
-                inputAmount = "" // Reset input
+                inputAmount = ""
             }
         }
     )
@@ -73,83 +81,89 @@ fun WaterContent(
     onQuickAdd: (Float) -> Unit,
     onSave: () -> Unit
 ) {
+    val view = LocalView.current
     val ratio = if (targetMl > 0f) (totalWaterMl / targetMl).coerceIn(0f, 1f) else 0f
     val quotaMet = targetMl > 0f && totalWaterMl >= targetMl
+    val tint = if (quotaMet) TelemetryGreen else SignalCyan
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(DesignSystem.Padding)
+            .verticalScroll(rememberScrollState())
+            .padding(DesignSystem.Padding),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Display current status
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            verticalArrangement = Arrangement.Center
-        ) {
-             Text(
-                text = "DAILY INTAKE",
-                style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.secondary
-            )
+        ArcCard(modifier = Modifier.fillMaxWidth(), accent = tint) {
             Text(
-                text = "%.2f L".format(totalWaterMl / 1000f),
-                style = MaterialTheme.typography.displayMedium,
-                color = if (quotaMet) TelemetryGreen else MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            LinearProgressIndicator(
-                progress = { ratio },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = if (quotaMet) TelemetryGreen else CalmBlue,
-                trackColor = CalmBlue.copy(alpha = 0.15f)
+                text = "TODAY",
+                style = MaterialTheme.typography.labelMedium,
+                color = AccentViolet,
+                letterSpacing = 1.5.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
+            Row(verticalAlignment = Alignment.Bottom) {
+                Text(
+                    text = "%.2f L".format(totalWaterMl / 1000f),
+                    style = MaterialTheme.typography.displayMedium.tabular,
+                    color = tint
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                Text(
+                    text = "target %.1f L".format(targetMl / 1000f),
+                    style = MaterialTheme.typography.labelSmall.tabular,
+                    color = TextSecondary,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            ArcProgressBar(progress = ratio, color = tint, height = 6.dp)
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = "${totalWaterMl.toInt()} / ${targetMl.toInt()} ml" +
-                        if (quotaMet) " · QUOTA MET" else "",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                    if (quotaMet) " · quota met" else "",
+                style = MaterialTheme.typography.labelSmall.tabular,
+                color = TextSecondary
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
+        ArcSectionLabel(text = "Quick add")
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             QUICK_ADD_ML.forEach { ml ->
-                JuicyButton(
-                    text = "+${ml.toInt()} ML",
-                    onClick = { onQuickAdd(ml) },
+                ArcButton(
+                    text = "+${ml.toInt()} ml",
+                    onClick = {
+                        view.hapticConfirm()
+                        onQuickAdd(ml)
+                    },
+                    compact = true,
                     modifier = Modifier.weight(1f)
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
+        ArcSectionLabel(text = "Custom amount")
         JuicyInput(
             value = inputAmount,
             onValueChange = onInputChange,
-            placeholder = "AMOUNT (ML)",
+            placeholder = "Amount (ml)",
             keyboardType = KeyboardType.Number,
             modifier = Modifier.fillMaxWidth()
         )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        JuicyButton(
-            text = "LOG INTAKE",
-            onClick = onSave,
+        ArcButton(
+            text = "Log intake",
+            icon = Icons.Rounded.WaterDrop,
+            showChevron = false,
+            enabled = inputAmount.isNotBlank(),
+            onClick = {
+                view.hapticConfirm()
+                onSave()
+            },
             modifier = Modifier.fillMaxWidth()
         )
-
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0B0A10)
 @Composable
 fun WaterScreenPreview() {
     PersonalLevelingSystemTheme {

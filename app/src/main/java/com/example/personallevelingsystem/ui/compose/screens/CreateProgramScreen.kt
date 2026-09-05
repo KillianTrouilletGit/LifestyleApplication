@@ -32,7 +32,6 @@ import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.JuicyInput
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
 import com.example.personallevelingsystem.viewmodel.TrainingViewModel

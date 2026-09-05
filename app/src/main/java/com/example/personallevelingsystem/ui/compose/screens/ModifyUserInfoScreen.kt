@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.example.personallevelingsystem.model.User
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyInput
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
 import com.example.personallevelingsystem.viewmodel.UserViewModel

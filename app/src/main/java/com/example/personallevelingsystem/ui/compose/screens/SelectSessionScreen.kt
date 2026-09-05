@@ -25,7 +25,6 @@ import com.example.personallevelingsystem.model.ProgramWithSessions
 import com.example.personallevelingsystem.model.SessionWithExercises
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
@@ -65,7 +64,7 @@ fun SelectSessionScreen(
                     SessionItem(
                         sessionWithExercises = sessionWithExercises,
                         onClick = { onSessionClick(sessionWithExercises.session.id) },
-                        modifier = Modifier.animateItemPlacement(PlacementSpring)
+                        modifier = Modifier.animateItem(placementSpec = PlacementSpring)
                     )
                 }
             }

@@ -1,43 +1,45 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
-import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
 import com.example.personallevelingsystem.ui.compose.theme.SpaceBlack
-import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 import kotlinx.coroutines.delay
 
+/** ~1 s loading cover: the wordmark fades in while a thin gradient line fills. */
 @Composable
 fun SplashScreen(onAnimationFinished: () -> Unit) {
-    var step by remember { mutableIntStateOf(0) }
-    
-    val logs = listOf(
-        "> INITIALIZING BOOT SEQUENCE...",
-        "> [OK] MOUNTING CORE MODULES",
-        "> [OK] NEURAL INTERFACE SYNCED",
-        "> [OK] CALIBRATING BIOMETRICS",
-        "> SYSTEM ONLINE. WELCOME OPERATOR."
-    )
+    val progress = remember { Animatable(0f) }
 
     LaunchedEffect(Unit) {
-        for (i in logs.indices) {
-            delay(500)
-            step = i + 1
-        }
-        delay(800)
+        progress.animateTo(1f, tween(850, easing = FastOutSlowInEasing))
+        delay(120)
         onAnimationFinished()
     }
 
@@ -47,43 +49,37 @@ fun SplashScreen(onAnimationFinished: () -> Unit) {
             .background(SpaceBlack),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
-        ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "OPERATOR OS",
-                style = MaterialTheme.typography.displayMedium,
-                color = CrimsonRed,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 4.sp
+                text = "ARC",
+                style = MaterialTheme.typography.displayLarge.copy(
+                    fontSize = 72.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    letterSpacing = 8.sp
+                ),
+                modifier = Modifier
+                    .graphicsLayer { alpha = (progress.value * 3f).coerceAtMost(0.99f) }
+                    .drawWithCache {
+                        onDrawWithContent {
+                            drawContent()
+                            drawRect(PrimaryGradient, blendMode = BlendMode.SrcIn)
+                        }
+                    }
             )
-            
-            Spacer(modifier = Modifier.height(8.dp))
-            
+            Spacer(modifier = Modifier.height(28.dp))
             Box(
                 modifier = Modifier
+                    .width(140.dp)
                     .height(3.dp)
-                    .fillMaxWidth(0.4f)
-                    .background(PrimaryGradient)
-            )
-            
-            Spacer(modifier = Modifier.height(24.dp))
-            
-            // Log sequence
-            Column(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                horizontalAlignment = Alignment.Start
+                    .clip(RoundedCornerShape(2.dp))
+                    .background(Color.White.copy(alpha = 0.08f))
             ) {
-                logs.take(step).forEachIndexed { index, log ->
-                    Text(
-                        text = log,
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (index == step - 1) PrimaryAccent else TextSecondary,
-                        modifier = Modifier.padding(vertical = 2.dp),
-                        fontFamily = androidx.compose.ui.text.font.FontFamily.Monospace
-                    )
-                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(progress.value)
+                        .fillMaxHeight()
+                        .background(PrimaryGradient)
+                )
             }
         }
     }
