@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -60,6 +61,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.model.Mission
 import com.example.personallevelingsystem.model.MissionCategory
 import com.example.personallevelingsystem.model.MissionDifficulty
@@ -72,6 +74,7 @@ import com.example.personallevelingsystem.ui.compose.components.ArcGhostButton
 import com.example.personallevelingsystem.ui.compose.components.ArcProgressBar
 import com.example.personallevelingsystem.ui.compose.components.ArcSegmentedTabs
 import com.example.personallevelingsystem.ui.compose.components.categoryColor
+import com.example.personallevelingsystem.ui.compose.components.label
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.AlertOrange
 import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
@@ -145,8 +148,8 @@ fun MissionsListContent(
     ) {
         ArcSegmentedTabs(
             options = listOf(
-                "Daily · $dailyDone/${dailyMissions.size}",
-                "Weekly · $weeklyDone/${weeklyMissions.size}"
+                stringResource(R.string.missions_daily_tab, dailyDone, dailyMissions.size),
+                stringResource(R.string.missions_weekly_tab, weeklyDone, weeklyMissions.size)
             ),
             selected = tab,
             onSelect = { tab = it },
@@ -221,7 +224,7 @@ private fun MissionList(
             item(key = "empty") {
                 ArcCard(modifier = Modifier.fillMaxWidth()) {
                     Text(
-                        text = "Nothing scheduled here.",
+                        text = stringResource(R.string.missions_empty),
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondary
                     )
@@ -287,7 +290,7 @@ private fun MissionCard(
                     Icon(Icons.Rounded.Check, contentDescription = null, tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "Complete",
+                        text = stringResource(R.string.missions_complete),
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.SemiBold,
                         color = Color.White
@@ -348,7 +351,7 @@ private fun MissionCard(
                     val displayXp = (mission.reward * multiplier).toInt()
                     val multSuffix = if (multiplier > 1f) " ×${"%.1f".format(multiplier)}" else ""
                     Text(
-                        text = "+$displayXp XP$multSuffix",
+                        text = stringResource(R.string.missions_xp_reward, displayXp, multSuffix),
                         style = MaterialTheme.typography.labelMedium.tabular,
                         color = CrimsonRed,
                         letterSpacing = 0.sp
@@ -380,9 +383,9 @@ private fun formatProgress(p: MissionProgress): String {
 
 @Composable
 private fun DifficultyPill(difficulty: MissionDifficulty) {
-    val (label, color) = when (difficulty) {
-        MissionDifficulty.HARD -> "HARD" to AlertOrange
-        MissionDifficulty.ELITE -> "ELITE" to CrimsonRed
+    val (labelRes, color) = when (difficulty) {
+        MissionDifficulty.HARD -> R.string.difficulty_hard to AlertOrange
+        MissionDifficulty.ELITE -> R.string.difficulty_elite to CrimsonRed
         MissionDifficulty.NORMAL -> return
     }
     Box(
@@ -391,7 +394,7 @@ private fun DifficultyPill(difficulty: MissionDifficulty) {
             .padding(horizontal = 6.dp, vertical = 2.dp)
     ) {
         Text(
-            text = label,
+            text = stringResource(labelRes).uppercase(),
             color = color,
             fontWeight = FontWeight.Bold,
             fontSize = 9.sp,
@@ -423,14 +426,14 @@ private fun SpecializationCard(categoryXp: Map<MissionCategory, Int>) {
     ArcCard(modifier = Modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "SPECIALIZATION",
+                text = stringResource(R.string.missions_specialization).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 color = AccentViolet,
                 letterSpacing = 1.5.sp,
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = "%,d XP".format(total),
+                text = stringResource(R.string.missions_xp_total, total),
                 style = MaterialTheme.typography.labelMedium.tabular,
                 color = HologramText
             )
@@ -447,7 +450,7 @@ private fun SpecializationCard(categoryXp: Map<MissionCategory, Int>) {
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = category.name.lowercase().replaceFirstChar { it.uppercase() },
+                    text = category.label(),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextSecondary,
                     modifier = Modifier.width(80.dp)
@@ -510,15 +513,15 @@ private fun MissionDetailSheet(
 
         Spacer(modifier = Modifier.height(16.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            StatChip("CATEGORY", mission.category.name)
-            if (streak >= 1) StatChip("STREAK", "🔥 $streak")
-            StatChip("XP", "+${mission.reward}")
+            StatChip(stringResource(R.string.missions_chip_category).uppercase(), mission.category.label().uppercase())
+            if (streak >= 1) StatChip(stringResource(R.string.missions_chip_streak).uppercase(), "🔥 $streak")
+            StatChip(stringResource(R.string.missions_chip_xp).uppercase(), "+${mission.reward}")
         }
 
         if (progress != null) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "PROGRESS",
+                text = stringResource(R.string.missions_progress).uppercase(),
                 color = AccentViolet,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.5.sp
@@ -536,7 +539,7 @@ private fun MissionDetailSheet(
         mission.tip?.let { tip ->
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "TIP",
+                text = stringResource(R.string.missions_tip).uppercase(),
                 color = AccentViolet,
                 style = MaterialTheme.typography.labelMedium,
                 letterSpacing = 1.5.sp
@@ -553,7 +556,7 @@ private fun MissionDetailSheet(
         val route = mission.deeplinkRoute
         if (!mission.isCompleted) {
             ArcButton(
-                text = "Mark complete",
+                text = stringResource(R.string.missions_mark_complete),
                 icon = Icons.Rounded.Check,
                 showChevron = false,
                 onClick = {
@@ -566,7 +569,7 @@ private fun MissionDetailSheet(
         }
         if (route != null) {
             ArcGhostButton(
-                text = "Open ${route.replace('_', ' ').replaceFirstChar { it.uppercase() }}",
+                text = stringResource(R.string.missions_open, route.replace('_', ' ')),
                 onClick = { onDeeplink(route) },
                 modifier = Modifier.fillMaxWidth()
             )
@@ -650,7 +653,7 @@ private fun StreakCelebrationOverlay(streak: Int?, onFinished: () -> Unit) {
                     color = AlertOrange
                 )
                 Text(
-                    text = "DAY STREAK",
+                    text = stringResource(R.string.missions_day_streak).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = AccentViolet,
                     letterSpacing = 2.sp

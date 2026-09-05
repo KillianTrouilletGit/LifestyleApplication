@@ -22,6 +22,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -86,14 +87,14 @@ fun SleepContent(
     ) {
         ArcCard(modifier = Modifier.fillMaxWidth(), accent = DeepViolet) {
             Text(
-                text = "LAST NIGHT",
+                text = stringResource(R.string.sleep_last_night).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 color = AccentViolet,
                 letterSpacing = 1.5.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Tap to pick how long you slept (hh:mm).",
+                text = stringResource(R.string.sleep_hint),
                 style = MaterialTheme.typography.bodySmall,
                 color = TextSecondary
             )
@@ -115,7 +116,7 @@ fun SleepContent(
         }
 
         ArcButton(
-            text = "Log rest cycle",
+            text = stringResource(R.string.sleep_log),
             icon = Icons.Rounded.Bedtime,
             showChevron = false,
             enabled = duration.isNotEmpty(),

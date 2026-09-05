@@ -24,10 +24,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcCard
 import com.example.personallevelingsystem.ui.compose.components.ArcProgressBar
@@ -95,7 +97,7 @@ fun WaterContent(
     ) {
         ArcCard(modifier = Modifier.fillMaxWidth(), accent = tint) {
             Text(
-                text = "TODAY",
+                text = stringResource(R.string.water_today).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 color = AccentViolet,
                 letterSpacing = 1.5.sp
@@ -103,13 +105,13 @@ fun WaterContent(
             Spacer(modifier = Modifier.height(4.dp))
             Row(verticalAlignment = Alignment.Bottom) {
                 Text(
-                    text = "%.2f L".format(totalWaterMl / 1000f),
+                    text = stringResource(R.string.water_liters, totalWaterMl / 1000f),
                     style = MaterialTheme.typography.displayMedium.tabular,
                     color = tint
                 )
                 Spacer(modifier = Modifier.weight(1f))
                 Text(
-                    text = "target %.1f L".format(targetMl / 1000f),
+                    text = stringResource(R.string.water_target, targetMl / 1000f),
                     style = MaterialTheme.typography.labelSmall.tabular,
                     color = TextSecondary,
                     modifier = Modifier.padding(bottom = 10.dp)
@@ -119,18 +121,18 @@ fun WaterContent(
             ArcProgressBar(progress = ratio, color = tint, height = 6.dp)
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                text = "${totalWaterMl.toInt()} / ${targetMl.toInt()} ml" +
-                    if (quotaMet) " · quota met" else "",
+                text = stringResource(R.string.water_progress, totalWaterMl.toInt(), targetMl.toInt()) +
+                    if (quotaMet) " " + stringResource(R.string.water_quota_met) else "",
                 style = MaterialTheme.typography.labelSmall.tabular,
                 color = TextSecondary
             )
         }
 
-        ArcSectionLabel(text = "Quick add")
+        ArcSectionLabel(text = stringResource(R.string.water_quick_add))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             QUICK_ADD_ML.forEach { ml ->
                 ArcButton(
-                    text = "+${ml.toInt()} ml",
+                    text = stringResource(R.string.water_add_ml, ml.toInt()),
                     onClick = {
                         view.hapticConfirm()
                         onQuickAdd(ml)
@@ -141,16 +143,16 @@ fun WaterContent(
             }
         }
 
-        ArcSectionLabel(text = "Custom amount")
+        ArcSectionLabel(text = stringResource(R.string.water_custom))
         JuicyInput(
             value = inputAmount,
             onValueChange = onInputChange,
-            placeholder = "Amount (ml)",
+            placeholder = stringResource(R.string.water_amount_hint),
             keyboardType = KeyboardType.Number,
             modifier = Modifier.fillMaxWidth()
         )
         ArcButton(
-            text = "Log intake",
+            text = stringResource(R.string.water_log),
             icon = Icons.Rounded.WaterDrop,
             showChevron = false,
             enabled = inputAmount.isNotBlank(),

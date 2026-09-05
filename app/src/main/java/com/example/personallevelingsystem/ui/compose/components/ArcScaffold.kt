@@ -1,5 +1,6 @@
 package com.example.personallevelingsystem.ui.compose.components
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -40,8 +41,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
@@ -50,47 +53,47 @@ import com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
 import com.example.personallevelingsystem.ui.compose.theme.SurfaceElevated
 import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
 
-enum class ArcTab(val route: String, val label: String, val icon: ImageVector) {
-    Home("main", "Home", Icons.Rounded.Home),
-    Missions("missions", "Missions", Icons.Rounded.Flag),
-    Training("training", "Training", Icons.Rounded.FitnessCenter),
-    Body("body", "Body", Icons.Rounded.MonitorHeart)
+enum class ArcTab(val route: String, @StringRes val labelRes: Int, val icon: ImageVector) {
+    Home("main", R.string.tab_home, Icons.Rounded.Home),
+    Missions("missions", R.string.tab_missions, Icons.Rounded.Flag),
+    Training("training", R.string.tab_training, Icons.Rounded.FitnessCenter),
+    Body("body", R.string.tab_body, Icons.Rounded.MonitorHeart)
 }
 
-data class ChromeAction(val icon: ImageVector, val label: String, val route: String)
+data class ChromeAction(val icon: ImageVector, @StringRes val labelRes: Int, val route: String)
 
 /** What the shell draws around a destination: title, tab membership, extra top-bar actions. */
 data class ScreenChrome(
-    val title: String,
-    val overline: String? = null,
+    @StringRes val titleRes: Int,
+    @StringRes val overlineRes: Int? = null,
     val tab: ArcTab? = null,
     val showBars: Boolean = true,
     val actions: List<ChromeAction> = emptyList()
 )
 
 val ScreenChromes: Map<String, ScreenChrome> = mapOf(
-    "splash" to ScreenChrome(title = "", showBars = false),
-    "main" to ScreenChrome("Dashboard", "Overview", ArcTab.Home),
+    "splash" to ScreenChrome(titleRes = R.string.app_name, showBars = false),
+    "main" to ScreenChrome(R.string.chrome_dashboard, R.string.chrome_dashboard_overline, ArcTab.Home),
     "missions" to ScreenChrome(
-        "Missions", "Objectives", ArcTab.Missions,
-        actions = listOf(ChromeAction(Icons.Rounded.CalendarMonth, "Planning", "planning"))
+        R.string.tab_missions, R.string.chrome_missions_overline, ArcTab.Missions,
+        actions = listOf(ChromeAction(Icons.Rounded.CalendarMonth, R.string.action_planning, "planning"))
     ),
-    "training" to ScreenChrome("Training", "Protocol", ArcTab.Training),
-    "body" to ScreenChrome("Body", "Recovery & fuel", ArcTab.Body),
-    "profile" to ScreenChrome("Profile", "Identity"),
-    "modify_user" to ScreenChrome("Update info", "Credentials"),
-    "settings" to ScreenChrome("Settings", "Reminders"),
-    "style_lab" to ScreenChrome("Style Lab", "Design system"),
-    "planning" to ScreenChrome("Planning", "Google Calendar"),
-    "select_session" to ScreenChrome("Select a session", "Programs"),
-    "training_session/{sessionId}" to ScreenChrome("Live session", "Training"),
-    "view_programs" to ScreenChrome("Program archive", "Database"),
-    "create_program" to ScreenChrome("Create program", "Architect"),
-    "flexibility" to ScreenChrome("Flexibility", "Mobility"),
-    "endurance" to ScreenChrome("Endurance", "Stamina"),
-    "water" to ScreenChrome("Hydration", "H2O levels"),
-    "sleep" to ScreenChrome("Sleep", "Recovery"),
-    "nutrition" to ScreenChrome("Nutrition", "Fuel")
+    "training" to ScreenChrome(R.string.tab_training, R.string.chrome_training_overline, ArcTab.Training),
+    "body" to ScreenChrome(R.string.tab_body, R.string.chrome_body_overline, ArcTab.Body),
+    "profile" to ScreenChrome(R.string.chrome_profile, R.string.chrome_profile_overline),
+    "modify_user" to ScreenChrome(R.string.chrome_modify_user, R.string.chrome_modify_user_overline),
+    "settings" to ScreenChrome(R.string.chrome_settings, R.string.chrome_settings_overline),
+    "style_lab" to ScreenChrome(R.string.chrome_style_lab, R.string.chrome_style_lab_overline),
+    "planning" to ScreenChrome(R.string.chrome_planning, R.string.chrome_planning_overline),
+    "select_session" to ScreenChrome(R.string.chrome_select_session, R.string.chrome_select_session_overline),
+    "training_session/{sessionId}" to ScreenChrome(R.string.chrome_live_session, R.string.chrome_live_session_overline),
+    "view_programs" to ScreenChrome(R.string.chrome_view_programs, R.string.chrome_view_programs_overline),
+    "create_program" to ScreenChrome(R.string.chrome_create_program, R.string.chrome_create_program_overline),
+    "flexibility" to ScreenChrome(R.string.chrome_flexibility, R.string.chrome_flexibility_overline),
+    "endurance" to ScreenChrome(R.string.chrome_endurance, R.string.chrome_endurance_overline),
+    "water" to ScreenChrome(R.string.chrome_water, R.string.chrome_water_overline),
+    "sleep" to ScreenChrome(R.string.chrome_sleep, R.string.chrome_sleep_overline),
+    "nutrition" to ScreenChrome(R.string.chrome_nutrition, R.string.chrome_nutrition_overline)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -105,16 +108,16 @@ fun ArcTopBar(
     TopAppBar(
         title = {
             Column {
-                if (chrome.overline != null) {
+                if (chrome.overlineRes != null) {
                     Text(
-                        text = chrome.overline.uppercase(),
+                        text = stringResource(chrome.overlineRes).uppercase(),
                         style = MaterialTheme.typography.labelMedium,
                         color = AccentViolet,
                         letterSpacing = 1.5.sp
                     )
                 }
                 Text(
-                    text = chrome.title,
+                    text = stringResource(chrome.titleRes),
                     style = MaterialTheme.typography.titleLarge,
                     color = HologramText
                 )
@@ -125,7 +128,7 @@ fun ArcTopBar(
                 IconButton(onClick = onBack) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = stringResource(R.string.action_back),
                         tint = HologramText
                     )
                 }
@@ -134,7 +137,7 @@ fun ArcTopBar(
         actions = {
             chrome.actions.forEach { action ->
                 IconButton(onClick = { onAction(action) }) {
-                    Icon(action.icon, contentDescription = action.label, tint = HologramText)
+                    Icon(action.icon, contentDescription = stringResource(action.labelRes), tint = HologramText)
                 }
             }
             if (chrome.tab != null) {
@@ -163,19 +166,19 @@ private fun AvatarMenu(onProfile: () -> Unit, onSettings: () -> Unit) {
         ) {
             Icon(
                 imageVector = Icons.Rounded.Person,
-                contentDescription = "Profile & settings",
+                contentDescription = stringResource(R.string.menu_avatar_cd),
                 tint = Color.White,
                 modifier = Modifier.size(20.dp)
             )
         }
         DropdownMenu(expanded = open, onDismissRequest = { open = false }) {
             DropdownMenuItem(
-                text = { Text("Profile") },
+                text = { Text(stringResource(R.string.menu_profile)) },
                 leadingIcon = { Icon(Icons.Rounded.Person, contentDescription = null) },
                 onClick = { open = false; onProfile() }
             )
             DropdownMenuItem(
-                text = { Text("Settings") },
+                text = { Text(stringResource(R.string.menu_settings)) },
                 leadingIcon = { Icon(Icons.Rounded.Settings, contentDescription = null) },
                 onClick = { open = false; onSettings() }
             )
@@ -192,13 +195,14 @@ fun ArcBottomBar(current: ArcTab?, onSelect: (ArcTab) -> Unit) {
             tonalElevation = 0.dp
         ) {
             ArcTab.entries.forEach { tab ->
+                val label = stringResource(tab.labelRes)
                 NavigationBarItem(
                     selected = tab == current,
                     onClick = { onSelect(tab) },
-                    icon = { Icon(tab.icon, contentDescription = tab.label) },
+                    icon = { Icon(tab.icon, contentDescription = label) },
                     label = {
                         Text(
-                            text = tab.label,
+                            text = label,
                             style = MaterialTheme.typography.labelMedium,
                             letterSpacing = 0.sp
                         )

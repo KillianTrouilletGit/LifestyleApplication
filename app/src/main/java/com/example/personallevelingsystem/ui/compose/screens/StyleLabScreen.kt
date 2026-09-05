@@ -18,7 +18,6 @@ import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Tune
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
@@ -29,11 +28,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcCard
 import com.example.personallevelingsystem.ui.compose.components.ArcGhostButton
 import com.example.personallevelingsystem.ui.compose.components.ArcListRow
+import com.example.personallevelingsystem.ui.compose.components.ArcProgressBar
 import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
 import com.example.personallevelingsystem.ui.compose.components.ArcStat
 import com.example.personallevelingsystem.ui.compose.theme.AlertOrange
@@ -62,12 +64,12 @@ fun StyleLabScreen() {
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         Text(
-            text = "Tap a style to make it the app-wide primary button. It applies instantly and is remembered.",
+            text = stringResource(R.string.stylelab_intro),
             style = MaterialTheme.typography.bodyMedium,
             color = TextSecondary
         )
 
-        ArcSectionLabel(text = "Primary button")
+        ArcSectionLabel(text = stringResource(R.string.stylelab_primary))
         ButtonStyle.entries.forEach { style ->
             val selected = style == current
             ArcCard(
@@ -77,8 +79,8 @@ fun StyleLabScreen() {
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(style.label, style = MaterialTheme.typography.titleMedium, color = HologramText)
-                        Text(style.blurb, style = MaterialTheme.typography.bodySmall, color = TextSecondary)
+                        Text(stringResource(style.labelRes), style = MaterialTheme.typography.titleMedium, color = HologramText)
+                        Text(stringResource(style.blurbRes), style = MaterialTheme.typography.bodySmall, color = TextSecondary)
                     }
                     RadioButton(
                         selected = selected,
@@ -91,8 +93,8 @@ fun StyleLabScreen() {
                 }
                 Spacer(modifier = Modifier.height(14.dp))
                 ArcButton(
-                    text = "Start a session",
-                    subtitle = "Push day · 5 exercises",
+                    text = stringResource(R.string.train_start_session),
+                    subtitle = stringResource(R.string.stylelab_sample_start_sub),
                     icon = Icons.Rounded.PlayArrow,
                     onClick = {},
                     style = style,
@@ -101,72 +103,65 @@ fun StyleLabScreen() {
                 Spacer(modifier = Modifier.height(10.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     ArcButton(
-                        text = "+250 ml", onClick = {}, compact = true, style = style,
+                        text = stringResource(R.string.dash_add_250), onClick = {}, compact = true, style = style,
                         modifier = Modifier.weight(1f)
                     )
                     ArcButton(
-                        text = "Log", onClick = {}, compact = true, style = style,
+                        text = stringResource(R.string.stylelab_sample_log), onClick = {}, compact = true, style = style,
                         icon = Icons.Rounded.Check, showChevron = false,
                         modifier = Modifier.weight(1f)
                     )
                     ArcButton(
-                        text = "Off", onClick = {}, compact = true, style = style, enabled = false,
+                        text = stringResource(R.string.stylelab_sample_off), onClick = {}, compact = true, style = style,
+                        enabled = false,
                         modifier = Modifier.weight(1f)
                     )
                 }
             }
         }
 
-        ArcSectionLabel(text = "Secondary")
+        ArcSectionLabel(text = stringResource(R.string.stylelab_secondary))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ArcGhostButton(
-                text = "Abort session", onClick = {}, tint = CrimsonRed, icon = Icons.Rounded.Close,
+                text = stringResource(R.string.common_abort), onClick = {}, tint = CrimsonRed, icon = Icons.Rounded.Close,
                 modifier = Modifier.weight(1f)
             )
-            ArcGhostButton(text = "Skip", onClick = {}, modifier = Modifier.weight(1f))
+            ArcGhostButton(text = stringResource(R.string.stylelab_sample_skip), onClick = {}, modifier = Modifier.weight(1f))
         }
 
-        ArcSectionLabel(text = "Card & stats")
+        ArcSectionLabel(text = stringResource(R.string.stylelab_card_stats))
         ArcCard(modifier = Modifier.fillMaxWidth()) {
             Row {
-                ArcStat(label = "Level", value = "12", modifier = Modifier.weight(1f))
-                ArcStat(label = "XP", value = "12,480", modifier = Modifier.weight(1f), valueColor = SignalCyan)
-                ArcStat(label = "Streak", value = "9 d", modifier = Modifier.weight(1f), valueColor = AlertOrange)
+                ArcStat(label = stringResource(R.string.dash_level), value = "12", modifier = Modifier.weight(1f))
+                ArcStat(label = stringResource(R.string.dash_xp), value = "12,480", modifier = Modifier.weight(1f), valueColor = SignalCyan)
+                ArcStat(label = stringResource(R.string.missions_chip_streak), value = "9 d", modifier = Modifier.weight(1f), valueColor = AlertOrange)
             }
             Spacer(modifier = Modifier.height(14.dp))
-            LinearProgressIndicator(
-                progress = { 0.62f },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(3.dp)),
-                color = CrimsonRed,
-                trackColor = Color.White.copy(alpha = 0.08f)
-            )
+            ArcProgressBar(progress = 0.62f, color = CrimsonRed, trackColor = Color.White.copy(alpha = 0.08f), height = 6.dp)
         }
         ArcListRow(
-            title = "List row",
-            subtitle = "Icon tile, title, subtitle, chevron",
+            title = stringResource(R.string.stylelab_list_row),
+            subtitle = stringResource(R.string.stylelab_list_row_sub),
             icon = Icons.Rounded.Tune,
             onClick = {}
         )
 
-        ArcSectionLabel(text = "Palette")
+        ArcSectionLabel(text = stringResource(R.string.stylelab_palette))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            Swatch(CrimsonRed, "Red")
-            Swatch(DeepViolet, "Violet")
-            Swatch(SignalCyan, "Cyan")
-            Swatch(AlertOrange, "Amber")
-            Swatch(TelemetryGreen, "Green")
+            Swatch(CrimsonRed, stringResource(R.string.color_red))
+            Swatch(DeepViolet, stringResource(R.string.color_violet))
+            Swatch(SignalCyan, stringResource(R.string.color_cyan))
+            Swatch(AlertOrange, stringResource(R.string.color_amber))
+            Swatch(TelemetryGreen, stringResource(R.string.color_green))
         }
 
-        ArcSectionLabel(text = "Type")
+        ArcSectionLabel(text = stringResource(R.string.stylelab_type))
         ArcCard(modifier = Modifier.fillMaxWidth()) {
-            Text("Sora display", style = MaterialTheme.typography.displaySmall, color = HologramText)
-            Text("Sora title", style = MaterialTheme.typography.titleLarge, color = HologramText)
+            Text(stringResource(R.string.stylelab_type_display), style = MaterialTheme.typography.displaySmall, color = HologramText)
+            Text(stringResource(R.string.stylelab_type_title), style = MaterialTheme.typography.titleLarge, color = HologramText)
             Spacer(modifier = Modifier.height(6.dp))
             Text(
-                "Inter body — the quick brown fox jumps over the lazy dog.",
+                stringResource(R.string.stylelab_type_body),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary
             )

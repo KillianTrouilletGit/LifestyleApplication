@@ -16,8 +16,10 @@ import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcListRow
 import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
@@ -40,8 +42,8 @@ fun TrainingScreen(
             .padding(DesignSystem.Padding)
     ) {
         ArcButton(
-            text = "Start a session",
-            subtitle = "Pick a program session and go",
+            text = stringResource(R.string.train_start_session),
+            subtitle = stringResource(R.string.train_start_session_sub),
             icon = Icons.Rounded.PlayArrow,
             onClick = onStartProgramClick,
             modifier = Modifier.fillMaxWidth()
@@ -49,35 +51,35 @@ fun TrainingScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ArcSectionLabel(text = "Programs")
+        ArcSectionLabel(text = stringResource(R.string.train_programs))
         ArcListRow(
-            title = "Program archive",
-            subtitle = "Browse sessions, inspect exercise history",
+            title = stringResource(R.string.train_archive),
+            subtitle = stringResource(R.string.train_archive_sub),
             icon = Icons.AutoMirrored.Rounded.ListAlt,
             onClick = onViewProgramsClick
         )
         Spacer(modifier = Modifier.height(10.dp))
         ArcListRow(
-            title = "Create a program",
-            subtitle = "Sessions, exercises and set counts",
+            title = stringResource(R.string.train_create),
+            subtitle = stringResource(R.string.train_create_sub),
             icon = Icons.Rounded.Add,
             onClick = onCreateProgramClick
         )
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        ArcSectionLabel(text = "Conditioning")
+        ArcSectionLabel(text = stringResource(R.string.train_conditioning))
         ArcListRow(
-            title = "Flexibility",
-            subtitle = "Timed mobility block",
+            title = stringResource(R.string.chrome_flexibility),
+            subtitle = stringResource(R.string.train_flex_sub),
             icon = Icons.Rounded.SelfImprovement,
             tint = SignalCyan,
             onClick = onStartFlexibilityClick
         )
         Spacer(modifier = Modifier.height(10.dp))
         ArcListRow(
-            title = "Endurance",
-            subtitle = "Timed run with distance",
+            title = stringResource(R.string.chrome_endurance),
+            subtitle = stringResource(R.string.train_endurance_sub),
             icon = Icons.AutoMirrored.Rounded.DirectionsRun,
             tint = SignalCyan,
             onClick = onStartEnduranceClick

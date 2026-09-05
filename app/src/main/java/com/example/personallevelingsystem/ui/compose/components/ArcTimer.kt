@@ -14,8 +14,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.theme.HologramText
 import com.example.personallevelingsystem.ui.compose.theme.SignalCyan
 import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
@@ -28,11 +30,13 @@ fun ArcTimerCard(elapsedMs: Long, running: Boolean, modifier: Modifier = Modifie
     val seconds = (elapsedMs / 1000) % 60
     val minutes = (elapsedMs / (1000 * 60)) % 60
     val hours = elapsedMs / (1000 * 60 * 60)
-    val status = when {
-        running -> "RUNNING"
-        elapsedMs > 0L -> "PAUSED"
-        else -> "READY"
-    }
+    val status = stringResource(
+        when {
+            running -> R.string.timer_running
+            elapsedMs > 0L -> R.string.timer_paused
+            else -> R.string.timer_ready
+        }
+    ).uppercase()
 
     ArcCard(
         modifier = modifier.fillMaxWidth(),

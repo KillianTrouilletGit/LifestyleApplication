@@ -37,9 +37,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.model.Exercise
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcCard
@@ -157,7 +159,7 @@ fun TrainingSessionContent(
     if (currentExercises.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text(
-                text = "No exercises found or still loading…",
+                text = stringResource(R.string.session_empty),
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary
             )
@@ -200,6 +202,7 @@ fun TrainingSessionContent(
                 )
             }
         }
+        val nextName = currentExercises.getOrNull(currentIndex + 1)?.name ?: ""
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -234,8 +237,9 @@ fun TrainingSessionContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         ArcButton(
-            text = if (isLast) "Finish session" else "Next exercise",
-            subtitle = if (isLast) "Save these sets and close out" else "Save sets · then ${currentExercises[currentIndex + 1].name}",
+            text = stringResource(if (isLast) R.string.session_finish else R.string.session_next),
+            subtitle = if (isLast) stringResource(R.string.session_finish_sub)
+            else stringResource(R.string.session_next_sub, nextName),
             icon = if (isLast) Icons.Rounded.Flag else Icons.AutoMirrored.Rounded.ArrowForward,
             onClick = {
                 view.hapticConfirm()
@@ -246,7 +250,7 @@ fun TrainingSessionContent(
         )
         Spacer(modifier = Modifier.height(8.dp))
         ArcGhostButton(
-            text = "End session",
+            text = stringResource(R.string.session_end),
             onClick = onBackClick,
             tint = CrimsonRed,
             compact = true,
@@ -268,7 +272,7 @@ private fun SessionHeader(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "EXERCISE ${index + 1} / $total",
+                    text = stringResource(R.string.session_exercise_of, index + 1, total).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = AccentViolet,
                     letterSpacing = 1.5.sp
@@ -286,7 +290,7 @@ private fun SessionHeader(
                     color = SignalCyan
                 )
                 Text(
-                    text = "ELAPSED",
+                    text = stringResource(R.string.session_elapsed).uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextSecondary,
                     letterSpacing = 1.sp
@@ -310,7 +314,7 @@ private fun RestTimerCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "REST",
+                    text = stringResource(R.string.session_rest).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = AccentViolet,
                     letterSpacing = 1.5.sp
@@ -322,9 +326,9 @@ private fun RestTimerCard(
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
-                ArcGhostButton(text = "+30 s", onClick = onAddThirty, compact = true)
+                ArcGhostButton(text = stringResource(R.string.session_add_30), onClick = onAddThirty, compact = true)
                 Spacer(modifier = Modifier.height(6.dp))
-                ArcGhostButton(text = "Skip", onClick = onSkip, compact = true, tint = TextSecondary)
+                ArcGhostButton(text = stringResource(R.string.session_skip), onClick = onSkip, compact = true, tint = TextSecondary)
             }
         }
         Spacer(modifier = Modifier.height(10.dp))
@@ -355,7 +359,7 @@ private fun SetCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "SET $number",
+                text = stringResource(R.string.session_set, number).uppercase(),
                 style = MaterialTheme.typography.labelMedium,
                 color = if (done) TelemetryGreen else AccentViolet,
                 letterSpacing = 1.5.sp,
@@ -363,7 +367,7 @@ private fun SetCard(
             )
             if (state.previousReps > 0) {
                 Text(
-                    text = "prev ${state.previousReps} × ${formatWeight(state.previousWeight)} kg",
+                    text = stringResource(R.string.session_prev, state.previousReps, formatWeight(state.previousWeight)),
                     style = MaterialTheme.typography.labelSmall.tabular,
                     color = TextSecondary
                 )
@@ -375,7 +379,7 @@ private fun SetCard(
         Row {
             ArcStepper(
                 value = "$reps",
-                label = "reps",
+                label = stringResource(R.string.session_reps),
                 onDecrement = { onRepsChange((reps - 1).coerceAtLeast(0).toString()) },
                 onIncrement = { onRepsChange((reps + 1).toString()) },
                 enabled = !done,
@@ -384,7 +388,7 @@ private fun SetCard(
             Spacer(modifier = Modifier.width(20.dp))
             ArcStepper(
                 value = formatWeight(weight),
-                label = "kg",
+                label = stringResource(R.string.session_kg),
                 onDecrement = { onWeightChange(formatWeight((weight - WEIGHT_STEP_KG).coerceAtLeast(0f))) },
                 onIncrement = { onWeightChange(formatWeight(weight + WEIGHT_STEP_KG)) },
                 tint = SignalCyan,

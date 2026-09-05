@@ -41,10 +41,12 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.AlertOrange
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
@@ -99,7 +101,7 @@ fun LevelRing(
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
-                text = "LEVEL",
+                text = stringResource(R.string.dash_level).uppercase(),
                 style = MaterialTheme.typography.labelSmall,
                 color = TextSecondary,
                 letterSpacing = 1.5.sp
@@ -136,15 +138,18 @@ fun HeroCard(
             ) {
                 StatLine(
                     icon = Icons.Rounded.Bolt, tint = AccentViolet,
-                    label = "XP", value = "%,d / %,d".format(currentXp, requiredXp)
+                    label = stringResource(R.string.dash_xp),
+                    value = stringResource(R.string.dash_xp_value, currentXp, requiredXp)
                 )
                 StatLine(
                     icon = Icons.Rounded.LocalFireDepartment, tint = AlertOrange,
-                    label = "Best streak", value = if (bestStreak > 0) "$bestStreak d" else "—"
+                    label = stringResource(R.string.dash_best_streak),
+                    value = if (bestStreak > 0) stringResource(R.string.dash_days_value, bestStreak) else "—"
                 )
                 StatLine(
                     icon = Icons.Rounded.CalendarToday, tint = SignalCyan,
-                    label = "Active days", value = "$activeDays / 7"
+                    label = stringResource(R.string.dash_active_days),
+                    value = stringResource(R.string.dash_of_seven, activeDays)
                 )
             }
         }
@@ -203,25 +208,25 @@ fun WeeklyTrainingCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "THIS WEEK",
+                    text = stringResource(R.string.dash_this_week).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = AccentViolet,
                     letterSpacing = 1.5.sp
                 )
                 Text(
-                    text = "Training volume",
+                    text = stringResource(R.string.dash_training_volume),
                     style = MaterialTheme.typography.titleMedium,
                     color = HologramText
                 )
             }
             Column(horizontalAlignment = Alignment.End) {
                 Text(
-                    text = "%.1f h".format(total),
+                    text = stringResource(R.string.dash_hours, total),
                     style = MaterialTheme.typography.headlineSmall.tabular,
                     color = SignalCyan
                 )
                 Text(
-                    text = "$activeDays / 7 active days",
+                    text = stringResource(R.string.dash_active_days_of, activeDays),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextSecondary
                 )
@@ -295,7 +300,7 @@ fun QuickLogCard(
 ) {
     ArcCard(modifier = modifier.fillMaxWidth()) {
         Text(
-            text = "QUICK LOG",
+            text = stringResource(R.string.dash_quick_log).uppercase(),
             style = MaterialTheme.typography.labelMedium,
             color = AccentViolet,
             letterSpacing = 1.5.sp
@@ -303,20 +308,20 @@ fun QuickLogCard(
         Spacer(modifier = Modifier.height(12.dp))
         Row {
             MiniStat(
-                label = "Water",
-                value = "%.1f / %.1f L".format(waterMl / 1000f, waterTargetMl / 1000f),
+                label = stringResource(R.string.dash_water),
+                value = stringResource(R.string.dash_water_value, waterMl / 1000f, waterTargetMl / 1000f),
                 color = SignalCyan,
                 modifier = Modifier.weight(1.2f)
             )
             MiniStat(
-                label = "Sleep",
-                value = if (sleepHours > 0f) "%.1f h".format(sleepHours) else "—",
+                label = stringResource(R.string.dash_sleep),
+                value = if (sleepHours > 0f) stringResource(R.string.dash_hours, sleepHours) else "—",
                 color = AccentViolet,
                 modifier = Modifier.weight(1f)
             )
             MiniStat(
-                label = "Fuel",
-                value = if (calories > 0) "%,d kcal".format(calories) else "—",
+                label = stringResource(R.string.dash_fuel),
+                value = if (calories > 0) stringResource(R.string.dash_kcal_value, calories) else "—",
                 color = AlertOrange,
                 modifier = Modifier.weight(1f)
             )
@@ -324,13 +329,23 @@ fun QuickLogCard(
         Spacer(modifier = Modifier.height(14.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             ArcButton(
-                text = "+250 ml",
+                text = stringResource(R.string.dash_add_250),
                 onClick = onQuickWater,
                 compact = true,
                 modifier = Modifier.weight(1.2f)
             )
-            ArcGhostButton(text = "Sleep", onClick = onLogSleep, compact = true, modifier = Modifier.weight(1f))
-            ArcGhostButton(text = "Meal", onClick = onLogMeal, compact = true, modifier = Modifier.weight(1f))
+            ArcGhostButton(
+                text = stringResource(R.string.dash_sleep),
+                onClick = onLogSleep,
+                compact = true,
+                modifier = Modifier.weight(1f)
+            )
+            ArcGhostButton(
+                text = stringResource(R.string.dash_log_meal),
+                onClick = onLogMeal,
+                compact = true,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }

@@ -15,10 +15,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.model.Mission
 import com.example.personallevelingsystem.model.MissionCategory
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
@@ -51,19 +53,20 @@ fun TopMissionsCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "TODAY'S OPS",
+                    text = stringResource(R.string.dash_todays_ops).uppercase(),
                     style = MaterialTheme.typography.labelMedium,
                     color = AccentViolet,
                     letterSpacing = 1.5.sp
                 )
                 Text(
-                    text = "$doneCount / $totalDaily cleared",
+                    text = stringResource(R.string.dash_cleared, doneCount, totalDaily),
                     style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
             }
             Text(
-                text = if (allClear) "All clear" else "+$totalXp XP",
+                text = if (allClear) stringResource(R.string.dash_all_clear)
+                else stringResource(R.string.dash_xp_available, totalXp),
                 style = MaterialTheme.typography.titleMedium.tabular,
                 color = if (allClear) TelemetryGreen else AlertOrange
             )
@@ -73,7 +76,7 @@ fun TopMissionsCard(
 
         if (allClear) {
             Text(
-                text = "Daily slate cleared. Streaks alive.",
+                text = stringResource(R.string.dash_slate_cleared),
                 style = MaterialTheme.typography.bodyMedium,
                 color = HologramText.copy(alpha = 0.85f)
             )
@@ -85,7 +88,7 @@ fun TopMissionsCard(
             val remaining = incompleteMissions.size - 3
             if (remaining > 0) {
                 Text(
-                    text = "+ $remaining more",
+                    text = stringResource(R.string.dash_more, remaining),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextTertiary
                 )
@@ -131,3 +134,15 @@ fun categoryColor(category: MissionCategory): Color = when (category) {
     MissionCategory.DISCIPLINE -> AlertOrange
     MissionCategory.PROGRESS -> Color(0xFFE6E6E6)
 }
+
+@Composable
+fun MissionCategory.label(): String = stringResource(
+    when (this) {
+        MissionCategory.BODY -> R.string.category_body
+        MissionCategory.MIND -> R.string.category_mind
+        MissionCategory.NUTRITION -> R.string.category_nutrition
+        MissionCategory.RECOVERY -> R.string.category_recovery
+        MissionCategory.DISCIPLINE -> R.string.category_discipline
+        MissionCategory.PROGRESS -> R.string.category_progress
+    }
+)

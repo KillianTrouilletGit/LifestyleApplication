@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -116,7 +117,7 @@ fun UserProfileContent(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = user?.name?.takeIf { it.isNotBlank() } ?: "Unnamed",
+                        text = user?.name?.takeIf { it.isNotBlank() } ?: stringResource(R.string.profile_unnamed),
                         style = MaterialTheme.typography.headlineSmall,
                         color = HologramText
                     )
@@ -128,7 +129,7 @@ fun UserProfileContent(
                             .padding(horizontal = 8.dp, vertical = 3.dp)
                     ) {
                         Text(
-                            text = "LEVEL ${user?.level ?: 1}",
+                            text = stringResource(R.string.profile_level, user?.level ?: 1).uppercase(),
                             style = MaterialTheme.typography.labelMedium.tabular,
                             color = CrimsonRed,
                             letterSpacing = 1.sp
@@ -139,14 +140,14 @@ fun UserProfileContent(
             Spacer(modifier = Modifier.height(16.dp))
             Row {
                 Text(
-                    text = "XP TO NEXT LEVEL",
+                    text = stringResource(R.string.profile_xp_next).uppercase(),
                     style = MaterialTheme.typography.labelSmall,
                     color = TextSecondary,
                     letterSpacing = 1.sp,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = "%,d / %,d".format(currentXp, maxXp),
+                    text = stringResource(R.string.dash_xp_value, currentXp, maxXp),
                     style = MaterialTheme.typography.labelSmall.tabular,
                     color = TextSecondary
                 )
@@ -159,20 +160,20 @@ fun UserProfileContent(
             val statStyle = MaterialTheme.typography.titleMedium.tabular
             Row {
                 ArcStat(
-                    label = "Weight",
+                    label = stringResource(R.string.profile_weight),
                     value = user?.weight?.takeIf { it > 0f }?.let { formatMeasure(it, "kg") } ?: "—",
                     valueColor = SignalCyan,
                     valueStyle = statStyle,
                     modifier = Modifier.weight(1f)
                 )
                 ArcStat(
-                    label = "Height",
+                    label = stringResource(R.string.profile_height),
                     value = user?.height?.takeIf { it > 0f }?.let { formatMeasure(it, "cm") } ?: "—",
                     valueStyle = statStyle,
                     modifier = Modifier.weight(1f)
                 )
                 ArcStat(
-                    label = "Born",
+                    label = stringResource(R.string.profile_born),
                     value = user?.dateOfBirth?.takeIf { it.isNotBlank() } ?: "—",
                     valueStyle = statStyle,
                     modifier = Modifier.weight(1.5f)
@@ -181,8 +182,8 @@ fun UserProfileContent(
         }
 
         ArcButton(
-            text = "Edit profile",
-            subtitle = "Name, weight, height, birth date",
+            text = stringResource(R.string.profile_edit),
+            subtitle = stringResource(R.string.profile_edit_sub),
             icon = Icons.Rounded.Edit,
             onClick = onModifyClick,
             modifier = Modifier.fillMaxWidth()

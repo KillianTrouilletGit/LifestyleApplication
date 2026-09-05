@@ -19,9 +19,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcGhostButton
 import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
@@ -84,11 +86,11 @@ fun EnduranceContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        ArcSectionLabel(text = "Distance")
+        ArcSectionLabel(text = stringResource(R.string.endurance_distance))
         JuicyInput(
             value = distanceInput,
             onValueChange = { distanceInput = it },
-            placeholder = "Distance (km)",
+            placeholder = stringResource(R.string.endurance_distance_hint),
             keyboardType = KeyboardType.Number,
             modifier = Modifier.fillMaxWidth()
         )
@@ -96,11 +98,13 @@ fun EnduranceContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         ArcButton(
-            text = when {
-                isRunning -> "Pause"
-                elapsedTime > 0L -> "Resume run"
-                else -> "Start run"
-            },
+            text = stringResource(
+                when {
+                    isRunning -> R.string.common_pause
+                    elapsedTime > 0L -> R.string.endurance_resume
+                    else -> R.string.endurance_start
+                }
+            ),
             icon = if (isRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
             showChevron = false,
             onClick = {
@@ -119,7 +123,7 @@ fun EnduranceContent(
         Spacer(modifier = Modifier.height(10.dp))
 
         ArcButton(
-            text = "Complete & save",
+            text = stringResource(R.string.common_complete_save),
             icon = Icons.Rounded.Check,
             showChevron = false,
             enabled = !isRunning && elapsedTime > 0L,
@@ -135,7 +139,7 @@ fun EnduranceContent(
         Spacer(modifier = Modifier.height(10.dp))
 
         ArcGhostButton(
-            text = "Abort session",
+            text = stringResource(R.string.common_abort),
             tint = CrimsonRed,
             onClick = {
                 onStopTimer()

@@ -1,14 +1,16 @@
 package com.example.personallevelingsystem.ui.compose.theme
 
 import android.content.Context
+import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.example.personallevelingsystem.R
 
-enum class ButtonStyle(val label: String, val blurb: String) {
-    GradientGlow("Gradient glow", "Red to violet pill with a soft glow. The signature."),
-    FlatShadow("Flat", "Solid red pill with a quiet drop shadow."),
-    Glass("Glass", "Translucent pill, hairline edge, accent icon.")
+enum class ButtonStyle(@StringRes val labelRes: Int, @StringRes val blurbRes: Int) {
+    GradientGlow(R.string.style_gradient, R.string.style_gradient_blurb),
+    FlatShadow(R.string.style_flat, R.string.style_flat_blurb),
+    Glass(R.string.style_glass, R.string.style_glass_blurb)
 }
 
 /** App-wide visual choices the user can flip from the Style Lab; persisted in SharedPreferences. */
