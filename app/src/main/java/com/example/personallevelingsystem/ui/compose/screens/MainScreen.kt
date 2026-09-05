@@ -1,229 +1,172 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.runtime.collectAsState
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.slideInVertically
-import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.CalendarMonth
-import androidx.compose.material.icons.rounded.FitnessCenter
-import androidx.compose.material.icons.rounded.Flag
-import androidx.compose.material.icons.rounded.Restaurant
-import androidx.compose.material.icons.rounded.WaterDrop
-import androidx.compose.material3.Icon
-import androidx.compose.ui.graphics.vector.ImageVector
-import com.example.personallevelingsystem.ui.compose.components.JuicyCard
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.MutableLiveData
+import com.example.personallevelingsystem.model.Mission
+import com.example.personallevelingsystem.ui.compose.components.HeroCard
+import com.example.personallevelingsystem.ui.compose.components.QuickLogCard
 import com.example.personallevelingsystem.ui.compose.components.TopMissionsCard
+import com.example.personallevelingsystem.ui.compose.components.WeeklyTrainingCard
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import com.example.personallevelingsystem.ui.compose.theme.Motion
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import androidx.compose.runtime.livedata.observeAsState
-
-data class DashboardItem(
-    val id: String,
-    val title: String,
-    val icon: ImageVector
-)
+import com.example.personallevelingsystem.util.hapticConfirm
+import com.example.personallevelingsystem.viewmodel.HealthViewModel
+import com.example.personallevelingsystem.viewmodel.MissionViewModel
+import com.example.personallevelingsystem.viewmodel.PerformanceState
+import com.example.personallevelingsystem.viewmodel.PerformanceViewModel
 
 @Composable
-
 fun MainScreen(
     onNavigate: (String) -> Unit,
-    performanceViewModel: com.example.personallevelingsystem.viewmodel.PerformanceViewModel,
-    healthViewModel: com.example.personallevelingsystem.viewmodel.HealthViewModel,
-    missionViewModel: com.example.personallevelingsystem.viewmodel.MissionViewModel? = null
+    performanceViewModel: PerformanceViewModel,
+    healthViewModel: HealthViewModel,
+    missionViewModel: MissionViewModel? = null
 ) {
-    val performanceState by performanceViewModel.uiState.collectAsState()
-    val dailyMissions by (missionViewModel?.dailyMissions
-        ?: androidx.lifecycle.MutableLiveData(emptyList<com.example.personallevelingsystem.model.Mission>()))
+    val performance by performanceViewModel.uiState.collectAsState()
+    val dailyMissions by (missionViewModel?.dailyMissions ?: MutableLiveData(emptyList<Mission>()))
         .observeAsState(emptyList())
-    var isVisible by remember { mutableStateOf(false) }
+    val streaks by (missionViewModel?.streaks ?: MutableLiveData(emptyMap<String, Int>()))
+        .observeAsState(emptyMap())
+    val waterMl by healthViewModel.totalWaterToday.observeAsState(initial = 0f)
+    val waterTargetMl by healthViewModel.waterTargetMl.observeAsState(initial = 2500f)
+    val view = LocalView.current
 
     LaunchedEffect(Unit) {
         performanceViewModel.loadPerformanceData()
         missionViewModel?.refresh()
-        isVisible = true
+        healthViewModel.calculateTotalWaterForToday()
     }
 
-    val items = listOf(
-        DashboardItem("missions", "Missions", Icons.Rounded.Flag),
-        DashboardItem("training", "Training", Icons.Rounded.FitnessCenter),
-        DashboardItem("nutrition", "Nutrition", Icons.Rounded.Restaurant),
-        DashboardItem("sleep", "Sleep", Icons.Rounded.Bedtime),
-        DashboardItem("water", "Hydration", Icons.Rounded.WaterDrop),
-        DashboardItem("planning", "Planning", Icons.Rounded.CalendarMonth)
+    DashboardContent(
+        performance = performance,
+        dailyMissions = dailyMissions,
+        bestStreak = streaks.values.maxOrNull() ?: 0,
+        waterMl = waterMl,
+        waterTargetMl = waterTargetMl,
+        onNavigate = onNavigate,
+        onQuickWater = {
+            healthViewModel.saveWater(250f)
+            view.hapticConfirm()
+        }
     )
+}
 
-    val lazyGridState = rememberLazyGridState()
+@Composable
+fun DashboardContent(
+    performance: PerformanceState,
+    dailyMissions: List<Mission>,
+    bestStreak: Int,
+    waterMl: Float,
+    waterTargetMl: Float,
+    onNavigate: (String) -> Unit,
+    onQuickWater: () -> Unit
+) {
+    var visible by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { visible = true }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background) // SpaceBlack via Theme
-            .padding(DesignSystem.Padding)
+            .verticalScroll(rememberScrollState())
+            .padding(DesignSystem.Padding),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        LazyVerticalGrid(
-            state = lazyGridState,
-            columns = GridCells.Fixed(2),
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // Header & Carousel Section
-            item(span = { androidx.compose.foundation.lazy.grid.GridItemSpan(2) }) {
-                Column(modifier = Modifier.graphicsLayer {
-                    if (lazyGridState.firstVisibleItemIndex == 0) {
-                        translationY = lazyGridState.firstVisibleItemScrollOffset * 0.15f
-                    }
-                }) {
-                    // Top missions surfaced from MissionViewModel (if available)
-                    if (dailyMissions.isNotEmpty()) {
-                        TopMissionsCard(
-                            incompleteMissions = dailyMissions.filter { !it.isCompleted },
-                            totalDaily = dailyMissions.size,
-                            onOpenMissions = { onNavigate("missions") }
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
-
-                    // Performance Visualization
-                    com.example.personallevelingsystem.ui.compose.components.PerformanceCarousel(state = performanceState)
-
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-
-            itemsIndexed(items, span = { _, item ->
-                // Make primary sections (Missions, Training) span the full width as "Hero" cards
-                if (item.id == "missions" || item.id == "training") {
-                    androidx.compose.foundation.lazy.grid.GridItemSpan(2)
-                } else {
-                    androidx.compose.foundation.lazy.grid.GridItemSpan(1)
-                }
-            }) { index, item ->
-                val isHero = item.id == "missions" || item.id == "training"
-                AnimatedVisibility(
-                    visible = isVisible,
-                    enter = fadeIn(animationSpec = tween(400, delayMillis = index * 50)) + 
-                            slideInVertically(initialOffsetY = { 50 }, animationSpec = tween(400, delayMillis = index * 50))
-                ) {
-                    DashboardCard(item = item, isHero = isHero, extraText = null, onClick = { onNavigate(item.id) })
-                }
-            }
+        Reveal(visible, 0) {
+            HeroCard(
+                level = performance.level,
+                currentXp = performance.currentXp.toInt(),
+                requiredXp = performance.requiredXp.toInt(),
+                bestStreak = bestStreak,
+                activeDays = performance.weeklyTrainingFrequency.count { it > 0.05f }
+            )
         }
-    }
-}
-
-@Composable
-fun DashboardCard(
-    item: DashboardItem,
-    isHero: Boolean = false,
-    extraText: String? = null,
-    onClick: () -> Unit
-) {
-    val infiniteTransition = rememberInfiniteTransition(label = "iconBreathing")
-    val breathingScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = if (isHero) 1.05f else 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(2000, easing = EaseInOut),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "iconBreathingScale"
-    )
-
-    JuicyCard(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(if (isHero) 160.dp else 140.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                imageVector = item.icon,
-                contentDescription = item.title,
-                tint = androidx.compose.ui.graphics.Color.White,
-                modifier = Modifier
-                    .size(if (isHero) 56.dp else 40.dp)
-                    .graphicsLayer { 
-                        alpha = 0.99f // Required for BlendMode masking
-                        scaleX = breathingScale
-                        scaleY = breathingScale
-                    }
-                    .drawWithCache {
-                        val brush = com.example.personallevelingsystem.ui.compose.theme.PrimaryGradient
-                        onDrawWithContent {
-                            drawContent()
-                            drawRect(brush, blendMode = BlendMode.SrcIn)
-                        }
-                    }
+        Reveal(visible, 1) {
+            WeeklyTrainingCard(
+                hoursPerDay = performance.weeklyTrainingFrequency,
+                labels = performance.weeklyTrainingLabels,
+                onClick = { onNavigate("training") }
             )
-            Spacer(modifier = Modifier.height(if (isHero) 12.dp else 8.dp))
-            Text(
-                text = item.title.uppercase(),
-                style = if (isHero) MaterialTheme.typography.titleMedium else MaterialTheme.typography.labelLarge,
-                color = androidx.compose.ui.graphics.Color.White,
-                fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-            )
-            if (extraText != null) {
-                Spacer(modifier = Modifier.height(4.dp))
-                 Text(
-                    text = extraText,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = com.example.personallevelingsystem.ui.compose.theme.AccentRed
+        }
+        if (dailyMissions.isNotEmpty()) {
+            Reveal(visible, 2) {
+                TopMissionsCard(
+                    incompleteMissions = dailyMissions.filter { !it.isCompleted },
+                    totalDaily = dailyMissions.size,
+                    onOpenMissions = { onNavigate("missions") }
                 )
             }
         }
+        Reveal(visible, 3) {
+            QuickLogCard(
+                waterMl = waterMl,
+                waterTargetMl = waterTargetMl,
+                sleepHours = performance.sleepHours,
+                calories = performance.dailyCalories,
+                onQuickWater = onQuickWater,
+                onLogSleep = { onNavigate("sleep") },
+                onLogMeal = { onNavigate("nutrition") }
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+private fun Reveal(visible: Boolean, index: Int, content: @Composable () -> Unit) {
+    val delay = index * 60
+    AnimatedVisibility(
+        visible = visible,
+        enter = fadeIn(tween(Motion.Standard, delayMillis = delay)) +
+            slideInVertically(tween(Motion.Standard, delayMillis = delay)) { it / 8 }
+    ) {
+        content()
+    }
+}
+
+@Preview(showBackground = true, backgroundColor = 0xFF0B0A10)
 @Composable
 fun MainScreenPreview() {
     PersonalLevelingSystemTheme {
-         // Preview requires mock/fake VM
+        DashboardContent(
+            performance = PerformanceState(
+                level = 23,
+                currentXp = 19515f,
+                requiredXp = 52900f,
+                weeklyTrainingFrequency = listOf(1.2f, 0f, 0.8f, 1.5f, 0f, 0f, 0.6f),
+                weeklyTrainingLabels = listOf("M", "T", "W", "T", "F", "S", "S"),
+                sleepHours = 7.5f,
+                dailyCalories = 1850
+            ),
+            dailyMissions = emptyList(),
+            bestStreak = 9,
+            waterMl = 1250f,
+            waterTargetMl = 2500f,
+            onNavigate = {},
+            onQuickWater = {}
+        )
     }
 }
