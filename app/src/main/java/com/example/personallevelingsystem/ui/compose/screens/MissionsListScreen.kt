@@ -67,6 +67,7 @@ import com.example.personallevelingsystem.service.MissionAutoCompleter
 import com.example.personallevelingsystem.service.MissionProgress
 import com.example.personallevelingsystem.ui.compose.components.ArcButton
 import com.example.personallevelingsystem.ui.compose.components.ArcCard
+import com.example.personallevelingsystem.ui.compose.components.ArcCheckBox
 import com.example.personallevelingsystem.ui.compose.components.ArcGhostButton
 import com.example.personallevelingsystem.ui.compose.components.ArcProgressBar
 import com.example.personallevelingsystem.ui.compose.components.ArcSegmentedTabs
@@ -356,44 +357,15 @@ private fun MissionCard(
 
                 Spacer(modifier = Modifier.width(12.dp))
 
-                CompletionBox(
-                    completed = mission.isCompleted,
-                    onCheck = {
+                ArcCheckBox(
+                    checked = mission.isCompleted,
+                    enabled = !mission.isCompleted,
+                    onToggle = {
                         view.hapticReward()
                         onCheck()
                     }
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun CompletionBox(completed: Boolean, onCheck: () -> Unit) {
-    val shape = RoundedCornerShape(9.dp)
-    Box(
-        modifier = Modifier
-            .size(30.dp)
-            .clip(shape)
-            .background(if (completed) PrimaryGradient else Brush.linearGradient(listOf(Color.Transparent, Color.Transparent)))
-            .border(
-                width = 1.5.dp,
-                color = if (completed) Color.Transparent else CrimsonRed.copy(alpha = 0.7f),
-                shape = shape
-            )
-            .clickable(enabled = !completed, onClick = onCheck),
-        contentAlignment = Alignment.Center
-    ) {
-        AnimatedVisibility(
-            visible = completed,
-            enter = scaleIn(animationSpec = Motion.Playful) + fadeIn(tween(Motion.Quick))
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.Check,
-                contentDescription = null,
-                tint = Color.White,
-                modifier = Modifier.size(18.dp)
-            )
         }
     }
 }
