@@ -54,7 +54,7 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 // 1. User Level & XP
-                val user = userDao.getLatestUser()
+                val user = userDao.getUserById(com.example.personallevelingsystem.repository.UserRepository.DEFAULT_USER_ID)
                 val level = user?.level ?: 1
                 val currentXp = user?.xp?.toFloat() ?: 0f
                 // Formula from UserRepository: 100 * level * level
@@ -137,9 +137,9 @@ class PerformanceViewModel(application: Application) : AndroidViewModel(applicat
                 val waterRecords = waterDao.getWaterForDay(todayStart, todayEnd)
                 
                 // Sum up values
-                val sleep = sleepRecords.sumOf { 
-                    it.duration.replace("h", "").trim().toDoubleOrNull() ?: 0.0 
-                }.toFloat() 
+                val sleep = sleepRecords.sumOf {
+                    com.example.personallevelingsystem.util.parseSleepHours(it.duration).toDouble()
+                }.toFloat()
                 
                 val water = waterRecords.sumOf { it.amount.toDouble() }.toFloat() / 1000f // Convert ml to L
 

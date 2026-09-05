@@ -220,7 +220,7 @@ class TrainingViewModel(application: Application) : AndroidViewModel(application
     private fun loadSetsForExercise(exercise: com.example.personallevelingsystem.model.Exercise) {
          viewModelScope.launch(Dispatchers.IO) {
              // Fetch previous sets using the REAL currentSessionId
-             val previousSets = trainingSessionDao.getPreviousTrainingSets(exercise.id, currentSessionId, exercise.sets)
+             val previousSets = trainingSessionDao.getPreviousTrainingSets(exercise.id, currentSessionId)
              
              val newSets = mutableListOf<TrainingSetState>()
              for (i in 0 until exercise.sets) {

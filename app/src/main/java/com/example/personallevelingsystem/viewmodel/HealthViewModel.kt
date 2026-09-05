@@ -29,8 +29,13 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     private val autoCompleter = MissionAutoCompleter(application)
 
     // LiveData Declarations (Must be before init)
+    /** Today's intake in ml — the unit every consumer (missions, reminders, bio-metrics) expects. */
     private val _totalWaterToday = MutableLiveData<Float>()
     val totalWaterToday: LiveData<Float> = _totalWaterToday
+
+    /** Daily target in ml (35 ml/kg, 2500 default) — shown next to the intake. */
+    private val _waterTargetMl = MutableLiveData<Float>(2500f)
+    val waterTargetMl: LiveData<Float> = _waterTargetMl
 
     private val _foodSuggestions = MutableLiveData<List<String>>()
     val foodSuggestions: LiveData<List<String>> = _foodSuggestions
@@ -47,9 +52,9 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     // Water Logic
-    fun saveWater(amount: Float) {
+    fun saveWater(amountMl: Float) {
         viewModelScope.launch(Dispatchers.IO) {
-            val water = Water(date = System.currentTimeMillis(), amount = amount)
+            val water = Water(date = System.currentTimeMillis(), amount = amountMl)
             waterDao.insert(water)
             calculateTotalWaterForToday()
             autoCompleter.sweep()
@@ -74,6 +79,7 @@ class HealthViewModel(application: Application) : AndroidViewModel(application) 
             val waterEntries = waterDao.getWaterForDay(startOfDay, endOfDay)
             val total = waterEntries.sumOf { it.amount.toDouble() }.toFloat()
             _totalWaterToday.postValue(total)
+            _waterTargetMl.postValue(autoCompleter.waterTargetMl())
         }
     }
 

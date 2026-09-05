@@ -56,7 +56,7 @@ fun ModifyUserInfoScreen(
 
     LaunchedEffect(Unit) {
         if (user == null) {
-            viewModel.getUserById(1)
+            viewModel.getUserById(com.example.personallevelingsystem.repository.UserRepository.DEFAULT_USER_ID)
         }
     }
 
@@ -76,7 +76,7 @@ fun ModifyUserInfoScreen(
                  height = height.toFloatOrNull() ?: 0f,
                  dateOfBirth = dob
              ) ?: User(
-                 id = 1,
+                 id = com.example.personallevelingsystem.repository.UserRepository.DEFAULT_USER_ID,
                  name = name,
                  weight = weight.toFloatOrNull() ?: 0f,
                  height = height.toFloatOrNull() ?: 0f,

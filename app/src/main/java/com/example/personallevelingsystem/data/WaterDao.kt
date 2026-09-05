@@ -27,4 +27,8 @@ interface WaterDao {
 
     @Query("SELECT * FROM water WHERE date >= :startOfDay AND date <= :endOfDay")
     suspend fun getWaterForDay(startOfDay: Long, endOfDay: Long): List<Water>
+
+    /** Legacy rows typed in litres (nobody logs under 20 ml) — bring them to ml. Run once. */
+    @Query("UPDATE water SET amount = amount * 1000 WHERE amount > 0 AND amount < 20")
+    suspend fun normalizeLitresToMl()
 }

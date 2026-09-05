@@ -94,7 +94,7 @@ fun MissionsListScreen(
             streaks = streaks,
             categoryXp = categoryXp,
             onMissionCheck = { mission ->
-                viewModel.completeMission(mission, 1)
+                viewModel.completeMission(mission)
             },
             onDeeplink = onDeeplink,
             onBackClick = onBackClick
@@ -313,7 +313,7 @@ fun MissionItem(
             }
 
             Spacer(modifier = Modifier.height(4.dp))
-            val multiplier = (1f + (streak / 7).coerceAtMost(5) * 0.10f)
+            val multiplier = com.example.personallevelingsystem.service.MissionAutoCompleter.streakMultiplier(streak)
             val displayXp = (mission.reward * multiplier).toInt()
             val multSuffix = if (multiplier > 1f) " ×${"%.1f".format(multiplier)}" else ""
             Text(

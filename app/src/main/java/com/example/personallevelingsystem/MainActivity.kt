@@ -1,9 +1,16 @@
 package com.example.personallevelingsystem
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -72,6 +79,21 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                     composable("main") {
+                        // Android 13+ only shows notifications once the user has
+                        // granted POST_NOTIFICATIONS at runtime — ask on first landing.
+                        val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                            ActivityResultContracts.RequestPermission()
+                        ) { /* granted or not, reminders check the permission themselves */ }
+                        LaunchedEffect(Unit) {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                ContextCompat.checkSelfPermission(
+                                    this@MainActivity, Manifest.permission.POST_NOTIFICATIONS
+                                ) != PackageManager.PERMISSION_GRANTED
+                            ) {
+                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        }
+
                         val performanceViewModel = ViewModelProvider(
                             this@MainActivity,
                             MigrationViewModelFactory(application)
@@ -327,7 +349,7 @@ class MigrationViewModelFactory(private val application: android.app.Application
                 UserViewModel(userRepository) as T
             }
             modelClass.isAssignableFrom(MissionViewModel::class.java) -> {
-                MissionViewModel(application, userRepository) as T
+                MissionViewModel(application) as T
             }
             modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java) -> {
                 com.example.personallevelingsystem.viewmodel.TrainingViewModel(application) as T

@@ -9,9 +9,14 @@ import com.example.personallevelingsystem.repository.MissionRepository
 import com.example.personallevelingsystem.repository.UserRepository
 import com.example.personallevelingsystem.util.MissionPrefs
 import com.example.personallevelingsystem.util.NotificationUtils
+import com.example.personallevelingsystem.util.daysBetweenDayKeys
+import com.example.personallevelingsystem.util.parseSleepHours
+import com.example.personallevelingsystem.util.thisWeekBounds
+import com.example.personallevelingsystem.util.todayBounds
 import com.example.personallevelingsystem.util.todayDayKey
-import com.example.personallevelingsystem.util.thisWeekKey
-import java.util.Calendar
+import com.example.personallevelingsystem.util.weeksBetweenDayKeys
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * Snapshot of the current value vs. target for a data-driven mission.
@@ -28,12 +33,11 @@ data class MissionProgress(
 }
 
 /**
- * Computes progress and auto-completes data-driven missions.
+ * Computes progress and completes missions — the *only* path that awards XP.
  *
- * Designed to be called whenever underlying data changes (water logged, sleep
- * logged, etc.) and at periodic worker ticks. Idempotent: only triggers the
- * completion side effects (XP add, streak bump, achievement check) once per day
- * per mission.
+ * [complete] and [sweep] share a process-wide mutex and re-check the persisted
+ * completion state inside it, so a manual tick racing an auto-sweep (water
+ * logged → sweep, list refreshed → sweep) can't pay the same mission twice.
  */
 class MissionAutoCompleter(private val context: Context) {
 
@@ -53,7 +57,7 @@ class MissionAutoCompleter(private val context: Context) {
             is MissionRequirement.SleepHoursAtLeast -> {
                 val (start, end) = todayBounds()
                 val hours = db.SleepTimeDao().getSleepForDay(start, end)
-                    .sumOf { it.duration.replace("h", "").trim().toDoubleOrNull() ?: 0.0 }
+                    .sumOf { parseSleepHours(it.duration).toDouble() }
                     .toFloat()
                 MissionProgress(current = hours, target = req.hours, unit = "h")
             }
@@ -92,45 +96,75 @@ class MissionAutoCompleter(private val context: Context) {
     }
 
     /**
+     * Marks [mission] complete for the current period and pays XP + streak.
+     * Returns the XP awarded, or null if it was already completed (no-op).
+     */
+    suspend fun complete(mission: Mission): Int? = completionLock.withLock { completeLocked(mission) }
+
+    /**
      * Runs through all missions, computes progress, and ticks anything
      * whose underlying data has crossed the target. Returns the missions
      * that were freshly completed during this sweep (for caller-side UX).
      */
-    suspend fun sweep(): List<Mission> {
+    suspend fun sweep(): List<Mission> = completionLock.withLock {
         val freshly = mutableListOf<Mission>()
         val all = missionRepository.getDailyMissions() + missionRepository.getWeeklyMissions()
         for (mission in all) {
             if (mission.isCompleted) continue
             val progress = computeProgress(mission) ?: continue
-            if (progress.isMet) {
-                missionRepository.completeMission(mission)
-                userRepository.addXp(DEFAULT_USER_ID, awardWithStreak(mission))
+            if (progress.isMet && completeLocked(mission) != null) {
                 freshly.add(mission)
             }
         }
-        return freshly
+        freshly
+    }
+
+    private suspend fun completeLocked(mission: Mission): Int? {
+        if (missionRepository.isMissionCompleted(mission.id, mission.type)) return null
+        missionRepository.completeMission(mission)
+        val awarded = awardWithStreak(mission)
+        userRepository.addXp(UserRepository.DEFAULT_USER_ID, awarded)
+        return awarded
     }
 
     /**
-     * Award XP for a mission, bump its streak, and update the per-category XP.
-     * Returns the actual XP awarded (base * streak multiplier).
-     * Also fires achievement notifications on streak milestones and on
-     * "first time clearing all daily missions".
+     * Streak as it should be displayed right now: the stored counter while the
+     * chain is still alive, 0 once it has lapsed (more than [STREAK_GRACE_DAYS]
+     * idle days for a daily mission, a whole skipped week for a weekly one).
      */
-    suspend fun awardWithStreak(mission: Mission): Int {
+    fun effectiveStreak(mission: Mission): Int {
+        val last = prefs.getLastCompletedDay(mission.id)
+        if (last == 0) return 0
+        val today = todayDayKey()
+        val alive = when (mission.type) {
+            MissionType.DAILY -> daysBetweenDayKeys(last, today) - 1 <= STREAK_GRACE_DAYS
+            MissionType.WEEKLY -> weeksBetweenDayKeys(last, today) <= 1
+        }
+        return if (alive) prefs.getStreak(mission.id) else 0
+    }
+
+    /**
+     * Bump the streak, update per-category XP and return the XP to award
+     * (base * streak multiplier). Fires achievement notifications on streak
+     * milestones and on "first time clearing all daily missions".
+     */
+    private fun awardWithStreak(mission: Mission): Int {
         val today = todayDayKey()
         val last = prefs.getLastCompletedDay(mission.id)
-        val currentStreak = prefs.getStreak(mission.id)
+        val stored = prefs.getStreak(mission.id)
 
-        // Up to STREAK_GRACE_DAYS idle days are forgiven before a streak breaks
-        // (gap of 1 = consecutive days = 0 idle days).
-        val idleDays = com.example.personallevelingsystem.util.daysBetweenDayKeys(last, today) - 1
         val newStreak = when {
-            last == today -> currentStreak // already counted today, no double-bump
-            last == 0 && currentStreak == 0 -> currentStreak + 1 // first ever completion
-            mission.type == MissionType.WEEKLY -> currentStreak + 1
-            idleDays <= STREAK_GRACE_DAYS -> currentStreak + 1
-            else -> 1 // streak broken
+            last == today -> stored                      // already counted today
+            last == 0 -> 1                               // first ever completion
+            mission.type == MissionType.WEEKLY -> when (weeksBetweenDayKeys(last, today)) {
+                0 -> stored                              // same week (shouldn't happen, be safe)
+                1 -> stored + 1                          // consecutive weeks
+                else -> 1                                // a whole week skipped
+            }
+            // Up to STREAK_GRACE_DAYS idle days are forgiven before a daily streak breaks
+            // (gap of 1 = consecutive days = 0 idle days).
+            daysBetweenDayKeys(last, today) - 1 <= STREAK_GRACE_DAYS -> stored + 1
+            else -> 1                                    // streak broken
         }
 
         if (last != today) {
@@ -157,7 +191,7 @@ class MissionAutoCompleter(private val context: Context) {
             context,
             id = achId,
             title = "${streak}-Day Streak Locked",
-            body = "${mission.title} held for $streak days. Streak multiplier: +${(streakMultiplier(streak) - 1f) * 100f}% XP."
+            body = "${mission.title} held for $streak days. Streak multiplier: +${((streakMultiplier(streak) - 1f) * 100f).toInt()}% XP."
         )
     }
 
@@ -188,41 +222,23 @@ class MissionAutoCompleter(private val context: Context) {
         )
     }
 
-    private fun streakMultiplier(streak: Int): Float {
-        // +10% per 7-day tier, capped at +50%
-        val tier = (streak / 7).coerceAtMost(5)
-        return 1f + tier * 0.10f
-    }
-
     suspend fun waterTargetMl(): Float {
-        val user = db.userDao().getAll().firstOrNull()
-        val weight = user?.weight ?: 0f
+        val weight = db.userDao().getUserById(UserRepository.DEFAULT_USER_ID)?.weight ?: 0f
         return if (weight > 0f) weight * 35f else 2500f
     }
 
-    private fun todayBounds(): Pair<Long, Long> {
-        val c = Calendar.getInstance()
-        c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0)
-        val start = c.timeInMillis
-        c.set(Calendar.HOUR_OF_DAY, 23); c.set(Calendar.MINUTE, 59); c.set(Calendar.SECOND, 59); c.set(Calendar.MILLISECOND, 999)
-        val end = c.timeInMillis
-        return start to end
-    }
-
-    private fun thisWeekBounds(): Pair<Long, Long> {
-        val c = Calendar.getInstance()
-        c.set(Calendar.DAY_OF_WEEK, c.firstDayOfWeek)
-        c.set(Calendar.HOUR_OF_DAY, 0); c.set(Calendar.MINUTE, 0); c.set(Calendar.SECOND, 0); c.set(Calendar.MILLISECOND, 0)
-        val start = c.timeInMillis
-        c.add(Calendar.DAY_OF_MONTH, 7)
-        c.add(Calendar.MILLISECOND, -1)
-        return start to c.timeInMillis
-    }
-
     companion object {
-        const val DEFAULT_USER_ID = 1
+        const val DEFAULT_USER_ID = UserRepository.DEFAULT_USER_ID
 
         /** Days of inactivity tolerated before a streak resets. */
         const val STREAK_GRACE_DAYS = 3
+
+        /** +10% per 7-day tier, capped at +50%. Shared with the list UI so the badge matches the payout. */
+        fun streakMultiplier(streak: Int): Float {
+            val tier = (streak / 7).coerceAtMost(5)
+            return 1f + tier * 0.10f
+        }
+
+        private val completionLock = Mutex()
     }
 }

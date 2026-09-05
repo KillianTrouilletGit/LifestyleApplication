@@ -95,6 +95,14 @@ class MissionPrefs private constructor(context: Context) {
         prefs.edit().putLong(snoozeKey(slot), untilMs).apply()
     }
 
+    // ---- One-shot data migrations --------------------------------------------
+
+    /** Water rows entered in litres before the screen switched to ml (see MyApplication). */
+    fun isWaterNormalizedToMl(): Boolean = prefs.getBoolean(KEY_WATER_ML_MIGRATED, false)
+    fun markWaterNormalizedToMl() {
+        prefs.edit().putBoolean(KEY_WATER_ML_MIGRATED, true).apply()
+    }
+
     // ---- Keys -----------------------------------------------------------------
 
     private fun streakKey(id: String) = "streak::$id"
@@ -112,6 +120,7 @@ class MissionPrefs private constructor(context: Context) {
         private const val KEY_QUIET_START = "quiet_start"
         private const val KEY_QUIET_END = "quiet_end"
         private const val KEY_BEHIND_ONLY = "behind_only"
+        private const val KEY_WATER_ML_MIGRATED = "water_ml_migrated"
 
         @Volatile private var INSTANCE: MissionPrefs? = null
 
@@ -121,39 +130,3 @@ class MissionPrefs private constructor(context: Context) {
     }
 }
 
-/** yyyyMMdd as Int — collation-friendly day key. */
-fun todayDayKey(): Int {
-    val c = java.util.Calendar.getInstance()
-    return c.get(java.util.Calendar.YEAR) * 10000 +
-            (c.get(java.util.Calendar.MONTH) + 1) * 100 +
-            c.get(java.util.Calendar.DAY_OF_MONTH)
-}
-
-fun yesterdayDayKey(): Int {
-    val c = java.util.Calendar.getInstance().apply { add(java.util.Calendar.DAY_OF_MONTH, -1) }
-    return c.get(java.util.Calendar.YEAR) * 10000 +
-            (c.get(java.util.Calendar.MONTH) + 1) * 100 +
-            c.get(java.util.Calendar.DAY_OF_MONTH)
-}
-
-/**
- * Calendar days between two yyyyMMdd day keys (0 = same day, 1 = consecutive days).
- * Returns Int.MAX_VALUE when either key is unset so callers treat it as "no history".
- */
-fun daysBetweenDayKeys(from: Int, to: Int): Int {
-    if (from <= 0 || to <= 0) return Int.MAX_VALUE
-    val cal = java.util.Calendar.getInstance()
-    cal.clear()
-    cal.set(from / 10000, (from / 100) % 100 - 1, from % 100)
-    val a = cal.timeInMillis
-    cal.clear()
-    cal.set(to / 10000, (to / 100) % 100 - 1, to % 100)
-    val b = cal.timeInMillis
-    return ((b - a) / 86_400_000L).toInt()
-}
-
-/** ISO week key: yyyy * 100 + weekOfYear. */
-fun thisWeekKey(): Int {
-    val c = java.util.Calendar.getInstance()
-    return c.get(java.util.Calendar.YEAR) * 100 + c.get(java.util.Calendar.WEEK_OF_YEAR)
-}

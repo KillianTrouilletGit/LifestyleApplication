@@ -8,27 +8,42 @@ import com.example.personallevelingsystem.data.UserDao
 import com.example.personallevelingsystem.model.User
 import com.example.personallevelingsystem.util.MissionPrefs
 import com.example.personallevelingsystem.util.NotificationUtils
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
 class UserRepository(private val userDao: UserDao, private val context: Context) {
 
+    companion object {
+        /** The app is single-user: every XP / profile path targets this row. */
+        const val DEFAULT_USER_ID = 1
+    }
+
+    /**
+     * Returns the operator row, creating it if the table is still empty.
+     * Called at app start and defensively from [addXp] so XP is never dropped
+     * on a fresh install before the profile has been filled in.
+     */
+    suspend fun ensureDefaultUser(): User {
+        userDao.getUserById(DEFAULT_USER_ID)?.let { return it }
+        val user = User(id = DEFAULT_USER_ID, name = "Operator", weight = 0f, height = 0f, dateOfBirth = "")
+        userDao.insert(user)
+        return user
+    }
+
     suspend fun addXp(userId: Int, xpToAdd: Int) {
         val user = userDao.getUserById(userId)
-        user?.let {
-            val oldLevel = it.level
-            it.xp += xpToAdd
-            var xpForNextLevel = calculateXpForNextLevel(it.level)
-            while (it.xp >= xpForNextLevel) {
-                it.xp -= xpForNextLevel
-                it.level += 1
-                xpForNextLevel = calculateXpForNextLevel(it.level)
-            }
-            userDao.update(it)
-            checkLevelUp(it, oldLevel)
+            ?: if (userId == DEFAULT_USER_ID) ensureDefaultUser() else return
+        val oldLevel = user.level
+        user.xp += xpToAdd
+        var xpForNextLevel = calculateXpForNextLevel(user.level)
+        while (user.xp >= xpForNextLevel) {
+            user.xp -= xpForNextLevel
+            user.level += 1
+            xpForNextLevel = calculateXpForNextLevel(user.level)
         }
+        userDao.update(user)
+        checkLevelUp(user, oldLevel)
     }
 
     suspend fun insertUser(user: User) {
@@ -57,14 +72,6 @@ class UserRepository(private val userDao: UserDao, private val context: Context)
         return userDao.getUserByName(name)
     }
 
-    suspend fun createDefaultUser() {
-        val user = userDao.getUserByName("User")
-        if (user == null) {
-            val defaultUser = User(name = "User", weight = 0f, height = 0f, dateOfBirth = "NONE")
-            userDao.insert(defaultUser)
-        }
-    }
-
     fun calculateXpForNextLevel(level: Int): Int {
         return 100 * level * level
     }
@@ -83,22 +90,19 @@ class UserRepository(private val userDao: UserDao, private val context: Context)
         }
     }
     suspend fun calculateDailyRequiredKcal(userId: Int): Double? {
-        val user = userDao.getUserById(userId)
-        return user?.let {
-            val age = calculateAge(it.dateOfBirth)
-            val bmr = 88.362 + (13.397 * it.weight) + (4.799 * it.height) - (5.677 * age)
-            val activityFactor = 1.55 // Moderate activity level
-            bmr * activityFactor
-        }
+        val user = userDao.getUserById(userId) ?: return null
+        val age = calculateAge(user.dateOfBirth) ?: return null
+        val bmr = 88.362 + (13.397 * user.weight) + (4.799 * user.height) - (5.677 * age)
+        val activityFactor = 1.55 // Moderate activity level
+        return bmr * activityFactor
     }
-    private fun calculateAge(dateOfBirth: String): Int {
+    /** Null when the stored date of birth is empty or not yyyy-MM-dd. */
+    private fun calculateAge(dateOfBirth: String): Int? {
+        if (dateOfBirth.isBlank()) return null
         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val dob = sdf.parse(dateOfBirth)
+        val dob = try { sdf.parse(dateOfBirth) } catch (e: ParseException) { null } ?: return null
         val today = Calendar.getInstance()
-        val birthDate = Calendar.getInstance()
-        if (dob != null) {
-            birthDate.time = dob
-        }
+        val birthDate = Calendar.getInstance().apply { time = dob }
 
         var age = today.get(Calendar.YEAR) - birthDate.get(Calendar.YEAR)
         if (today.get(Calendar.DAY_OF_YEAR) < birthDate.get(Calendar.DAY_OF_YEAR)) {

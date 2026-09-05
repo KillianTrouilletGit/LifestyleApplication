@@ -39,8 +39,21 @@ interface TrainingSessionDao {
     """)
     suspend fun getCompletedSessionsForProgramInWeek(programId: Long, startOfWeek: Long, endOfWeek: Long): List<TrainingSession>
 
-    @Query("SELECT * FROM training_sets WHERE exerciseId = :exerciseId AND trainingSessionId < :currentSessionId ORDER BY trainingSessionId DESC LIMIT :limit")
-    fun getPreviousTrainingSets(exerciseId: Long, currentSessionId: Long, limit: Int = 1): List<TrainingSet>
+    /**
+     * Sets logged for this exercise in the most recent earlier session, in the
+     * order they were entered (set 1 first). TrainingSet has no set index, so
+     * insertion order (id) is the only thing that identifies "set N".
+     */
+    @Query("""
+        SELECT * FROM training_sets
+        WHERE exerciseId = :exerciseId
+          AND trainingSessionId = (
+              SELECT MAX(trainingSessionId) FROM training_sets
+              WHERE exerciseId = :exerciseId AND trainingSessionId < :currentSessionId
+          )
+        ORDER BY id ASC
+    """)
+    fun getPreviousTrainingSets(exerciseId: Long, currentSessionId: Long): List<TrainingSet>
 
     @Query("SELECT * FROM training_sessions WHERE date >= :startOfWeek AND date <= :endOfWeek")
     suspend fun getTrainingSessionsForWeek(startOfWeek: Long, endOfWeek: Long): List<TrainingSession>

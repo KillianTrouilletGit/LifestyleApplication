@@ -6,9 +6,11 @@ import androidx.work.WorkerParameters
 import com.example.personallevelingsystem.data.AppDatabase
 import com.example.personallevelingsystem.model.MissionCategory
 import com.example.personallevelingsystem.repository.MissionRepository
+import com.example.personallevelingsystem.repository.UserRepository
 import com.example.personallevelingsystem.service.MissionAutoCompleter
 import com.example.personallevelingsystem.util.MissionPrefs
 import com.example.personallevelingsystem.util.NotificationUtils
+import com.example.personallevelingsystem.util.parseSleepHours
 import java.util.Calendar
 
 /**
@@ -41,7 +43,7 @@ class BriefingWorker(
         val (yStart, yEnd) = lastNightBounds()
 
         val sleepHours = db.SleepTimeDao().getSleepForDay(yStart, yEnd)
-            .sumOf { it.duration.replace("h", "").trim().toDoubleOrNull() ?: 0.0 }
+            .sumOf { parseSleepHours(it.duration).toDouble() }
             .toFloat()
 
         val incomplete = repo.getIncompleteDailyMissions()
@@ -66,13 +68,16 @@ class BriefingWorker(
         val weakest = ranked.lastOrNull()?.key ?: MissionCategory.PROGRESS
         val totalXp = xpMap.values.sum()
 
-        // Count any mission with streak >= 7 as "held"
+        // Count any mission with a live streak >= 7 as "held"
+        val autoCompleter = MissionAutoCompleter(applicationContext)
         val streaksHeld = MissionRepository(applicationContext).getDailyMissions()
-            .count { prefs.getStreak(it.id) >= 7 }
+            .count { autoCompleter.effectiveStreak(it) >= 7 }
 
         // Level is not strictly stored on prefs, but we can read user once.
         val db = AppDatabase.getDatabase(applicationContext)
-        val level = kotlinx.coroutines.runBlocking { db.userDao().getAll().firstOrNull()?.level ?: 1 }
+        val level = kotlinx.coroutines.runBlocking {
+            db.userDao().getUserById(UserRepository.DEFAULT_USER_ID)?.level ?: 1
+        }
 
         NotificationUtils.showWeeklyDebrief(
             context = applicationContext,

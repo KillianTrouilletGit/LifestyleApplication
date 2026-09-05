@@ -27,12 +27,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <receiver
-            android:name=".receiver.DailyMissionResetReceiver"
-            android:exported="false" />
-        <receiver
-            android:name=".receiver.WeeklyMissionResetReceiver"
-            android:exported="false" />
-        <receiver
             android:name=".receiver.NotificationActionReceiver"
             android:exported="false" />
 

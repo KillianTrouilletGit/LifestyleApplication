@@ -55,7 +55,7 @@ fun UserProfileScreen(
 
     LaunchedEffect(Unit) {
         if (user == null) {
-            viewModel.getUserById(1)
+            viewModel.getUserById(com.example.personallevelingsystem.repository.UserRepository.DEFAULT_USER_ID)
         }
     }
 
