@@ -1,5 +1,6 @@
 package com.example.personallevelingsystem.ui.compose.components
 
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -7,12 +8,17 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,13 +43,18 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.graphics.Brush
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.BorderGradient
+import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
 import com.example.personallevelingsystem.ui.compose.theme.CardGradient
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
+import com.example.personallevelingsystem.ui.compose.theme.DeepViolet
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
+import com.example.personallevelingsystem.ui.compose.theme.GlassFill
 import com.example.personallevelingsystem.ui.compose.theme.HologramText
 import com.example.personallevelingsystem.ui.compose.theme.Motion
 import com.example.personallevelingsystem.ui.compose.theme.TextSecondary
@@ -202,5 +213,85 @@ fun ArcStat(
             style = MaterialTheme.typography.headlineMedium.tabular,
             color = valueColor
         )
+    }
+}
+
+/** Thin rounded progress bar (no Material stop dot). */
+@Composable
+fun ArcProgressBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    color: Color = CrimsonRed,
+    trackColor: Color = color.copy(alpha = 0.15f),
+    height: Dp = 5.dp
+) {
+    val shape = RoundedCornerShape(height / 2)
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(height)
+            .clip(shape)
+            .background(trackColor)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxHeight()
+                .background(color, shape)
+        )
+    }
+}
+
+/** Two-to-four way pill switch with a sliding gradient indicator. */
+@Composable
+fun ArcSegmentedTabs(
+    options: List<String>,
+    selected: Int,
+    onSelect: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val pill = RoundedCornerShape(50)
+    BoxWithConstraints(
+        modifier = modifier
+            .height(44.dp)
+            .clip(pill)
+            .background(GlassFill)
+            .border(1.dp, BorderSubtle, pill)
+            .padding(4.dp)
+    ) {
+        val segmentWidth = maxWidth / options.size
+        val indicatorOffset by animateDpAsState(
+            targetValue = segmentWidth * selected,
+            animationSpec = Motion.standard(),
+            label = "segmentedIndicator"
+        )
+        Box(
+            modifier = Modifier
+                .offset(x = indicatorOffset)
+                .width(segmentWidth)
+                .fillMaxHeight()
+                .clip(pill)
+                .background(Brush.horizontalGradient(listOf(CrimsonRed, DeepViolet)))
+        )
+        Row(modifier = Modifier.fillMaxSize()) {
+            options.forEachIndexed { index, label ->
+                val interaction = remember { MutableInteractionSource() }
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable(interactionSource = interaction, indication = null) { onSelect(index) },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (index == selected) Color.White else TextSecondary,
+                        maxLines = 1
+                    )
+                }
+            }
+        }
     }
 }
