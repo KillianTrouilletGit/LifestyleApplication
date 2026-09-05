@@ -42,7 +42,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.BlendMode
-import com.example.personallevelingsystem.R
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Bedtime
+import androidx.compose.material.icons.rounded.CalendarMonth
+import androidx.compose.material.icons.rounded.FitnessCenter
+import androidx.compose.material.icons.rounded.Flag
+import androidx.compose.material.icons.rounded.Restaurant
+import androidx.compose.material.icons.rounded.WaterDrop
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.components.TopMissionsCard
@@ -53,7 +61,7 @@ import androidx.compose.runtime.livedata.observeAsState
 data class DashboardItem(
     val id: String,
     val title: String,
-    val iconRes: Int
+    val icon: ImageVector
 )
 
 @Composable
@@ -77,14 +85,12 @@ fun MainScreen(
     }
 
     val items = listOf(
-        DashboardItem("missions", "Missions", R.drawable.ic_missions_v2),
-        DashboardItem("training", "Training", R.drawable.ic_training_v2),
-        DashboardItem("nutrition", "Nutrition", R.drawable.ic_nutrition_v2),
-        DashboardItem("sleep", "Sleep", R.drawable.ic_sleep_v2),
-        DashboardItem("water", "Hydration", R.drawable.ic_water_v2),
-        DashboardItem("planning", "Planning", R.drawable.ic_planning_v2),
-        DashboardItem("profile", "Profile", R.drawable.ic_profile_v2),
-        DashboardItem("settings", "Settings", R.drawable.ic_settings_v2)
+        DashboardItem("missions", "Missions", Icons.Rounded.Flag),
+        DashboardItem("training", "Training", Icons.Rounded.FitnessCenter),
+        DashboardItem("nutrition", "Nutrition", Icons.Rounded.Restaurant),
+        DashboardItem("sleep", "Sleep", Icons.Rounded.Bedtime),
+        DashboardItem("water", "Hydration", Icons.Rounded.WaterDrop),
+        DashboardItem("planning", "Planning", Icons.Rounded.CalendarMonth)
     )
 
     val lazyGridState = rememberLazyGridState()
@@ -109,13 +115,6 @@ fun MainScreen(
                         translationY = lazyGridState.firstVisibleItemScrollOffset * 0.15f
                     }
                 }) {
-                    OperatorHeader(
-                        subtitle = "Operator OS",
-                        title = "System Dashboard"
-                    )
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
                     // Top missions surfaced from MissionViewModel (if available)
                     if (dailyMissions.isNotEmpty()) {
                         TopMissionsCard(
@@ -183,9 +182,10 @@ fun DashboardCard(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Image(
-                painter = painterResource(id = item.iconRes),
+            Icon(
+                imageVector = item.icon,
                 contentDescription = item.title,
+                tint = androidx.compose.ui.graphics.Color.White,
                 modifier = Modifier
                     .size(if (isHero) 56.dp else 40.dp)
                     .graphicsLayer { 

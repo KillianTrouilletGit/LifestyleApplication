@@ -1,6 +1,5 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -9,15 +8,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.DirectionsRun
+import androidx.compose.material.icons.automirrored.rounded.ListAlt
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.PlayArrow
+import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.personallevelingsystem.ui.compose.components.JuicyButton
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.components.ArcButton
+import com.example.personallevelingsystem.ui.compose.components.ArcListRow
+import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import com.example.personallevelingsystem.ui.compose.theme.SignalCyan
 
 @Composable
 fun TrainingScreen(
@@ -25,64 +31,56 @@ fun TrainingScreen(
     onViewProgramsClick: () -> Unit,
     onStartProgramClick: () -> Unit,
     onStartFlexibilityClick: () -> Unit,
-    onStartEnduranceClick: () -> Unit,
-    onBackClick: () -> Unit
+    onStartEnduranceClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(DesignSystem.Padding)
             .verticalScroll(rememberScrollState())
+            .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Protocol", title = "Training Module")
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        JuicyButton(
-            onClick = onCreateProgramClick,
-            text = "CREATE NEW PROGRAM",
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        JuicyButton(
-            onClick = onViewProgramsClick,
-            text = "VIEW EXISTING PROGRAMS",
-            modifier = Modifier.fillMaxWidth()
-        )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        JuicyButton(
+        ArcButton(
+            text = "Start a session",
+            subtitle = "Pick a program session and go",
+            icon = Icons.Rounded.PlayArrow,
             onClick = onStartProgramClick,
-            text = "START PROGRAM TRAINING",
             modifier = Modifier.fillMaxWidth()
         )
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
-        JuicyButton(
-            onClick = onStartFlexibilityClick,
-            text = "START FLEXIBILITY TRAINING",
-            modifier = Modifier.fillMaxWidth()
+
+        ArcSectionLabel(text = "Programs")
+        ArcListRow(
+            title = "Program archive",
+            subtitle = "Browse sessions, inspect exercise history",
+            icon = Icons.AutoMirrored.Rounded.ListAlt,
+            onClick = onViewProgramsClick
         )
-        
+        Spacer(modifier = Modifier.height(10.dp))
+        ArcListRow(
+            title = "Create a program",
+            subtitle = "Sessions, exercises and set counts",
+            icon = Icons.Rounded.Add,
+            onClick = onCreateProgramClick
+        )
+
         Spacer(modifier = Modifier.height(24.dp))
-        
-        JuicyButton(
-            onClick = onStartEnduranceClick,
-            text = "START ENDURANCE TRAINING",
-            modifier = Modifier.fillMaxWidth()
+
+        ArcSectionLabel(text = "Conditioning")
+        ArcListRow(
+            title = "Flexibility",
+            subtitle = "Timed mobility block",
+            icon = Icons.Rounded.SelfImprovement,
+            tint = SignalCyan,
+            onClick = onStartFlexibilityClick
         )
-        
-        Spacer(modifier = Modifier.height(48.dp))
-        
-        JuicyButton(
-            onClick = onBackClick,
-            text = "RETURN TO MAIN",
-            modifier = Modifier.fillMaxWidth()
+        Spacer(modifier = Modifier.height(10.dp))
+        ArcListRow(
+            title = "Endurance",
+            subtitle = "Timed run with distance",
+            icon = Icons.AutoMirrored.Rounded.DirectionsRun,
+            tint = SignalCyan,
+            onClick = onStartEnduranceClick
         )
     }
 }
@@ -91,6 +89,6 @@ fun TrainingScreen(
 @Composable
 fun TrainingScreenPreview() {
     PersonalLevelingSystemTheme {
-        TrainingScreen({}, {}, {}, {}, {}, {})
+        TrainingScreen({}, {}, {}, {}, {})
     }
 }

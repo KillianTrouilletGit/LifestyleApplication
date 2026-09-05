@@ -61,8 +61,7 @@ import com.example.personallevelingsystem.util.uriToBitmap
 @Composable
 fun NutritionScreen(
     viewModel: HealthViewModel,
-    foodAnalysisViewModel: FoodAnalysisViewModel,
-    onBackClick: () -> Unit
+    foodAnalysisViewModel: FoodAnalysisViewModel
 ) {
     var foodQuery by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
@@ -127,7 +126,6 @@ fun NutritionScreen(
             .padding(DesignSystem.Padding)
             .verticalScroll(scrollState)
     ) {
-        OperatorHeader(subtitle = "Fuel Management", title = "Nutrition Monitor")
         
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -311,13 +309,6 @@ fun NutritionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        JuicyButton(
-            text = "RETURN",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 

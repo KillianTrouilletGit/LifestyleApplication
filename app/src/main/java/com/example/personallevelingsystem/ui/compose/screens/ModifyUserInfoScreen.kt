@@ -33,8 +33,7 @@ import com.example.personallevelingsystem.viewmodel.UserViewModel
 @Composable
 fun ModifyUserInfoScreen(
     viewModel: UserViewModel,
-    onSaveClick: () -> Unit,
-    onBackClick: () -> Unit
+    onSaveClick: () -> Unit
 ) {
     val user by viewModel.user.observeAsState()
 
@@ -91,8 +90,7 @@ fun ModifyUserInfoScreen(
                  viewModel.insertUser(updatedUser)
              }
              onSaveClick()
-        },
-        onBackClick = onBackClick
+        }
     )
 }
 
@@ -106,8 +104,7 @@ fun ModifyUserInfoContent(
     onHeightChange: (String) -> Unit,
     dob: String,
     onDobChange: (String) -> Unit,
-    onSaveClick: () -> Unit,
-    onBackClick: () -> Unit
+    onSaveClick: () -> Unit
 ) {
     // Date Picker Logic
     val context = androidx.compose.ui.platform.LocalContext.current
@@ -143,10 +140,6 @@ fun ModifyUserInfoContent(
             .padding(DesignSystem.Padding)
             .verticalScroll(rememberScrollState())
     ) {
-        OperatorHeader(subtitle = "Credentials", title = "Update Info")
-
-        Spacer(modifier = Modifier.height(24.dp))
-
         JuicyInput(
             value = name,
             onValueChange = onNameChange,
@@ -195,11 +188,6 @@ fun ModifyUserInfoContent(
         
         Spacer(modifier = Modifier.height(16.dp))
         
-        JuicyButton(
-            onClick = onBackClick,
-            text = "CANCEL",
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -216,8 +204,7 @@ fun ModifyUserInfoPreview() {
             onHeightChange = {},
             dob = "1990-01-01",
             onDobChange = {},
-            onSaveClick = {},
-            onBackClick = {}
+            onSaveClick = {}
         )
     }
 }

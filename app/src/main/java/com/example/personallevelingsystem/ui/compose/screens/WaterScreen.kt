@@ -38,10 +38,7 @@ import com.example.personallevelingsystem.viewmodel.HealthViewModel
 private val QUICK_ADD_ML = listOf(250f, 500f, 750f)
 
 @Composable
-fun WaterScreen(
-    viewModel: HealthViewModel,
-    onBackClick: () -> Unit
-) {
+fun WaterScreen(viewModel: HealthViewModel) {
     val totalWaterMl by viewModel.totalWaterToday.observeAsState(initial = 0f)
     val targetMl by viewModel.waterTargetMl.observeAsState(initial = 2500f)
     var inputAmount by remember { mutableStateOf("") }
@@ -63,8 +60,7 @@ fun WaterScreen(
                 viewModel.saveWater(amount)
                 inputAmount = "" // Reset input
             }
-        },
-        onBackClick = onBackClick
+        }
     )
 }
 
@@ -75,8 +71,7 @@ fun WaterContent(
     inputAmount: String,
     onInputChange: (String) -> Unit,
     onQuickAdd: (Float) -> Unit,
-    onSave: () -> Unit,
-    onBackClick: () -> Unit
+    onSave: () -> Unit
 ) {
     val ratio = if (targetMl > 0f) (totalWaterMl / targetMl).coerceIn(0f, 1f) else 0f
     val quotaMet = targetMl > 0f && totalWaterMl >= targetMl
@@ -87,10 +82,6 @@ fun WaterContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Hydration Monitor", title = "H2O Levels")
-
-        Spacer(modifier = Modifier.height(32.dp))
-
         // Display current status
         Column(
             modifier = Modifier.fillMaxWidth(),
@@ -155,13 +146,6 @@ fun WaterContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        JuicyButton(
-            text = "RETURN",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -175,8 +159,7 @@ fun WaterScreenPreview() {
             inputAmount = "500",
             onInputChange = {},
             onQuickAdd = {},
-            onSave = {},
-            onBackClick = {}
+            onSave = {}
         )
     }
 }

@@ -75,7 +75,6 @@ fun EnduranceContent(
             .padding(DesignSystem.Padding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OperatorHeader(subtitle = "Stamina Module", title = "Endurance")
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -143,12 +142,13 @@ fun EnduranceContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        JuicyButton(
-            text = "ABORT / RETURN",
+        com.example.personallevelingsystem.ui.compose.components.ArcGhostButton(
+            text = "Abort session",
             onClick = {
                 onStopTimer()
                 onBackClick()
             },
+            tint = com.example.personallevelingsystem.ui.compose.theme.CrimsonRed,
             modifier = Modifier.fillMaxWidth()
         )
     }

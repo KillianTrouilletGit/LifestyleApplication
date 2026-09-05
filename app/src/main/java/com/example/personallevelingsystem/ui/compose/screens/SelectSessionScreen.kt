@@ -38,8 +38,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 @Composable
 fun SelectSessionScreen(
     programs: List<ProgramWithSessions>, // Will come from ViewModel
-    onSessionClick: (Long) -> Unit,
-    onBackClick: () -> Unit
+    onSessionClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -47,10 +46,6 @@ fun SelectSessionScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Select Session", title = "Initiate Protocol")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -75,12 +70,6 @@ fun SelectSessionScreen(
                 }
             }
         }
-
-        JuicyButton(
-            onClick = onBackClick,
-            text = "BACK TO MENU",
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -154,8 +143,7 @@ fun SelectSessionScreenPreview() {
                     sessions = emptyList()
                 )
             ),
-            onSessionClick = {},
-            onBackClick = {}
+            onSessionClick = {}
         )
     }
 }

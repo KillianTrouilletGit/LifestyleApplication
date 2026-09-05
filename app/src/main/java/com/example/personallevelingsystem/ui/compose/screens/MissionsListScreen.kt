@@ -76,7 +76,6 @@ import kotlinx.coroutines.delay
 @Composable
 fun MissionsListScreen(
     viewModel: MissionViewModel,
-    onBackClick: () -> Unit,
     onDeeplink: (String) -> Unit = {}
 ) {
     val dailyMissions by viewModel.dailyMissions.observeAsState(initial = emptyList())
@@ -96,8 +95,7 @@ fun MissionsListScreen(
             onMissionCheck = { mission ->
                 viewModel.completeMission(mission)
             },
-            onDeeplink = onDeeplink,
-            onBackClick = onBackClick
+            onDeeplink = onDeeplink
         )
         StreakCelebrationOverlay(
             streak = celebration,
@@ -115,8 +113,7 @@ fun MissionsListContent(
     streaks: Map<String, Int>,
     categoryXp: Map<MissionCategory, Int>,
     onMissionCheck: (Mission) -> Unit,
-    onDeeplink: (String) -> Unit,
-    onBackClick: () -> Unit
+    onDeeplink: (String) -> Unit
 ) {
     val dailyDone = dailyMissions.count { it.isCompleted }
     val weeklyDone = weeklyMissions.count { it.isCompleted }
@@ -133,10 +130,6 @@ fun MissionsListContent(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            item {
-                OperatorHeader(subtitle = "Objectives", title = "Active Missions")
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
             // Specialization summary
             if (categoryXp.values.any { it > 0 }) {
@@ -186,13 +179,6 @@ fun MissionsListContent(
             }
         }
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        JuicyButton(
-            onClick = onBackClick,
-            text = "CLOSE",
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

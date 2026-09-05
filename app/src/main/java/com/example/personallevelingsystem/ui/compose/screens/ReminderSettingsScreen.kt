@@ -32,8 +32,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.personallevelingsystem.ui.compose.components.JuicyButton
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Palette
+import com.example.personallevelingsystem.ui.compose.components.ArcListRow
+import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.HologramText
@@ -62,7 +64,7 @@ private val ALL_SLOTS = listOf(
 )
 
 @Composable
-fun ReminderSettingsScreen(onBackClick: () -> Unit) {
+fun ReminderSettingsScreen(onOpenStyleLab: () -> Unit) {
     val context = LocalContext.current
     val prefs = remember { MissionPrefs.get(context) }
 
@@ -78,10 +80,17 @@ fun ReminderSettingsScreen(onBackClick: () -> Unit) {
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Settings", title = "Reminder Tuning")
-
         LazyColumn(modifier = Modifier.weight(1f).fillMaxWidth()) {
             item {
+                SettingsSection("APPEARANCE") {
+                    ArcListRow(
+                        title = "Style Lab",
+                        subtitle = "Compare button styles, cards, palette and type on device.",
+                        icon = Icons.Rounded.Palette,
+                        tint = AccentViolet,
+                        onClick = onOpenStyleLab
+                    )
+                }
                 SettingsSection("GLOBAL") {
                     ToggleRow(
                         label = "Notifications",
@@ -124,7 +133,6 @@ fun ReminderSettingsScreen(onBackClick: () -> Unit) {
             }
         }
 
-        JuicyButton(text = "DONE", onClick = onBackClick, modifier = Modifier.fillMaxWidth())
     }
 }
 
@@ -133,7 +141,7 @@ private fun SettingsSection(title: String, content: @Composable () -> Unit) {
     Spacer(modifier = Modifier.height(4.dp))
     Text(
         text = title,
-        color = com.example.personallevelingsystem.ui.compose.theme.AccentViolet,
+        color = AccentViolet,
         style = MaterialTheme.typography.labelMedium,
         letterSpacing = 1.5.sp,
         fontWeight = FontWeight.Bold,

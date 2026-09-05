@@ -18,8 +18,11 @@
         <item name="android:windowIsTranslucent">true</item>
     </style>
 
-    <style name="Theme.PersonalLevelingSystem" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your theme here. -->
+    <style name="Theme.PersonalLevelingSystem" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 
     <!-- Protocol Design System Styles -->

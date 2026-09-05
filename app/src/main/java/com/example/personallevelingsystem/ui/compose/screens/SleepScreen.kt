@@ -41,8 +41,7 @@ fun SleepScreen(
                 viewModel.saveSleep(duration)
                 onBackClick() // Go back after saving
             }
-        },
-        onBackClick = onBackClick
+        }
     )
 }
 
@@ -50,8 +49,7 @@ fun SleepScreen(
 fun SleepContent(
     duration: String,
     onDurationChange: (String) -> Unit,
-    onSave: () -> Unit,
-    onBackClick: () -> Unit
+    onSave: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -59,10 +57,6 @@ fun SleepContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Recovery Module", title = "Sleep Monitor")
-
-        Spacer(modifier = Modifier.height(32.dp))
-
         Text(
             text = "ENTER DURATION (HH:MM)",
             style = MaterialTheme.typography.labelMedium,
@@ -110,13 +104,6 @@ fun SleepContent(
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        JuicyButton(
-            text = "RETURN",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -127,8 +114,7 @@ fun SleepScreenPreview() {
         SleepContent(
             duration = "07:30",
             onDurationChange = {},
-            onSave = {},
-            onBackClick = {}
+            onSave = {}
         )
     }
 }

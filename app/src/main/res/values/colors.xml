@@ -9,10 +9,10 @@
     <color name="white">#FFFFFFFF</color>
     
     <!-- Red Design System Mapping -->
-    <color name="primaryColor">#E63946</color> <!-- CrimsonRed -->
-    <color name="accentColor">#D90429</color>   <!-- RubyRed -->
-    <color name="backgroundColor">#000000</color> <!-- SpaceBlack -->
-    <color name="textColor">#CCFFFFFF</color>     <!-- HologramText -->
+    <color name="primaryColor">#E5484D</color> <!-- CrimsonRed -->
+    <color name="accentColor">#6E56CF</color>   <!-- DeepViolet -->
+    <color name="backgroundColor">#0C0B10</color> <!-- SpaceBlack -->
+    <color name="textColor">#EDEAF4</color>     <!-- TextPrimary -->
     <color name="ic_launcher_background">#000000</color>
     <color name="ic_launcher_foreground">#E63946</color>
 </resources>

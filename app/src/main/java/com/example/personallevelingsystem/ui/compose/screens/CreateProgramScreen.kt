@@ -40,7 +40,6 @@ import com.example.personallevelingsystem.viewmodel.TrainingViewModel
 @Composable
 fun CreateProgramScreen(
     viewModel: TrainingViewModel,
-    onBackClick: () -> Unit,
     onSaveSuccess: () -> Unit
 ) {
     var programName by remember { mutableStateOf("") }
@@ -95,8 +94,7 @@ fun CreateProgramScreen(
                  viewModel.saveProgram(programName, newSessions)
                  onSaveSuccess()
              }
-        },
-        onBackClick = onBackClick
+        }
     )
 }
 
@@ -121,8 +119,7 @@ fun CreateProgramContent(
     onAddExercise: (Int) -> Unit,
     onRemoveExercise: (Int, Int) -> Unit,
     onUpdateExercise: (Int, Int, String, String) -> Unit,
-    onSave: () -> Unit,
-    onBackClick: () -> Unit
+    onSave: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -130,7 +127,6 @@ fun CreateProgramContent(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Architect", title = "Create Program")
         
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -224,11 +220,6 @@ fun CreateProgramContent(
         
         Spacer(modifier = Modifier.height(16.dp))
 
-        JuicyButton(
-            text = "ABORT / RETURN",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -248,8 +239,7 @@ fun CreateProgramPreview() {
             onAddExercise = {},
             onRemoveExercise = {_,_ ->},
             onUpdateExercise = {_,_,_,_ ->},
-            onSave = {},
-            onBackClick = {}
+            onSave = {}
         )
     }
 }

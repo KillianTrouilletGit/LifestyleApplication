@@ -104,12 +104,6 @@ fun TrainingSessionContent(
         // Loading or Empty State
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No Exercises Found or Loading...", color = MaterialTheme.colorScheme.primary)
-            // Ideally provide a back button here too if stuck
-             JuicyButton(
-                onClick = onBackClick,
-                text = "GO BACK",
-                modifier = Modifier.padding(top = 100.dp)
-            )
         }
         return
     }
@@ -167,9 +161,10 @@ fun TrainingSessionContent(
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(16.dp))
-                JuicyButton(
+                com.example.personallevelingsystem.ui.compose.components.ArcGhostButton(
                     onClick = onBackClick,
-                    text = "END SESSION",
+                    tint = com.example.personallevelingsystem.ui.compose.theme.CrimsonRed,
+                    text = "End session",
                     modifier = Modifier.fillMaxWidth() 
                 )
             }

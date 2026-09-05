@@ -45,8 +45,7 @@ import java.util.Locale
 
 @Composable
 fun PlanningScreen(
-    missionViewModel: MissionViewModel,
-    onBackClick: () -> Unit
+    missionViewModel: MissionViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -165,8 +164,6 @@ fun PlanningScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Google Link", title = "Weekly Protocol")
-
         if (errorMessage != null) {
             Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
             Spacer(modifier = Modifier.height(8.dp))
@@ -211,11 +208,6 @@ fun PlanningScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         )
 
-        JuicyButton(
-            text = "RETURN TO DASHBOARD",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 

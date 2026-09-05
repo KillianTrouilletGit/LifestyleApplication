@@ -73,7 +73,6 @@ fun FlexibilityContent(
             .padding(DesignSystem.Padding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OperatorHeader(subtitle = "Mobility Protocol", title = "Flexibility")
 
         Spacer(modifier = Modifier.weight(1f))
 
@@ -130,12 +129,13 @@ fun FlexibilityContent(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        JuicyButton(
-            text = "ABORT / RETURN",
+        com.example.personallevelingsystem.ui.compose.components.ArcGhostButton(
+            text = "Abort session",
             onClick = {
                 onStopTimer()
                 onBackClick()
             },
+            tint = com.example.personallevelingsystem.ui.compose.theme.CrimsonRed,
             modifier = Modifier.fillMaxWidth()
         )
     }

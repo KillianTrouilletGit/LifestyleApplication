@@ -41,7 +41,6 @@ import com.example.personallevelingsystem.viewmodel.UserViewModel
 @Composable
 fun UserProfileScreen(
     viewModel: UserViewModel,
-    onBackClick: () -> Unit,
     onModifyClick: () -> Unit
 ) {
     val user by viewModel.user.observeAsState()
@@ -62,7 +61,6 @@ fun UserProfileScreen(
     UserProfileContent(
         user = user,
         maxXp = maxXp,
-        onBackClick = onBackClick,
         onModifyClick = onModifyClick
     )
 }
@@ -71,7 +69,6 @@ fun UserProfileScreen(
 fun UserProfileContent(
     user: User?,
     maxXp: Int,
-    onBackClick: () -> Unit,
     onModifyClick: () -> Unit
 ) {
     Column(
@@ -81,7 +78,6 @@ fun UserProfileContent(
             .padding(DesignSystem.Padding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        OperatorHeader(subtitle = "Identity", title = "Operator Profile")
         
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -151,13 +147,6 @@ fun UserProfileContent(
             trackColor = MaterialTheme.colorScheme.surfaceVariant,
         )
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        JuicyButton(
-            onClick = onBackClick,
-            text = "BACK",
-            modifier = Modifier.align(Alignment.Start)
-        )
     }
 }
 
@@ -176,7 +165,6 @@ fun UserProfilePreview() {
                 dateOfBirth = "2000-01-01"
             ),
             maxXp = 1000,
-            onBackClick = {},
             onModifyClick = {}
         )
     }
