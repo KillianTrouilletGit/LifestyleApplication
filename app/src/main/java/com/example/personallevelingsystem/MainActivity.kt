@@ -106,9 +106,17 @@ class MainActivity : ComponentActivity() {
                 fun openTab(tab: ArcTab) {
                     navController.navigate(tab.route) {
                         launchSingleTop = true
-                        restoreState = true
+                        // Navigation keys the state saved by popUpTo on the popUpTo destination
+                        // itself, so restoring while targeting Home would re-push the tab we
+                        // just left and land back on it.
+                        restoreState = tab != ArcTab.Home
                         popUpTo(ArcTab.Home.route) { saveState = true }
                     }
+                }
+
+                fun navigateTo(route: String) {
+                    val tab = ArcTab.entries.firstOrNull { it.route == route }
+                    if (tab != null) openTab(tab) else navController.navigate(route)
                 }
 
                 fun viewModels() = MigrationViewModelFactory(application)
@@ -126,7 +134,7 @@ class MainActivity : ComponentActivity() {
                                 ArcTopBar(
                                     chrome = chrome,
                                     onBack = if (currentTab == null) ({ popBackStackSafe() }) else null,
-                                    onAction = { navController.navigate(it.route) },
+                                    onAction = { navigateTo(it.route) },
                                     onProfile = { navController.navigate("profile") },
                                     onSettings = { navController.navigate("settings") }
                                 )
@@ -167,7 +175,7 @@ class MainActivity : ComponentActivity() {
                                         }
                                         // Honor deeplink_route from notification taps
                                         intent?.getStringExtra("deeplink_route")?.takeIf { it.isNotBlank() }?.let { route ->
-                                            navController.navigate(route)
+                                            navigateTo(route)
                                             intent.removeExtra("deeplink_route")
                                         }
                                     }
@@ -194,7 +202,7 @@ class MainActivity : ComponentActivity() {
                                 val missionViewModel = ViewModelProvider(this@MainActivity, viewModels())[MissionViewModel::class.java]
 
                                 MainScreen(
-                                    onNavigate = { destination -> navController.navigate(destination) },
+                                    onNavigate = { destination -> navigateTo(destination) },
                                     performanceViewModel = performanceViewModel,
                                     healthViewModel = healthViewModel,
                                     missionViewModel = missionViewModel
@@ -204,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                 val viewModel = ViewModelProvider(this@MainActivity, viewModels())[MissionViewModel::class.java]
                                 MissionsListScreen(
                                     viewModel = viewModel,
-                                    onDeeplink = { route -> navController.navigate(route) }
+                                    onDeeplink = { route -> navigateTo(route) }
                                 )
                             }
                             composable("training") {
