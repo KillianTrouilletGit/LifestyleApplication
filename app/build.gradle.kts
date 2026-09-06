@@ -32,6 +32,38 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY")}\"")
     }
 
+    // Release signing reads from local.properties (gitignored) so the keystore
+    // and its passwords never touch version control. Missing on a given
+    // machine -> release build stays unsigned (still built, just not installable).
+    val releaseStoreFile = properties.getProperty("RELEASE_STORE_FILE")
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = properties.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
+                keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            if (releaseStoreFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+        debug {
+            // Unchanged — debug keystore, no shrinking, matches every prior build.
+        }
+    }
+
     buildFeatures {
         compose = true
         viewBinding = true
