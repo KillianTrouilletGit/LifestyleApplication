@@ -1,9 +1,10 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.android")
-    id("kotlin-kapt")
-    id("com.google.gms.google-services")
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
 }
 
 
@@ -31,14 +32,42 @@ android {
         buildConfigField("String", "GEMINI_API_KEY", "\"${properties.getProperty("GEMINI_API_KEY")}\"")
     }
 
+    // Release signing reads from local.properties (gitignored) so the keystore
+    // and its passwords never touch version control. Missing on a given
+    // machine -> release build stays unsigned (still built, just not installable).
+    val releaseStoreFile = properties.getProperty("RELEASE_STORE_FILE")
+    signingConfigs {
+        if (releaseStoreFile != null) {
+            create("release") {
+                storeFile = file(releaseStoreFile)
+                storePassword = properties.getProperty("RELEASE_STORE_PASSWORD")
+                keyAlias = properties.getProperty("RELEASE_KEY_ALIAS")
+                keyPassword = properties.getProperty("RELEASE_KEY_PASSWORD")
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            if (releaseStoreFile != null) {
+                signingConfig = signingConfigs.getByName("release")
+            }
+        }
+        debug {
+            // Unchanged — debug keystore, no shrinking, matches every prior build.
+        }
+    }
+
     buildFeatures {
         compose = true
         viewBinding = true
         buildConfig = true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
     }
 
     compileOptions {
@@ -65,15 +94,17 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
+    implementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
-    implementation("androidx.compose.ui:ui:1.6.8")
-    implementation("androidx.compose.material3:material3:1.2.1")
-    implementation("androidx.compose.ui:ui-tooling-preview:1.6.8")
-    implementation("androidx.activity:activity-compose:1.9.0")
-    implementation("androidx.navigation:navigation-compose:2.7.7")
-    implementation("androidx.compose.runtime:runtime-livedata:1.6.8")
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material.icons.extended)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.google.api.client.android)
     implementation("com.google.http-client:google-http-client-gson:1.40.1")
     implementation("com.google.apis:google-api-services-calendar:v3-rev20220715-2.0.0")
@@ -95,19 +126,16 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.work.runtime.ktx)
 
-    kapt("androidx.room:room-compiler:2.6.1")
+    ksp("androidx.room:room-compiler:2.6.1")
     implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.work:work-runtime-ktx:2.9.0")
-    androidTestImplementation("androidx.compose.ui:ui-test-junit4:1.6.8")
-    debugImplementation("androidx.compose.ui:ui-tooling:1.6.8")
-    implementation("com.google.android.material:material:1.12.0")
+    androidTestImplementation(libs.androidx.ui.test.junit4)
+    debugImplementation(libs.androidx.ui.tooling)
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-    
-    implementation("com.google.android.gms:play-services-auth:20.5.0")
+
     implementation("com.google.android.gms:play-services-auth:20.5.0")
     // implementation("com.google.cloud:google-cloud-datastore:2.1.0") // Removed for GitHub cleanup
     implementation(libs.google.ai.client.generativeai)

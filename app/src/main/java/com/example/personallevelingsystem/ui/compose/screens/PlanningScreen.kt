@@ -22,7 +22,6 @@ import com.example.personallevelingsystem.R
 import com.example.personallevelingsystem.model.MissionType
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PlacementSpring
 import com.example.personallevelingsystem.ui.compose.theme.PrimaryAccent
@@ -45,8 +44,7 @@ import java.util.Locale
 
 @Composable
 fun PlanningScreen(
-    missionViewModel: MissionViewModel,
-    onBackClick: () -> Unit
+    missionViewModel: MissionViewModel
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -105,7 +103,7 @@ fun PlanningScreen(
                 val service = com.google.api.services.calendar.Calendar.Builder(
                     transport, jsonFactory, credential
                 )
-                .setApplicationName("Operator OS")
+                .setApplicationName("ARC")
                 .build()
 
                 val now = java.util.Calendar.getInstance()
@@ -165,8 +163,6 @@ fun PlanningScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Google Link", title = "Weekly Protocol")
-
         if (errorMessage != null) {
             Text(text = errorMessage!!, color = MaterialTheme.colorScheme.error)
             Spacer(modifier = Modifier.height(8.dp))
@@ -211,11 +207,6 @@ fun PlanningScreen(
             modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)
         )
 
-        JuicyButton(
-            text = "RETURN TO DASHBOARD",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 

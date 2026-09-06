@@ -1,32 +1,38 @@
 package com.example.personallevelingsystem.ui.compose.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Check
+import androidx.compose.material.icons.rounded.Pause
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.example.personallevelingsystem.ui.compose.components.JuicyButton
+import com.example.personallevelingsystem.R
+import com.example.personallevelingsystem.ui.compose.components.ArcButton
+import com.example.personallevelingsystem.ui.compose.components.ArcGhostButton
+import com.example.personallevelingsystem.ui.compose.components.ArcSectionLabel
+import com.example.personallevelingsystem.ui.compose.components.ArcTimerCard
 import com.example.personallevelingsystem.ui.compose.components.JuicyInput
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
+import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import com.example.personallevelingsystem.util.hapticConfirm
 import com.example.personallevelingsystem.viewmodel.TrainingViewModel
 import kotlinx.coroutines.delay
 
@@ -53,9 +59,10 @@ fun EnduranceContent(
     onSave: (Long, Float) -> Unit,
     onBackClick: () -> Unit
 ) {
+    val view = LocalView.current
     var isRunning by remember { mutableStateOf(false) }
-    var startTime by remember { mutableStateOf(0L) }
-    var elapsedTime by remember { mutableStateOf(0L) }
+    var startTime by remember { mutableLongStateOf(0L) }
+    var elapsedTime by remember { mutableLongStateOf(0L) }
     var distanceInput by remember { mutableStateOf("") }
 
     LaunchedEffect(isRunning) {
@@ -71,97 +78,88 @@ fun EnduranceContent(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .padding(DesignSystem.Padding),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Stamina Module", title = "Endurance")
+        Spacer(modifier = Modifier.weight(1f))
+
+        ArcTimerCard(elapsedMs = elapsedTime, running = isRunning)
 
         Spacer(modifier = Modifier.weight(1f))
 
-        // Timer Display
-        val seconds = (elapsedTime / 1000) % 60
-        val minutes = (elapsedTime / (1000 * 60)) % 60
-        val hours = (elapsedTime / (1000 * 60 * 60))
-        val timeString = String.format("%02d:%02d:%02d", hours, minutes, seconds)
-
-        Text(
-            text = timeString,
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontSize = 64.sp,
-                fontWeight = FontWeight.Bold,
-                fontFeatureSettings = "tnum"
-            ),
-            color = MaterialTheme.colorScheme.primary
-        )
-
-        Spacer(modifier = Modifier.weight(1f))
-        
+        ArcSectionLabel(text = stringResource(R.string.endurance_distance))
         JuicyInput(
             value = distanceInput,
             onValueChange = { distanceInput = it },
-            placeholder = "DISTANCE (KM)",
+            placeholder = stringResource(R.string.endurance_distance_hint),
             keyboardType = KeyboardType.Number,
             modifier = Modifier.fillMaxWidth()
         )
-        
-        Spacer(modifier = Modifier.height(24.dp))
-
-        if (!isRunning) {
-            JuicyButton(
-                text = if (elapsedTime > 0) "RESUME RUN" else "START RUN",
-                onClick = { 
-                    isRunning = true
-                    onStartTimer("Endurance Training")
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        } else {
-             JuicyButton(
-                text = "PAUSE",
-                onClick = { 
-                    isRunning = false
-                    onStopTimer()
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        JuicyButton(
-            text = "COMPLETE & SAVE",
+        ArcButton(
+            text = stringResource(
+                when {
+                    isRunning -> R.string.common_pause
+                    elapsedTime > 0L -> R.string.endurance_resume
+                    else -> R.string.endurance_start
+                }
+            ),
+            icon = if (isRunning) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+            showChevron = false,
             onClick = {
-                isRunning = false
-                onStopTimer()
-                val dist = distanceInput.toFloatOrNull() ?: 0f
-                onSave(elapsedTime, dist)
+                view.hapticConfirm()
+                if (isRunning) {
+                    isRunning = false
+                    onStopTimer()
+                } else {
+                    isRunning = true
+                    onStartTimer("Endurance Training")
+                }
             },
-            enabled = !isRunning && elapsedTime > 0,
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(10.dp))
 
-        JuicyButton(
-            text = "ABORT / RETURN",
+        ArcButton(
+            text = stringResource(R.string.common_complete_save),
+            icon = Icons.Rounded.Check,
+            showChevron = false,
+            enabled = !isRunning && elapsedTime > 0L,
+            onClick = {
+                view.hapticConfirm()
+                isRunning = false
+                onStopTimer()
+                onSave(elapsedTime, distanceInput.replace(',', '.').toFloatOrNull() ?: 0f)
+            },
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        ArcGhostButton(
+            text = stringResource(R.string.common_abort),
+            tint = CrimsonRed,
             onClick = {
                 onStopTimer()
                 onBackClick()
             },
             modifier = Modifier.fillMaxWidth()
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, backgroundColor = 0xFF0B0A10)
 @Composable
 fun EnduranceScreenPreview() {
     PersonalLevelingSystemTheme {
         EnduranceContent(
             onStartTimer = {},
             onStopTimer = {},
-            onSave = { _,_ -> },
+            onSave = { _, _ -> },
             onBackClick = {}
         )
     }

@@ -57,7 +57,6 @@ import com.example.personallevelingsystem.model.Program
 import com.example.personallevelingsystem.model.ProgramWithSessions
 import com.example.personallevelingsystem.model.SessionWithExercises
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.BorderSubtle
 import com.example.personallevelingsystem.ui.compose.theme.CrimsonRed
@@ -79,8 +78,7 @@ fun ViewProgramsScreen(
     programs: List<ProgramWithSessions>, // Will come from ViewModel
     exerciseHistory: List<ExerciseHistoryPoint>,
     onExerciseClick: (Exercise) -> Unit,
-    onDeleteProgram: (ProgramWithSessions) -> Unit,
-    onBackClick: () -> Unit
+    onDeleteProgram: (ProgramWithSessions) -> Unit
 ) {
     var inspectedExercise by remember { mutableStateOf<Exercise?>(null) }
 
@@ -90,10 +88,6 @@ fun ViewProgramsScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Database", title = "Program Archive")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -106,18 +100,10 @@ fun ViewProgramsScreen(
                         onExerciseClick(exercise)
                     },
                     onDelete = { onDeleteProgram(programWithSessions) },
-                    modifier = Modifier.animateItemPlacement(PlacementSpring)
+                    modifier = Modifier.animateItem(placementSpec = PlacementSpring)
                 )
             }
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        JuicyButton(
-            onClick = onBackClick,
-            text = "RETURN TO TRAINING",
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -440,8 +426,7 @@ fun ViewProgramsScreenPreview() {
             ),
             exerciseHistory = emptyList(),
             onExerciseClick = {},
-            onDeleteProgram = {},
-            onBackClick = {}
+            onDeleteProgram = {}
         )
     }
 }

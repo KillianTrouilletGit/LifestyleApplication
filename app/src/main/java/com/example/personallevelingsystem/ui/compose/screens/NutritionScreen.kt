@@ -48,7 +48,6 @@ import com.example.personallevelingsystem.model.Meal
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
 import com.example.personallevelingsystem.ui.compose.components.JuicyInput
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
 import com.example.personallevelingsystem.viewmodel.AnalysisState
@@ -61,8 +60,7 @@ import com.example.personallevelingsystem.util.uriToBitmap
 @Composable
 fun NutritionScreen(
     viewModel: HealthViewModel,
-    foodAnalysisViewModel: FoodAnalysisViewModel,
-    onBackClick: () -> Unit
+    foodAnalysisViewModel: FoodAnalysisViewModel
 ) {
     var foodQuery by remember { mutableStateOf("") }
     var quantity by remember { mutableStateOf("") }
@@ -127,7 +125,6 @@ fun NutritionScreen(
             .padding(DesignSystem.Padding)
             .verticalScroll(scrollState)
     ) {
-        OperatorHeader(subtitle = "Fuel Management", title = "Nutrition Monitor")
         
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -311,13 +308,6 @@ fun NutritionScreen(
             }
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        JuicyButton(
-            text = "RETURN",
-            onClick = onBackClick,
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 

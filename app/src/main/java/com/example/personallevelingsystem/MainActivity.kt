@@ -6,318 +6,341 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.personallevelingsystem.data.AppDatabase
 import com.example.personallevelingsystem.repository.UserRepository
+import com.example.personallevelingsystem.ui.compose.components.AmbientBackground
+import com.example.personallevelingsystem.ui.compose.components.ArcBottomBar
+import com.example.personallevelingsystem.ui.compose.components.ArcTab
+import com.example.personallevelingsystem.ui.compose.components.ArcTopBar
+import com.example.personallevelingsystem.ui.compose.components.ScreenChromes
+import com.example.personallevelingsystem.ui.compose.screens.BodyScreen
+import com.example.personallevelingsystem.ui.compose.screens.CreateProgramScreen
+import com.example.personallevelingsystem.ui.compose.screens.EnduranceScreen
+import com.example.personallevelingsystem.ui.compose.screens.FlexibilityScreen
 import com.example.personallevelingsystem.ui.compose.screens.MainScreen
 import com.example.personallevelingsystem.ui.compose.screens.MissionsListScreen
-import com.example.personallevelingsystem.ui.compose.screens.UserProfileScreen
-import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
-import com.example.personallevelingsystem.viewmodel.MissionViewModel
-import com.example.personallevelingsystem.ui.compose.screens.TrainingSessionScreen
+import com.example.personallevelingsystem.ui.compose.screens.ModifyUserInfoScreen
+import com.example.personallevelingsystem.ui.compose.screens.NutritionScreen
+import com.example.personallevelingsystem.ui.compose.screens.PlanningScreen
+import com.example.personallevelingsystem.ui.compose.screens.ReminderSettingsScreen
+import com.example.personallevelingsystem.ui.compose.screens.SelectSessionScreen
+import com.example.personallevelingsystem.ui.compose.screens.SleepScreen
+import com.example.personallevelingsystem.ui.compose.screens.SplashScreen
+import com.example.personallevelingsystem.ui.compose.screens.StyleLabScreen
 import com.example.personallevelingsystem.ui.compose.screens.TrainingScreen
+import com.example.personallevelingsystem.ui.compose.screens.TrainingSessionScreen
+import com.example.personallevelingsystem.ui.compose.screens.UserProfileScreen
+import com.example.personallevelingsystem.ui.compose.screens.ViewProgramsScreen
+import com.example.personallevelingsystem.ui.compose.screens.WaterScreen
+import com.example.personallevelingsystem.ui.compose.theme.ArcStyle
+import com.example.personallevelingsystem.ui.compose.theme.Motion
+import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
+import com.example.personallevelingsystem.viewmodel.FoodAnalysisViewModel
+import com.example.personallevelingsystem.viewmodel.HealthViewModel
+import com.example.personallevelingsystem.viewmodel.MissionViewModel
+import com.example.personallevelingsystem.viewmodel.PerformanceViewModel
+import com.example.personallevelingsystem.viewmodel.TrainingViewModel
 import com.example.personallevelingsystem.viewmodel.UserViewModel
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.Box
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 
+private val TabRoutes = ArcTab.entries.map { it.route }.toSet()
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("ComposableDestinationInComposeScope")
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT),
+            navigationBarStyle = SystemBarStyle.dark(android.graphics.Color.TRANSPARENT)
+        )
         super.onCreate(savedInstanceState)
+        ArcStyle.load(this)
+
         setContent {
             PersonalLevelingSystemTheme {
                 val navController = rememberNavController()
                 val navBackStackEntry by navController.currentBackStackEntryAsState()
-                
-                // Helper for debounced navigation/popping
+                val currentRoute = navBackStackEntry?.destination?.route
+                val chrome = ScreenChromes[currentRoute]
+                val showBars = chrome?.showBars ?: true
+                val currentTab = chrome?.tab
+
                 fun popBackStackSafe() {
-                    val lifecycle = navBackStackEntry?.lifecycle
-                    if (lifecycle?.currentState == androidx.lifecycle.Lifecycle.State.RESUMED) {
+                    if (navBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
                         navController.popBackStack()
                     }
                 }
-                
-                // ... (rest of content)
-                val currentRoute = navBackStackEntry?.destination?.route
 
-                // Wrap content in Ambient Background
+                fun openTab(tab: ArcTab) {
+                    navController.navigate(tab.route) {
+                        launchSingleTop = true
+                        // Navigation keys the state saved by popUpTo on the popUpTo destination
+                        // itself, so restoring while targeting Home would re-push the tab we
+                        // just left and land back on it.
+                        restoreState = tab != ArcTab.Home
+                        popUpTo(ArcTab.Home.route) { saveState = true }
+                    }
+                }
+
+                fun navigateTo(route: String) {
+                    val tab = ArcTab.entries.firstOrNull { it.route == route }
+                    if (tab != null) openTab(tab) else navController.navigate(route)
+                }
+
+                fun viewModels() = MigrationViewModelFactory(application)
+
                 Box(modifier = Modifier.fillMaxSize()) {
                     if (currentRoute != "splash") {
-                        com.example.personallevelingsystem.ui.compose.components.AmbientBackground()
+                        AmbientBackground()
                     }
-                    
-                    NavHost(navController = navController, startDestination = "splash") {
-                    composable("splash") {
-                        com.example.personallevelingsystem.ui.compose.screens.SplashScreen(
-                            onAnimationFinished = {
-                                navController.navigate("main") {
-                                    popUpTo("splash") { inclusive = true }
-                                }
-                                // Honor deeplink_route from notification taps
-                                intent?.getStringExtra("deeplink_route")?.takeIf { it.isNotBlank() }?.let { route ->
-                                    navController.navigate(route)
-                                    intent.removeExtra("deeplink_route")
-                                }
+
+                    Scaffold(
+                        containerColor = Color.Transparent,
+                        contentWindowInsets = if (showBars) ScaffoldDefaults.contentWindowInsets else WindowInsets(0, 0, 0, 0),
+                        topBar = {
+                            if (showBars && chrome != null) {
+                                ArcTopBar(
+                                    chrome = chrome,
+                                    onBack = if (currentTab == null) ({ popBackStackSafe() }) else null,
+                                    onAction = { navigateTo(it.route) },
+                                    onProfile = { navController.navigate("profile") },
+                                    onSettings = { navController.navigate("settings") }
+                                )
                             }
-                        )
-                    }
-                    composable("main") {
-                        // Android 13+ only shows notifications once the user has
-                        // granted POST_NOTIFICATIONS at runtime — ask on first landing.
-                        val notificationPermissionLauncher = rememberLauncherForActivityResult(
-                            ActivityResultContracts.RequestPermission()
-                        ) { /* granted or not, reminders check the permission themselves */ }
-                        LaunchedEffect(Unit) {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
-                                ContextCompat.checkSelfPermission(
-                                    this@MainActivity, Manifest.permission.POST_NOTIFICATIONS
-                                ) != PackageManager.PERMISSION_GRANTED
-                            ) {
-                                notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        },
+                        bottomBar = {
+                            if (showBars && currentTab != null) {
+                                ArcBottomBar(current = currentTab, onSelect = { openTab(it) })
                             }
                         }
-
-                        val performanceViewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.PerformanceViewModel::class.java]
-
-                        val healthViewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java]
-
-                        val missionViewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[MissionViewModel::class.java]
-
-                        MainScreen(
-                            onNavigate = { destination ->
-                                navController.navigate(destination)
+                    ) { innerPadding ->
+                        NavHost(
+                            navController = navController,
+                            startDestination = "splash",
+                            modifier = Modifier
+                                .padding(innerPadding)
+                                .consumeWindowInsets(innerPadding)
+                                .imePadding(),
+                            enterTransition = {
+                                val tabToTab = initialState.destination.route in TabRoutes &&
+                                    targetState.destination.route in TabRoutes
+                                if (tabToTab) fadeIn(tween(Motion.Standard))
+                                else fadeIn(tween(Motion.Standard)) + slideInHorizontally(tween(Motion.Standard)) { it / 12 }
                             },
-                            performanceViewModel = performanceViewModel,
-                            healthViewModel = healthViewModel,
-                            missionViewModel = missionViewModel
-                        )
-                    }
-                    composable("profile") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[UserViewModel::class.java]
-                        
-                        UserProfileScreen(
-                            viewModel = viewModel,
-                            onBackClick = { navController.popBackStack() },
-                            onModifyClick = { navController.navigate("modify_user") }
-                        )
-                    }
-                    composable("modify_user") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[UserViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.ModifyUserInfoScreen(
-                            viewModel = viewModel,
-                            onSaveClick = { navController.popBackStack() },
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("missions") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[MissionViewModel::class.java]
-
-                        MissionsListScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() },
-                            onDeeplink = { route -> navController.navigate(route) }
-                        )
-                    }
-                    // Add other screens as needed
-                    composable("training") {
-                        TrainingScreen(
-                            onCreateProgramClick = { navController.navigate("create_program") },
-                            onViewProgramsClick = { navController.navigate("view_programs") },
-                            onStartProgramClick = { navController.navigate("select_session") },
-                            onStartFlexibilityClick = { navController.navigate("flexibility") },
-                            onStartEnduranceClick = { navController.navigate("endurance") },
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable(
-                        "training_session/{sessionId}",
-                        arguments = listOf(androidx.navigation.navArgument("sessionId") { type = androidx.navigation.NavType.LongType })
-                    ) { backStackEntry ->
-                        val sessionId = backStackEntry.arguments?.getLong("sessionId") ?: -1L
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-                        
-                        androidx.compose.runtime.LaunchedEffect(sessionId) {
-                            if (sessionId != -1L) {
-                                viewModel.startSession(sessionId)
-                            }
-                        }
-
-                        com.example.personallevelingsystem.ui.compose.screens.TrainingSessionScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("select_session") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-                        
-                        val programs by viewModel.programs.observeAsState(initial = emptyList())
-
-                        androidx.compose.runtime.LaunchedEffect(Unit) {
-                            viewModel.loadPrograms()
-                        }
-
-                        com.example.personallevelingsystem.ui.compose.screens.SelectSessionScreen(
-                            programs = programs,
-                            onSessionClick = { sessionId ->
-                                navController.navigate("training_session/$sessionId")
+                            exitTransition = { fadeOut(tween(Motion.Quick)) },
+                            popEnterTransition = {
+                                fadeIn(tween(Motion.Standard)) + slideInHorizontally(tween(Motion.Standard)) { -it / 12 }
                             },
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("view_programs") {
-                         val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-
-                        val programs by viewModel.programs.observeAsState(initial = emptyList())
-                        val exerciseHistory by viewModel.exerciseHistory.observeAsState(initial = emptyList())
-
-                        androidx.compose.runtime.LaunchedEffect(Unit) {
-                            viewModel.loadPrograms()
-                        }
-
-                        com.example.personallevelingsystem.ui.compose.screens.ViewProgramsScreen(
-                            programs = programs,
-                            exerciseHistory = exerciseHistory,
-                            onExerciseClick = { exercise -> viewModel.loadExerciseHistory(exercise.id) },
-                            onDeleteProgram = { viewModel.deleteProgram(it.program) },
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("water") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.WaterScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("sleep") {
-                         val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.SleepScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("nutrition") {
-                         val healthViewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java]
-
-                        val foodAnalysisViewModel = ViewModelProvider(
-                            this@MainActivity
-                        )[com.example.personallevelingsystem.viewmodel.FoodAnalysisViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.NutritionScreen(
-                            viewModel = healthViewModel,
-                            foodAnalysisViewModel = foodAnalysisViewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("flexibility") {
-                         val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.FlexibilityScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("endurance") {
-                         val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-                        
-                            
-                        com.example.personallevelingsystem.ui.compose.screens.EnduranceScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("create_program") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
-                        
-                        com.example.personallevelingsystem.ui.compose.screens.CreateProgramScreen(
-                            viewModel = viewModel,
-                            onBackClick = { popBackStackSafe() },
-                            onSaveSuccess = { 
-                                popBackStackSafe() 
+                            popExitTransition = {
+                                fadeOut(tween(Motion.Quick)) + slideOutHorizontally(tween(Motion.Standard)) { it / 12 }
                             }
-                        )
-                    }
-                    composable("settings") {
-                        com.example.personallevelingsystem.ui.compose.screens.ReminderSettingsScreen(
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
-                    composable("planning") {
-                        val viewModel = ViewModelProvider(
-                            this@MainActivity,
-                            MigrationViewModelFactory(application)
-                        )[MissionViewModel::class.java]
+                        ) {
+                            composable("splash") {
+                                SplashScreen(
+                                    onAnimationFinished = {
+                                        navController.navigate("main") {
+                                            popUpTo("splash") { inclusive = true }
+                                        }
+                                        // Honor deeplink_route from notification taps
+                                        intent?.getStringExtra("deeplink_route")?.takeIf { it.isNotBlank() }?.let { route ->
+                                            navigateTo(route)
+                                            intent.removeExtra("deeplink_route")
+                                        }
+                                    }
+                                )
+                            }
+                            composable("main") {
+                                // Android 13+ only shows notifications once the user has
+                                // granted POST_NOTIFICATIONS at runtime — ask on first landing.
+                                val notificationPermissionLauncher = rememberLauncherForActivityResult(
+                                    ActivityResultContracts.RequestPermission()
+                                ) { /* granted or not, reminders check the permission themselves */ }
+                                LaunchedEffect(Unit) {
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                        ContextCompat.checkSelfPermission(
+                                            this@MainActivity, Manifest.permission.POST_NOTIFICATIONS
+                                        ) != PackageManager.PERMISSION_GRANTED
+                                    ) {
+                                        notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
+                                }
 
-                        com.example.personallevelingsystem.ui.compose.screens.PlanningScreen(
-                            missionViewModel = viewModel,
-                            onBackClick = { popBackStackSafe() }
-                        )
-                    }
+                                val performanceViewModel = ViewModelProvider(this@MainActivity, viewModels())[PerformanceViewModel::class.java]
+                                val healthViewModel = ViewModelProvider(this@MainActivity, viewModels())[HealthViewModel::class.java]
+                                val missionViewModel = ViewModelProvider(this@MainActivity, viewModels())[MissionViewModel::class.java]
+
+                                MainScreen(
+                                    onNavigate = { destination -> navigateTo(destination) },
+                                    performanceViewModel = performanceViewModel,
+                                    healthViewModel = healthViewModel,
+                                    missionViewModel = missionViewModel
+                                )
+                            }
+                            composable("missions") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[MissionViewModel::class.java]
+                                MissionsListScreen(
+                                    viewModel = viewModel,
+                                    onDeeplink = { route -> navigateTo(route) }
+                                )
+                            }
+                            composable("training") {
+                                TrainingScreen(
+                                    onCreateProgramClick = { navController.navigate("create_program") },
+                                    onViewProgramsClick = { navController.navigate("view_programs") },
+                                    onStartProgramClick = { navController.navigate("select_session") },
+                                    onStartFlexibilityClick = { navController.navigate("flexibility") },
+                                    onStartEnduranceClick = { navController.navigate("endurance") }
+                                )
+                            }
+                            composable("body") {
+                                BodyScreen(onNavigate = { navController.navigate(it) })
+                            }
+                            composable("profile") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[UserViewModel::class.java]
+                                UserProfileScreen(
+                                    viewModel = viewModel,
+                                    onModifyClick = { navController.navigate("modify_user") }
+                                )
+                            }
+                            composable("modify_user") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[UserViewModel::class.java]
+                                ModifyUserInfoScreen(
+                                    viewModel = viewModel,
+                                    onSaveClick = { navController.popBackStack() }
+                                )
+                            }
+                            composable("settings") {
+                                ReminderSettingsScreen(onOpenStyleLab = { navController.navigate("style_lab") })
+                            }
+                            composable("style_lab") {
+                                StyleLabScreen()
+                            }
+                            composable("planning") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[MissionViewModel::class.java]
+                                PlanningScreen(missionViewModel = viewModel)
+                            }
+                            composable(
+                                "training_session/{sessionId}",
+                                arguments = listOf(navArgument("sessionId") { type = NavType.LongType })
+                            ) { backStackEntry ->
+                                val sessionId = backStackEntry.arguments?.getLong("sessionId") ?: -1L
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+
+                                LaunchedEffect(sessionId) {
+                                    if (sessionId != -1L) {
+                                        viewModel.startSession(sessionId)
+                                    }
+                                }
+
+                                TrainingSessionScreen(
+                                    viewModel = viewModel,
+                                    onBackClick = { popBackStackSafe() }
+                                )
+                            }
+                            composable("select_session") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+                                val programs by viewModel.programs.observeAsState(initial = emptyList())
+
+                                LaunchedEffect(Unit) {
+                                    viewModel.loadPrograms()
+                                }
+
+                                SelectSessionScreen(
+                                    programs = programs,
+                                    onSessionClick = { sessionId ->
+                                        navController.navigate("training_session/$sessionId")
+                                    }
+                                )
+                            }
+                            composable("view_programs") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+                                val programs by viewModel.programs.observeAsState(initial = emptyList())
+                                val exerciseHistory by viewModel.exerciseHistory.observeAsState(initial = emptyList())
+
+                                LaunchedEffect(Unit) {
+                                    viewModel.loadPrograms()
+                                }
+
+                                ViewProgramsScreen(
+                                    programs = programs,
+                                    exerciseHistory = exerciseHistory,
+                                    onExerciseClick = { exercise -> viewModel.loadExerciseHistory(exercise.id) },
+                                    onDeleteProgram = { viewModel.deleteProgram(it.program) }
+                                )
+                            }
+                            composable("water") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[HealthViewModel::class.java]
+                                WaterScreen(viewModel = viewModel)
+                            }
+                            composable("sleep") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[HealthViewModel::class.java]
+                                SleepScreen(
+                                    viewModel = viewModel,
+                                    onBackClick = { popBackStackSafe() }
+                                )
+                            }
+                            composable("nutrition") {
+                                val healthViewModel = ViewModelProvider(this@MainActivity, viewModels())[HealthViewModel::class.java]
+                                val foodAnalysisViewModel = ViewModelProvider(this@MainActivity)[FoodAnalysisViewModel::class.java]
+                                NutritionScreen(
+                                    viewModel = healthViewModel,
+                                    foodAnalysisViewModel = foodAnalysisViewModel
+                                )
+                            }
+                            composable("flexibility") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+                                FlexibilityScreen(
+                                    viewModel = viewModel,
+                                    onBackClick = { popBackStackSafe() }
+                                )
+                            }
+                            composable("endurance") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+                                EnduranceScreen(
+                                    viewModel = viewModel,
+                                    onBackClick = { popBackStackSafe() }
+                                )
+                            }
+                            composable("create_program") {
+                                val viewModel = ViewModelProvider(this@MainActivity, viewModels())[TrainingViewModel::class.java]
+                                CreateProgramScreen(
+                                    viewModel = viewModel,
+                                    onSaveSuccess = { popBackStackSafe() }
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -330,7 +353,7 @@ class MainActivity : ComponentActivity() {
             val viewModel = ViewModelProvider(
                 this,
                 MigrationViewModelFactory(application)
-            )[com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java]
+            )[TrainingViewModel::class.java]
             viewModel.ensureTimerNotification()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -351,14 +374,14 @@ class MigrationViewModelFactory(private val application: android.app.Application
             modelClass.isAssignableFrom(MissionViewModel::class.java) -> {
                 MissionViewModel(application) as T
             }
-            modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.TrainingViewModel::class.java) -> {
-                com.example.personallevelingsystem.viewmodel.TrainingViewModel(application) as T
+            modelClass.isAssignableFrom(TrainingViewModel::class.java) -> {
+                TrainingViewModel(application) as T
             }
-            modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.HealthViewModel::class.java) -> {
-                com.example.personallevelingsystem.viewmodel.HealthViewModel(application) as T
+            modelClass.isAssignableFrom(HealthViewModel::class.java) -> {
+                HealthViewModel(application) as T
             }
-            modelClass.isAssignableFrom(com.example.personallevelingsystem.viewmodel.PerformanceViewModel::class.java) -> {
-                com.example.personallevelingsystem.viewmodel.PerformanceViewModel(application) as T
+            modelClass.isAssignableFrom(PerformanceViewModel::class.java) -> {
+                PerformanceViewModel(application) as T
             }
             else -> throw IllegalArgumentException("Unknown ViewModel class")
         }

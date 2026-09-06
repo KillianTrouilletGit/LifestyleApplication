@@ -25,7 +25,6 @@ import com.example.personallevelingsystem.model.ProgramWithSessions
 import com.example.personallevelingsystem.model.SessionWithExercises
 import com.example.personallevelingsystem.ui.compose.components.JuicyButton
 import com.example.personallevelingsystem.ui.compose.components.JuicyCard
-import com.example.personallevelingsystem.ui.compose.components.OperatorHeader
 import com.example.personallevelingsystem.ui.compose.theme.AccentViolet
 import com.example.personallevelingsystem.ui.compose.theme.DesignSystem
 import com.example.personallevelingsystem.ui.compose.theme.PersonalLevelingSystemTheme
@@ -38,8 +37,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 @Composable
 fun SelectSessionScreen(
     programs: List<ProgramWithSessions>, // Will come from ViewModel
-    onSessionClick: (Long) -> Unit,
-    onBackClick: () -> Unit
+    onSessionClick: (Long) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -47,10 +45,6 @@ fun SelectSessionScreen(
             .background(MaterialTheme.colorScheme.background)
             .padding(DesignSystem.Padding)
     ) {
-        OperatorHeader(subtitle = "Select Session", title = "Initiate Protocol")
-
-        Spacer(modifier = Modifier.height(16.dp))
-
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -70,17 +64,11 @@ fun SelectSessionScreen(
                     SessionItem(
                         sessionWithExercises = sessionWithExercises,
                         onClick = { onSessionClick(sessionWithExercises.session.id) },
-                        modifier = Modifier.animateItemPlacement(PlacementSpring)
+                        modifier = Modifier.animateItem(placementSpec = PlacementSpring)
                     )
                 }
             }
         }
-
-        JuicyButton(
-            onClick = onBackClick,
-            text = "BACK TO MENU",
-            modifier = Modifier.fillMaxWidth()
-        )
     }
 }
 
@@ -154,8 +142,7 @@ fun SelectSessionScreenPreview() {
                     sessions = emptyList()
                 )
             ),
-            onSessionClick = {},
-            onBackClick = {}
+            onSessionClick = {}
         )
     }
 }

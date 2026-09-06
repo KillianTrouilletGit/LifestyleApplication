@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Shell -->
+    <string name="tab_home">Accueil</string>
+    <string name="tab_missions">Missions</string>
+    <string name="tab_training">Entraînement</string>
+    <string name="tab_body">Corps</string>
+    <string name="action_back">Retour</string>
+    <string name="action_planning">Planning</string>
+    <string name="menu_profile">Profil</string>
+    <string name="menu_settings">Réglages</string>
+    <string name="menu_avatar_cd">Profil et réglages</string>
+
+    <!-- Screen chrome -->
+    <string name="chrome_dashboard">Tableau de bord</string>
+    <string name="chrome_dashboard_overline">Vue d\'ensemble</string>
+    <string name="chrome_missions_overline">Objectifs</string>
+    <string name="chrome_training_overline">Protocole</string>
+    <string name="chrome_body_overline">Récupération &amp; carburant</string>
+    <string name="chrome_profile">Profil</string>
+    <string name="chrome_profile_overline">Identité</string>
+    <string name="chrome_modify_user">Modifier les infos</string>
+    <string name="chrome_modify_user_overline">Identifiants</string>
+    <string name="chrome_settings">Réglages</string>
+    <string name="chrome_settings_overline">Application &amp; rappels</string>
+    <string name="chrome_style_lab">Style Lab</string>
+    <string name="chrome_style_lab_overline">Design system</string>
+    <string name="chrome_planning">Planning</string>
+    <string name="chrome_planning_overline">Google Agenda</string>
+    <string name="chrome_select_session">Choisir une séance</string>
+    <string name="chrome_select_session_overline">Programmes</string>
+    <string name="chrome_live_session">Séance en cours</string>
+    <string name="chrome_live_session_overline">Entraînement</string>
+    <string name="chrome_view_programs">Archive des programmes</string>
+    <string name="chrome_view_programs_overline">Base de données</string>
+    <string name="chrome_create_program">Créer un programme</string>
+    <string name="chrome_create_program_overline">Architecte</string>
+    <string name="chrome_flexibility">Souplesse</string>
+    <string name="chrome_flexibility_overline">Mobilité</string>
+    <string name="chrome_endurance">Endurance</string>
+    <string name="chrome_endurance_overline">Cardio</string>
+    <string name="chrome_water">Hydratation</string>
+    <string name="chrome_water_overline">Niveau d\'eau</string>
+    <string name="chrome_sleep">Sommeil</string>
+    <string name="chrome_sleep_overline">Récupération</string>
+    <string name="chrome_nutrition">Nutrition</string>
+    <string name="chrome_nutrition_overline">Carburant</string>
+
+    <!-- Dashboard -->
+    <string name="dash_level">Niveau</string>
+    <string name="dash_xp">XP</string>
+    <string name="dash_xp_value">%1$,d / %2$,d</string>
+    <string name="dash_best_streak">Meilleure série</string>
+    <string name="dash_days_value">%1$d j</string>
+    <string name="dash_active_days">Jours actifs</string>
+    <string name="dash_of_seven">%1$d / 7</string>
+    <string name="dash_this_week">Cette semaine</string>
+    <string name="dash_training_volume">Volume d\'entraînement</string>
+    <string name="dash_hours">%1$.1f h</string>
+    <string name="dash_active_days_of">%1$d / 7 jours actifs</string>
+    <string name="dash_todays_ops">Ops du jour</string>
+    <string name="dash_cleared">%1$d / %2$d terminées</string>
+    <string name="dash_all_clear">Tout est fait</string>
+    <string name="dash_xp_available">+%1$d XP</string>
+    <string name="dash_slate_cleared">Journée bouclée. Les séries tiennent.</string>
+    <string name="dash_more">+ %1$d autres</string>
+    <string name="dash_quick_log">Saisie rapide</string>
+    <string name="dash_water">Eau</string>
+    <string name="dash_sleep">Sommeil</string>
+    <string name="dash_fuel">Carburant</string>
+    <string name="dash_water_value">%1$.1f / %2$.1f L</string>
+    <string name="dash_kcal_value">%1$,d kcal</string>
+    <string name="dash_add_250">+250 ml</string>
+    <string name="dash_log_meal">Repas</string>
+
+    <!-- Training hub -->
+    <string name="train_start_session">Lancer une séance</string>
+    <string name="train_start_session_sub">Choisis une séance du programme et c\'est parti</string>
+    <string name="train_programs">Programmes</string>
+    <string name="train_archive">Archive des programmes</string>
+    <string name="train_archive_sub">Parcourir les séances, voir l\'historique</string>
+    <string name="train_create">Créer un programme</string>
+    <string name="train_create_sub">Séances, exercices et nombre de séries</string>
+    <string name="train_conditioning">Condition physique</string>
+    <string name="train_flex_sub">Bloc de mobilité chronométré</string>
+    <string name="train_endurance_sub">Course chronométrée avec distance</string>
+
+    <!-- Body hub -->
+    <string name="body_daily_logs">Journal du jour</string>
+    <string name="body_hydration_sub">Ajout rapide et suivi du quota du jour</string>
+    <string name="body_sleep_sub">Noter la nuit dernière</string>
+    <string name="body_nutrition_sub">Repas, macros et analyse IA des plats</string>
+
+    <!-- Missions -->
+    <string name="missions_daily_tab">Jour · %1$d/%2$d</string>
+    <string name="missions_weekly_tab">Semaine · %1$d/%2$d</string>
+    <string name="missions_empty">Rien de prévu ici.</string>
+    <string name="missions_complete">Terminer</string>
+    <string name="missions_specialization">Spécialisation</string>
+    <string name="missions_xp_total">%1$,d XP</string>
+    <string name="missions_xp_reward">+%1$d XP%2$s</string>
+    <string name="missions_mark_complete">Marquer comme fait</string>
+    <string name="missions_open">Ouvrir %1$s</string>
+    <string name="missions_progress">Progression</string>
+    <string name="missions_tip">Conseil</string>
+    <string name="missions_chip_category">Catégorie</string>
+    <string name="missions_chip_streak">Série</string>
+    <string name="missions_chip_xp">XP</string>
+    <string name="missions_day_streak">Jours d\'affilée</string>
+    <string name="difficulty_hard">Difficile</string>
+    <string name="difficulty_elite">Élite</string>
+    <string name="category_body">Corps</string>
+    <string name="category_mind">Esprit</string>
+    <string name="category_nutrition">Nutrition</string>
+    <string name="category_recovery">Récupération</string>
+    <string name="category_discipline">Discipline</string>
+    <string name="category_progress">Progression</string>
+
+    <!-- Training session -->
+    <string name="session_exercise_of">Exercice %1$d / %2$d</string>
+    <string name="session_elapsed">Écoulé</string>
+    <string name="session_rest">Repos</string>
+    <string name="session_add_30">+30 s</string>
+    <string name="session_skip">Passer</string>
+    <string name="session_set">Série %1$d</string>
+    <string name="session_prev">préc. %1$d × %2$s kg</string>
+    <string name="session_reps">reps</string>
+    <string name="session_kg">kg</string>
+    <string name="session_finish">Terminer la séance</string>
+    <string name="session_finish_sub">Enregistrer ces séries et clôturer</string>
+    <string name="session_next">Exercice suivant</string>
+    <string name="session_next_sub">Enregistrer · puis %1$s</string>
+    <string name="session_end">Quitter la séance</string>
+    <string name="session_empty">Aucun exercice trouvé ou chargement en cours…</string>
+
+    <!-- Hydration -->
+    <string name="water_today">Aujourd\'hui</string>
+    <string name="water_liters">%1$.2f L</string>
+    <string name="water_target">objectif %1$.1f L</string>
+    <string name="water_progress">%1$d / %2$d ml</string>
+    <string name="water_quota_met">· quota atteint</string>
+    <string name="water_quick_add">Ajout rapide</string>
+    <string name="water_custom">Quantité libre</string>
+    <string name="water_amount_hint">Quantité (ml)</string>
+    <string name="water_log">Enregistrer</string>
+    <string name="water_add_ml">+%1$d ml</string>
+
+    <!-- Sleep -->
+    <string name="sleep_last_night">Nuit dernière</string>
+    <string name="sleep_hint">Touche pour choisir ta durée de sommeil (hh:mm).</string>
+    <string name="sleep_log">Enregistrer la nuit</string>
+
+    <!-- Timers -->
+    <string name="timer_ready">Prêt</string>
+    <string name="timer_running">En cours</string>
+    <string name="timer_paused">En pause</string>
+    <string name="flex_start">Lancer le bloc mobilité</string>
+    <string name="common_resume">Reprendre</string>
+    <string name="common_pause">Pause</string>
+    <string name="common_complete_save">Terminer &amp; enregistrer</string>
+    <string name="common_abort">Abandonner la séance</string>
+    <string name="endurance_distance">Distance</string>
+    <string name="endurance_distance_hint">Distance (km)</string>
+    <string name="endurance_start">Lancer la course</string>
+    <string name="endurance_resume">Reprendre la course</string>
+
+    <!-- Profile -->
+    <string name="profile_unnamed">Sans nom</string>
+    <string name="profile_level">Niveau %1$d</string>
+    <string name="profile_xp_next">XP jusqu\'au prochain niveau</string>
+    <string name="profile_weight">Poids</string>
+    <string name="profile_height">Taille</string>
+    <string name="profile_born">Naissance</string>
+    <string name="profile_edit">Modifier le profil</string>
+    <string name="profile_edit_sub">Nom, poids, taille, date de naissance</string>
+
+    <!-- Settings -->
+    <string name="settings_language">Langue</string>
+    <string name="settings_language_hint">S\'applique immédiatement à toute l\'application.</string>
+    <string name="settings_language_unsupported">La langue par application demande Android 13 ou plus.</string>
+    <string name="lang_system">Système</string>
+    <string name="lang_en">English</string>
+    <string name="lang_fr">Français</string>
+    <string name="settings_appearance">Apparence</string>
+    <string name="settings_style_lab_sub">Comparer les styles de bouton, cartes, palette et typo sur l\'appareil.</string>
+    <string name="settings_global">Général</string>
+    <string name="settings_notifications">Notifications</string>
+    <string name="settings_notifications_sub">Interrupteur général. Désactivé = silence total.</string>
+    <string name="settings_quiet_hours">Heures calmes</string>
+    <string name="settings_quiet_hours_sub">%1$s → %2$s. Les rappels urgents passent quand même.</string>
+    <string name="settings_quiet_starts">Début du calme</string>
+    <string name="settings_quiet_ends">Fin du calme</string>
+    <string name="settings_behind_only">Mode retard uniquement</string>
+    <string name="settings_behind_only_sub">Pas de rappel de mi-journée sauf si 3 ops ou plus restent ouvertes.</string>
+    <string name="settings_reminders">Rappels</string>
+    <string name="slot_midday">Point de mi-journée</string>
+    <string name="slot_midday_hint">12:30 · ops du jour restantes</string>
+    <string name="slot_evening">Résumé du soir</string>
+    <string name="slot_evening_hint">18:00 · état consolidé</string>
+    <string name="slot_last_call_daily">Dernier appel du jour</string>
+    <string name="slot_last_call_daily_hint">21:30 · urgent, ignore les heures calmes</string>
+    <string name="slot_last_call_weekly">Dernier appel de la semaine</string>
+    <string name="slot_last_call_weekly_hint">Dim 19:00 · urgent</string>
+    <string name="slot_sleep_morning">Journal de sommeil</string>
+    <string name="slot_sleep_morning_hint">09:00 · la nuit dernière</string>
+    <string name="slot_water_morning">Eau — début de journée</string>
+    <string name="slot_water_morning_hint">10:00 · si aucune saisie</string>
+    <string name="slot_nutrition_lunch">Journal du déjeuner</string>
+    <string name="slot_nutrition_lunch_hint">13:30 · si aucun repas</string>
+    <string name="slot_water_afternoon">Eau — en retard</string>
+    <string name="slot_water_afternoon_hint">15:00 · si &lt;50 % de l\'objectif</string>
+    <string name="slot_nutrition_dinner">Journal du dîner</string>
+    <string name="slot_nutrition_dinner_hint">20:30 · si &lt;2 repas</string>
+    <string name="slot_planning_evening">Planifier demain</string>
+    <string name="slot_planning_evening_hint">21:00 · fixer 3 priorités</string>
+    <string name="slot_weight_sunday">Pesée hebdo</string>
+    <string name="slot_weight_sunday_hint">Dim 10:00</string>
+    <string name="slot_morning_briefing">Briefing du matin</string>
+    <string name="slot_morning_briefing_hint">07:30 · récup + ops + plan</string>
+    <string name="slot_weekly_debrief">Débrief hebdo</string>
+    <string name="slot_weekly_debrief_hint">Dim 20:00 · bilan XP + séries</string>
+
+    <!-- Style Lab -->
+    <string name="stylelab_intro">Touche un style pour en faire le bouton principal de toute l\'app. Effet immédiat, choix mémorisé.</string>
+    <string name="stylelab_primary">Bouton principal</string>
+    <string name="stylelab_secondary">Secondaire</string>
+    <string name="stylelab_card_stats">Carte &amp; stats</string>
+    <string name="stylelab_list_row">Ligne de liste</string>
+    <string name="stylelab_list_row_sub">Tuile d\'icône, titre, sous-titre, chevron</string>
+    <string name="stylelab_palette">Palette</string>
+    <string name="stylelab_type">Typo</string>
+    <string name="style_gradient">Dégradé lumineux</string>
+    <string name="style_gradient_blurb">Pilule rouge → violet avec un halo doux. La signature.</string>
+    <string name="style_flat">Plat</string>
+    <string name="style_flat_blurb">Pilule rouge unie, ombre discrète.</string>
+    <string name="style_glass">Verre</string>
+    <string name="style_glass_blurb">Pilule translucide, bord fin, icône accentuée.</string>
+    <string name="stylelab_sample_start_sub">Séance push · 5 exercices</string>
+    <string name="stylelab_sample_log">Noter</string>
+    <string name="stylelab_sample_off">Off</string>
+    <string name="stylelab_sample_skip">Passer</string>
+    <string name="color_red">Rouge</string>
+    <string name="color_violet">Violet</string>
+    <string name="color_cyan">Cyan</string>
+    <string name="color_amber">Ambre</string>
+    <string name="color_green">Vert</string>
+    <string name="stylelab_type_display">Titre Sora</string>
+    <string name="stylelab_type_title">Sous-titre Sora</string>
+    <string name="stylelab_type_body">Corps Inter — portez ce vieux whisky au juge blond qui fume.</string>
+</resources>
