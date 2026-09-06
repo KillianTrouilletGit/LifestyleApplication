@@ -1,31 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- ARC launcher mark: progress arc, crimson to violet to cyan. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-  <path
-      android:pathData="M54,19L23.69,36.5V71.5L54,89L84.31,71.5V36.5L54,19Z"
-      android:strokeWidth="4"
-      android:strokeColor="#FFFFFF"
-      android:strokeLineJoin="round"
-      android:strokeLineCap="round">
+  <path android:pathData="M38.85,80.24 A30.30,30.30 0 1 1 69.15,80.24 A3.80,3.80 0 0 1 65.35,73.66 A22.70,22.70 0 1 0 42.65,73.66 A3.80,3.80 0 0 1 38.85,80.24 Z">
       <aapt:attr name="android:fillColor">
-          <gradient 
-              android:startX="54"
-              android:startY="19"
-              android:endX="54"
-              android:endY="89"
+          <gradient
+              android:startX="27" android:startY="27"
+              android:endX="81" android:endY="81"
               android:type="linear">
-              <item android:offset="0.0" android:color="#E63946"/>
-              <item android:offset="1.0" android:color="#D90429"/>
+              <item android:offset="0.0" android:color="#E5484D"/>
+              <item android:offset="0.55" android:color="#6E56CF"/>
+              <item android:offset="1.0" android:color="#22D3EE"/>
           </gradient>
       </aapt:attr>
   </path>
-  <!-- Inner Detail for 'Tech' look -->
   <path
-      android:pathData="M54,35L38,45V63L54,73L70,63V45L54,35Z"
-      android:fillColor="#00000000"
-      android:strokeColor="#FFFFFF"
-      android:strokeWidth="2"/>
+      android:pathData="M67.25,74.95 a2.0,2.0 0 1,0 0.01,0 Z"
+      android:fillColor="#EDEAF4"/>
 </vector>

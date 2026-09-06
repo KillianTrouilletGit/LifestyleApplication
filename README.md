@@ -1,6 +1,6 @@
-# Operator OS
+# ARC
 
-![Kotlin](https://img.shields.io/badge/Kotlin-1.9.0-7F52FF.svg?style=flat&logo=kotlin&logoColor=white)
+![Kotlin](https://img.shields.io/badge/Kotlin-2.0.21-7F52FF.svg?style=flat&logo=kotlin&logoColor=white)
 ![Android](https://img.shields.io/badge/Android-MinSDK%2024-3DDC84.svg?style=flat&logo=android&logoColor=white)
 ![Architecture](https://img.shields.io/badge/Architecture-MVVM-0052CC.svg?style=flat&logo=architecture&logoColor=white)
 ![UI](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg?style=flat&logo=jetpackcompose&logoColor=white)
@@ -8,7 +8,7 @@
 
 ## 🚀 Overview
 
-**Operator OS** is a high-performance Android application that gamifies self-improvement, turning daily habits into an immersive RPG experience. Inspired by the "System" from *Solo Leveling*, it wraps complex fitness, nutrition, and scheduling tools in a custom-built, sci-fi **"Operator OS"** interface.
+**ARC** is an Android application that gamifies self-improvement, turning daily habits into a levelling system. It wraps training, nutrition, sleep and hydration tracking in a custom-built Compose design system.
 
 The app has recently undergone a major transformation, moving from a legacy XML-based architecture to a **Modern Android Development (MAD)** stack using Jetpack Compose, offering a more fluid, reactive, and visually stunning user experience.
 
@@ -43,17 +43,21 @@ The **Nutrition Monitor** now features a cutting-edge AI scanner that identifies
 
 ---
 
-## 🎨 Design System: "Operator OS"
+## 🎨 Design System: ARC
 
-The "Operator OS" aesthetic has been completely rebuilt as a native Compose design system.
+The interface was rebuilt as a native Compose design system, moving away from the earlier neon sci-fi HUD to a restrained dark theme.
 
--   **Aesthetic**: Tactical, high-contrast, dark-mode interface inspired by sci-fi HUDs and "Solo Leveling" UI.
--   **Thematic Boot Sequence**: A custom **Interactive Splash Screen** replicates a technical boot sequence (`Initializing Core Modules...`, `Neural Sync...`) before revealing the dashboard.
--   **Adaptive Performance HUD**: A centralized `PerformanceCarousel` provides a rolling overview of level progress, mission efficiency scores, and bio-metrics.
+-   **Aesthetic**: Restrained dark interface on near-black, built from a single component library (`ArcCard`, `ArcButton`, `ArcStepper`) with a `StyleLab` screen that renders every token in one place.
+-   **Splash**: A one-second animated mark, then straight to the dashboard.
+-   **Dashboard**: A level ring with XP progress, the current streak, the week's training volume, today's open missions and a one-tap quick-log row.
 -   **Color DNA**:
-    *   *Cyber Cyan* (`#00E5FF`): Interactive data points.
-    *   *Neon Magenta* (`#FF00FF`): Level milestones and critical paths.
-    *   *Matte Void* (`#000000`): Background for absolute contrast.
+    *   *Crimson* (`#E5484D`): Action and primary controls.
+    *   *Violet* (`#6E56CF`): Structure and navigation.
+    *   *Signal Cyan* (`#22D3EE`): Telemetry and data points.
+    *   *Space Black* (`#0B0A10`): Background.
+-   **Type**: Sora for headings and figures, Inter for body, both bundled as variable fonts.
+-   **Motion**: Around 250 ms with non-overshooting springs; the bouncy spring is reserved for reward moments (mission complete, streak, level up).
+-   **Languages**: English and French, switchable in-app through Android per-app locales.
 
 ---
 
